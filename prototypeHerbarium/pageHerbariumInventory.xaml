@@ -1,0 +1,251 @@
+﻿<Page x:Class="prototypeHerbarium.pageHerbariumInventory"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:prototypeHerbarium"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="pageHerbariumInventory">
+
+    <Grid>
+        <DockPanel>
+            <Grid DockPanel.Dock="Top" Margin="2" Height="35">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="200" />
+                </Grid.ColumnDefinitions>
+
+                <WrapPanel Grid.Column="2" Margin="5">
+                    <Label Content="Search: "/>
+                    <TextBox Width="135"/>
+                </WrapPanel>
+            </Grid>
+            <ListView x:Name="lstFamilyBox" DockPanel.Dock="Left" Width="180" Margin="5">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Button Margin="8 5" Width="150" Click="FamilyBox_Click">
+                            <Button.Content>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="50" />
+                                        <ColumnDefinition Width="100" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="20"/>
+                                        <RowDefinition Height="20"/>
+                                    </Grid.RowDefinitions>
+
+                                    <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+                                           Source="{StaticResource favicon-colored}" Margin="2" />
+                                    <TextBlock x:Name="lblBoxNumber" Grid.Column="1" Grid.Row="0" 
+                                               Text="{Binding BoxNumber}" FontWeight="Bold" />
+                                    <TextBlock Grid.Column="1" Grid.Row="1" 
+                                               Text="{Binding Family}" FontStyle="Italic" />
+                                </Grid>
+                            </Button.Content>
+                        </Button>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <DataGrid x:Name="dgrHerbariumSheets" DockPanel.Dock="Top" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Width="*" Header="Accession Number" Binding="{Binding AccessionNumber}"/>
+                    <DataGridTextColumn Width="2*" Header="Scientific Name" Binding="{Binding ScientificName}"/>
+                    <DataGridTextColumn Width="*" Header="Box Number" Binding="{Binding BoxLocation}"/>
+                    <DataGridTextColumn Width="*" Header="Status" Binding="{Binding Status}"/>
+                    <DataGridTemplateColumn Header="Actions" Width="110">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <WrapPanel HorizontalAlignment="Center">
+                                    <Button x:Name="btnView" 
+                                        Padding="2" Margin="2"
+                                        Click="btnView_Click"
+                                        ToolTip="View"
+                                        Content="VIEW" />
+                                </WrapPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </DockPanel>
+        <Grid x:Name="pnlPlantDeposit" Visibility="Hidden">
+            <Grid.Background>
+                <SolidColorBrush Color="#7F555555"/>
+            </Grid.Background>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="800" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="450" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <DockPanel Grid.Column="1" Grid.Row="1" Margin="30 10" Background="White">
+                <Border DockPanel.Dock="Left" BorderBrush="Gray" BorderThickness="1" Margin="15 5" VerticalAlignment="Center">
+                    <Image x:Name="picHerbariumSheet" Height="400" Width="300" Stretch="Uniform" />
+                </Border>
+                <Grid Margin="5" DockPanel.Dock="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <Label FontWeight="DemiBold" Margin="0 5">Herbarium Sheet Information</Label>
+                    <WrapPanel Margin="5" Grid.Column="1" FlowDirection="RightToLeft" VerticalAlignment="Center">
+                        <Button x:Name="btnReturn" Click="btnReturn_Click" 
+                            Padding="2" ToolTip="Close"
+                            Grid.Row="0" Grid.Column="2" Grid.RowSpan="2"
+                            Background="#55FFFFFF" BorderBrush="#00FFFFFF" Height="20" VerticalAlignment="Bottom">
+                            <Image Source="{StaticResource glyphicon-remove}"/>
+                        </Button>
+                    </WrapPanel>
+                </Grid>
+                <WrapPanel Margin="15" DockPanel.Dock="Bottom" FlowDirection="RightToLeft">
+                    <Button x:Name="btnAvail" Click="btnAvail_Click" Margin="5" Padding="10 5">SET AVAILABILITY</Button>
+                </WrapPanel>
+                <ScrollViewer Margin="5 0 0 5" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="0 0 5 0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Accession Number:" />
+                            <TextBlock x:Name="lblAccessionNumber" Grid.Column="1" 
+                                   Margin="5" TextWrapping="Wrap" Text="" />
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Stored in:" />
+                            <WrapPanel Grid.Column="1" Margin="5">
+                                <TextBlock x:Name="lblBox" Text="" />
+                                <TextBlock x:Name="lblFamilyName" Text="" />
+                            </WrapPanel>
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Scientific Name:" />
+                            <TextBlock x:Name="lblScientificName" Grid.Column="1" 
+                                   Margin="5" TextWrapping="Wrap" Text="" />
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Common Name:" />
+                            <TextBlock x:Name="lblCommonName" Grid.Column="1" 
+                                       Margin="5" TextWrapping="Wrap" Text="" />
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Date Collected:" />
+                            <TextBlock x:Name="lblDateCollected" Grid.Column="1" 
+                                       Margin="5" TextWrapping="Wrap" Text="" />
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Date Deposited:" />
+                            <TextBlock x:Name="lblDateDeposited" Grid.Column="1" 
+                                       Margin="5" TextWrapping="Wrap" Text="" />
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Date Verified:" />
+                            <TextBlock x:Name="lblDateVerified" Grid.Column="1" 
+                                       Margin="5" TextWrapping="Wrap" Text="" />
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Locality:" />
+                            <TextBlock x:Name="lblLocality" Grid.Column="1" 
+                                       Margin="5" TextWrapping="Wrap" Text="" />
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Collector:" />
+                            <TextBlock x:Name="lblCollector" Grid.Column="1" 
+                                       Margin="5" TextWrapping="Wrap" Text="" />
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Validated by:" />
+                            <TextBlock x:Name="lblValidator" Grid.Column="1" 
+                                       Margin="5" TextWrapping="Wrap" Text="" />
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Description:" />
+                            <TextBlock x:Name="lblDescription" Grid.Column="1" 
+                                       Margin="5" TextWrapping="Wrap" Text="" />
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Loan Availability:" />
+                            <TextBlock x:Name="lblAvail" Grid.Column="1" 
+                                       Margin="5" TextWrapping="Wrap" Text="" />
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Status:" />
+                            <TextBlock x:Name="lblStatus" Grid.Column="1" 
+                                       Margin="5" TextWrapping="Wrap" Text="" />
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+            </DockPanel>
+        </Grid>
+    </Grid>
+</Page>

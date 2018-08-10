@@ -1,0 +1,10 @@
+﻿<Application x:Class="prototypeHerbarium.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:prototypeHerbarium"
+             StartupUri="frmLogin.xaml">
+    <Application.Resources>
+        <!-- Get Resource Dictionary for this Application-->
+        <ResourceDictionary Source="resourceHerbarium.xaml" />
+    </Application.Resources>
+</Application>

@@ -1,0 +1,327 @@
+﻿<Window x:Class="prototypeHerbarium.frmMain"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:local="clr-namespace:prototypeHerbarium"
+        mc:Ignorable="d"
+        Title="Herbarium Management Information System" Height="675" Width="1200"
+        Icon="{StaticResource favicon}"
+        WindowStartupLocation="CenterScreen"
+        MinHeight="400" MinWidth="400">
+    <Grid>
+        <!--<Grid.Background>
+            <ImageBrush ImageSource="{StaticResource background}"/>
+        </Grid.Background>-->
+        <DockPanel>
+            <DockPanel.Background>
+                <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
+                    <GradientStop Color="#DF66CC66" Offset="3"/>
+                    <GradientStop Color="#EF005500" Offset="0"/>
+                </LinearGradientBrush>
+            </DockPanel.Background>
+
+            <Border Background="#3077DDDD" DockPanel.Dock="Top">
+                <Grid Height="30">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="100" />
+                    </Grid.ColumnDefinitions>
+
+                    <WrapPanel VerticalAlignment="Center" Grid.Column="0">
+                        <TextBlock x:Name="lblPageName"  
+                                   Foreground="White" FontWeight="Bold" FontSize="12" Padding="15 0"
+                                   Text="[TITLE HERE]" />
+                    </WrapPanel>
+                    <WrapPanel Grid.Column="1" FlowDirection="RightToLeft" VerticalAlignment="Center" >
+                        <Button x:Name="btnAbout" Click="btnAbout_Click"
+                                Margin="2 4" Padding="3" ToolTip="About"
+                                Background="#00FFFFFF" BorderBrush="#00FFFFFF">
+                            <Rectangle Width="15" Height="15" Fill="White">
+                                <Rectangle.OpacityMask>
+                                    <ImageBrush ImageSource="{StaticResource glyphicon-info-sign}"/>
+                                </Rectangle.OpacityMask>
+                            </Rectangle>
+                        </Button>
+                        <Button x:Name="btnLogout" Click="btnLogout_Click" 
+                                Margin="2 4" Padding="3" ToolTip="Log-Out"
+                                Background="#00FFFFFF" BorderBrush="#00FFFFFF">
+                            <Rectangle Width="15" Height="15" Fill="White">
+                                <Rectangle.OpacityMask>
+                                    <ImageBrush ImageSource="{StaticResource glyphicon-logout}"/>
+                                </Rectangle.OpacityMask>
+                            </Rectangle>
+                        </Button>
+                        <TextBlock x:Name="lblAccess" 
+                                   Margin="5 0 0 0" VerticalAlignment="Center"
+                                   Foreground="White" FontWeight="UltraLight"  FontSize="12">CURATOR</TextBlock>
+                        <TextBlock Margin="5 0 0 0" VerticalAlignment="Center"
+                                   Foreground="White" FontWeight="Normal" FontSize="12">/</TextBlock>
+                        <TextBlock x:Name="lblStaff" 
+                                   Margin="5 0 0 0" VerticalAlignment="Center"
+                                   Foreground="White" FontWeight="Medium" FontSize="12">[USERNAME]</TextBlock>
+                    </WrapPanel>
+                    <TextBlock x:Name="txfTime" 
+                               Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center"
+                               Foreground="White" FontWeight="DemiBold" FontSize="12" Padding="20 0"
+                               Text="{Binding Source={x:Static sys:DateTime.Now}, StringFormat='{}{0:hh:mm tt}'}" />
+                </Grid>
+            </Border>
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0 0 0 10">
+                <StackPanel DockPanel.Dock="Left" Width="250">
+                    <StackPanel Background="#20000000" Margin="0 10">
+                        <Image Source="{StaticResource logo}" Height="50" Margin="1 10 1 1"/>
+                        <TextBlock Text="HERBARIUM MANAGEMENT INFORMATION SYSTEM" Margin="10 10" 
+                                   FontWeight="Bold" Foreground="White" TextAlignment="Center"
+                                   TextWrapping="WrapWithOverflow" />
+                    </StackPanel>
+
+                    <Button x:Name="btnHome" 
+                            Style="{StaticResource menuButton}"
+                            Click="btnHome_Click">
+                        <Button.Content>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="35" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Image Source="{StaticResource glyphicon-home}"
+                                       Grid.Column="0" Margin="3"/>
+                                <TextBlock Grid.Column="1" Padding="2">HOME</TextBlock>
+                            </Grid>
+                        </Button.Content>
+                    </Button>
+                    <Button x:Name="btnMaintenance"
+                            Style="{StaticResource menuButton}"
+                            Click="btnMaintenance_Click" >
+                        <Button.Content>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="35" />
+                                    <ColumnDefinition Width="170" />
+                                    <ColumnDefinition Width="20" />
+                                </Grid.ColumnDefinitions>
+                                <Image Source="{StaticResource glyphicon-database-plus}"
+                                        Grid.Column="0" Margin="3"/>
+                                <TextBlock Grid.Column="1" Padding="2">MAINTENANCE</TextBlock>
+                                <Image x:Name="iconMaintenanceChev" 
+                                        Source="{StaticResource glyphicon-chevron-right}"
+                                        Grid.Column="2" Margin="5" RenderTransformOrigin="0.5,0.5">
+                                    <Image.RenderTransform>
+                                        <TransformGroup>
+                                            <RotateTransform Angle="0"/>
+                                        </TransformGroup>
+                                    </Image.RenderTransform>
+                                </Image>
+                            </Grid>
+                        </Button.Content>
+                    </Button>
+                    <StackPanel x:Name="pnlMaintenance" Visibility="Collapsed">
+                        <Button x:Name="btnTaxonomicHierarchy" 
+                                Style="{StaticResource subMenuButton}"
+                                Click="btnTaxonomicHierarchy_Click">
+                            <Button.Content>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="185" />
+                                        <ColumnDefinition Width="20" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0" Padding="0 3">Taxonomic Hierarchy</TextBlock>
+                                    <Image x:Name="iconTaxonChev" 
+                                            Source="{StaticResource glyphicon-chevron-right}"
+                                            Grid.Column="1" Margin="5" RenderTransformOrigin="0.5,0.5">
+                                        <Image.RenderTransform>
+                                            <TransformGroup>
+                                                <RotateTransform Angle="0"/>
+                                            </TransformGroup>
+                                        </Image.RenderTransform>
+                                    </Image>
+                                </Grid>
+                            </Button.Content>
+                        </Button>
+                        <!-- Taxonomic Hierarchy Sub Menu -->
+                        <StackPanel x:Name="pnlTaxonomicHierarchy" Visibility="Collapsed">
+                            <Button x:Name="btnTaxonPhylum" 
+                                    Style="{StaticResource subL3MenuButton}"
+                                    Click="btnTaxonPhylum_Click"
+                                    Content="Phylum"/>
+                            <Button x:Name="btnTaxonClass" 
+                                    Style="{StaticResource subL3MenuButton}"
+                                    Click="btnTaxonClass_Click"
+                                    Content="Class"/>
+                            <Button x:Name="btnTaxonOrder" 
+                                    Style="{StaticResource subL3MenuButton}"
+                                    Click="btnTaxonOrder_Click"
+                                    Content="Order"/>
+                            <Button x:Name="btnTaxonFamily" 
+                                    Style="{StaticResource subL3MenuButton}"
+                                    Click="btnTaxonFamily_Click"
+                                    Content="Family"/>
+                            <Button x:Name="btnTaxonGenus" 
+                                    Style="{StaticResource subL3MenuButton}"
+                                    Click="btnTaxonGenus_Click"
+                                    Content="Genus"/>
+                            <Button x:Name="btnTaxonSpecies" 
+                                    Style="{StaticResource subL3MenuButton}"
+                                    Click="btnTaxonSpecies_Click"
+                                    Content="Species"/>
+                        </StackPanel>
+                        <Button x:Name="btnFamilyBox" 
+                                Style="{StaticResource subMenuButton}"
+                                Click="btnFamilyBox_Click"
+                                Content="Family Boxes"/>
+                        <Button x:Name="btnLocality"
+                                Style="{StaticResource subMenuButton}"
+                                Click="btnLocality_Click"
+                                Content="Locality"/>
+                        <Button x:Name="btnCollector" 
+                                Style="{StaticResource subMenuButton}"
+                                Click="btnCollector_Click"
+                                Content="Collector"/>
+                        <Button x:Name="btnValidator"
+                                Style="{StaticResource subMenuButton}"
+                                Click="btnValidator_Click"
+                                Content="External Validator"/>
+                        <Button x:Name="btnCurator"
+                                Style="{StaticResource subMenuButton}"
+                                Click="btnCurator_Click"
+                                Content="Staff Management"/>
+                        <Button x:Name="btnAccounts" 
+                                Style="{StaticResource subMenuButton}"
+                                Click="btnAccounts_Click"
+                                Content="Access Accounts"/>
+                    </StackPanel>
+                    <Button x:Name="btnTransaction" 
+                            Style="{StaticResource menuButton}"
+                            Click="btnTransaction_Click">
+                        <Button.Content>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="35" />
+                                    <ColumnDefinition Width="170" />
+                                    <ColumnDefinition Width="20" />
+                                </Grid.ColumnDefinitions>
+                                <Image Source="{StaticResource glyphicon-leaf}"
+                                       Grid.Column="0" Margin="3"/>
+                                <TextBlock Grid.Column="1" Padding="2">TRANSACTION</TextBlock>
+                                <Image x:Name="iconTransactionChev" 
+                                        Source="{StaticResource glyphicon-chevron-right}"
+                                        Grid.Column="2" Margin="5" RenderTransformOrigin="0.5,0.5">
+                                    <Image.RenderTransform>
+                                        <TransformGroup>
+                                            <RotateTransform Angle="0"/>
+                                        </TransformGroup>
+                                    </Image.RenderTransform>
+                                </Image>
+                            </Grid>
+                        </Button.Content>
+                    </Button>
+                    <StackPanel x:Name="pnlTransaction" Visibility="Collapsed">
+                        <Button x:Name="btnPlantDeposit"
+                                Style="{StaticResource subMenuButton}"
+                                Click="btnPlantDeposit_Click"
+                                Content="Plant Deposit" />
+                        <!--<Button x:Name="btnPlantResubmit"
+                                Style="{StaticResource subMenuButton}"
+                                Click="btnPlantResubmit_Click"
+                                Content="Re-Submit Plant Deposit" />
+                        <Button x:Name="btnPlantIdentification"
+                                Style="{StaticResource subMenuButton}" 
+                                Click="btnPlantIdentification_Click"
+                                Content="Plant Receiving" />-->
+                        <Button x:Name="btnPlantVerification" 
+                                Style="{StaticResource subMenuButton}"
+                                Click="btnPlantVerification_Click" 
+                                Content="Plant Verification" />
+                        <Button x:Name="btnPlantClassification" 
+                                Style="{StaticResource subMenuButton}"
+                                Click="btnPlantClassification_Click"
+                                Content="Plant Classification" />
+                        <Button x:Name="btnPlantLoaning" 
+                                Style="{StaticResource subMenuButton}"
+                                Content="Loan Plant" 
+                                Click="btnPlantLoaning_Click" />
+                    </StackPanel>
+                    <Button x:Name="btnUtilities" 
+                            Style="{StaticResource menuButton}"
+                            Click="btnUtilities_Click">
+                        <Button.Content>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="35" />
+                                    <ColumnDefinition Width="170" />
+                                    <ColumnDefinition Width="20" />
+                                </Grid.ColumnDefinitions>
+                                <Image Source="{StaticResource glyphicon-settings}"
+                                       Grid.Column="0" Margin="3"/>
+                                <TextBlock Grid.Column="1" Padding="2">MANAGEMENT TOOLS</TextBlock>
+                                <Image x:Name="iconUtilitiesChev" 
+                                       Source="{StaticResource glyphicon-chevron-right}"
+                                       Grid.Column="2" Margin="5" RenderTransformOrigin="0.5,0.5">
+                                    <Image.RenderTransform>
+                                        <TransformGroup>
+                                            <RotateTransform Angle="0"/>
+                                        </TransformGroup>
+                                    </Image.RenderTransform>
+                                </Image>
+                            </Grid>
+                        </Button.Content>
+                    </Button>
+                    <StackPanel x:Name="pnlUtilities" Visibility="Collapsed">
+                        <Button x:Name="btnHerbariumInventory"
+                                Style="{StaticResource subMenuButton}"
+                                Content="Herbarium Inventory"
+                                Click="btnHerbariumInventory_Click" />
+                        <Button x:Name="btnPlantTracking" 
+                                Style="{StaticResource subMenuButton}"
+                                Content="Herbarium Specimen Tracking" 
+                                Click="btnPlantTracking_Click"/>
+                        <Button x:Name="btnAuditTrailing"
+                                Style="{StaticResource subMenuButton}"
+                                Click="btnAuditTrailing_Click"
+                                Content="Audit Trailing"/>
+                    </StackPanel>
+                    <Button x:Name="btnQuery"
+                            Style="{StaticResource menuButton}"
+                            Click="btnQuery_Click">
+                        <Button.Content>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="35" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Image Source="{StaticResource glyphicon-stats}"
+                                       Grid.Column="0" Margin="3"/>
+                                <TextBlock Grid.Column="1" Padding="2">QUERY</TextBlock>
+                            </Grid>
+                        </Button.Content>
+                    </Button>
+                    <Button x:Name="btnReports" 
+                            Style="{StaticResource menuButton}"
+                            Click="btnReports_Click">
+                        <Button.Content>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="35" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Image Source="{StaticResource glyphicon-notes}"
+                                       Grid.Column="0" Margin="3"/>
+                                <TextBlock Grid.Column="1" Padding="2">REPORTS</TextBlock>
+                            </Grid>
+                        </Button.Content>
+                    </Button>
+                </StackPanel>
+            </ScrollViewer>
+
+            <Frame x:Name="pnlPageLoader" 
+                   SourceUpdated="pnlPageLoader_SourceUpdated" DockPanel.Dock="Right"
+                   Background="#55E4E4E4"  Margin="2 10 10 10"
+                   NavigationUIVisibility="Hidden" ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
+        </DockPanel>
+    </Grid>
+</Window>
