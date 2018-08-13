@@ -35,6 +35,9 @@ namespace prototypeHerbarium
             // Database - Program Declaration
             DatabaseConnection connection = new DatabaseConnection();
             PlantDeposit plantDeposit = dgrVerifyingDeposit.SelectedValue as PlantDeposit;
+            PlantDeposit plantDetails = new PlantDeposit();
+            string referenceAccession = "";
+            string scientificName = "";
 
             // Query Command Setting
             connection.setQuery("SELECT strAccessionNumber, picHerbariumSheet, " +
@@ -61,11 +64,33 @@ namespace prototypeHerbarium
                 lblLocality.Text = sqlData[4].ToString();
                 lblCollector.Text = sqlData[5].ToString();
                 lblDescription.Text = sqlData[6].ToString();
+
+                plantDetails.AccessionNumber = sqlData[0].ToString();
+                plantDetails.DateCollected = sqlData[2].ToString();
+                plantDetails.DateDeposited = sqlData[3].ToString();
+                plantDetails.Locality = sqlData[4].ToString();
+                plantDetails.Collector = sqlData[5].ToString();
+                plantDetails.Description = sqlData[6].ToString();
             }
             connection.closeResult();
 
             getSpeciesList();
             getAccessionNumbers(lblAccessionNumber.Text);
+            if(isDuplicateHerbarium(plantDetails, ref referenceAccession, ref scientificName))
+            {
+                pnlDuplicateMessage.Visibility = Visibility.Visible;
+                chkIsDuplicate.IsChecked = true;
+                chkIsDuplicate_CheckChanged(chkIsDuplicate, null);
+
+                cbxReferenceNumber.SelectedItem = referenceAccession;
+                cbxScientificName.SelectedItem = scientificName;
+            }
+            else
+            {
+                pnlDuplicateMessage.Visibility = Visibility.Collapsed;
+                chkIsDuplicate.IsChecked = false;
+                chkIsDuplicate_CheckChanged(chkIsDuplicate, null);
+            }
         }
 
         private void chkIsDuplicate_CheckChanged(object sender, RoutedEventArgs e) 
@@ -223,7 +248,7 @@ namespace prototypeHerbarium
             cbxReferenceNumber.Items.Clear();
 
             DatabaseConnection connection = new DatabaseConnection();
-            connection.setQuery("SELECT strAccessionNumber FROM viewPlantDeposit WHERE strAccessionNumber <> @accessionNo");
+            connection.setQuery("SELECT strReferenceAccession FROM viewHerbariumSheet WHERE strReferenceAccession <> @accessionNo");
             connection.addParameter("@accessionNo", SqlDbType.VarChar, accessionNumber);
 
             SqlDataReader sqlData = connection.executeResult();
@@ -232,6 +257,34 @@ namespace prototypeHerbarium
                 cbxReferenceNumber.Items.Add(sqlData[0]);
             }
             connection.closeResult();
+        }
+
+        private bool isDuplicateHerbarium(PlantDeposit deposit, ref string refAccession, ref string taxonName)
+        {
+            bool result;
+
+            DatabaseConnection connection = new DatabaseConnection();
+            connection.setQuery("SELECT DISTINCT strReferenceAccession, strScientificName " +
+                                "FROM viewHerbariumSheet " +
+                                "WHERE strCollector = @collector " +
+                                    "AND strFullLocality = @locality " +
+                                    "AND dateCollected = @dateCollected " +
+                                    "AND strDescription = @description");
+            connection.addParameter("@collector", SqlDbType.VarChar, deposit.Collector);
+            connection.addParameter("@locality", SqlDbType.VarChar, deposit.Locality);
+            connection.addParameter("@dateCollected", SqlDbType.Date, deposit.DateCollected);
+            connection.addParameter("@description", SqlDbType.VarChar, deposit.Description);
+
+            SqlDataReader sqlData = connection.executeResult();
+            while (sqlData.Read())
+            {
+                refAccession = sqlData[0].ToString();
+                taxonName = sqlData[1].ToString();
+            }
+            result = sqlData.HasRows;
+            connection.closeResult();
+
+            return result;
         }
     }
 }

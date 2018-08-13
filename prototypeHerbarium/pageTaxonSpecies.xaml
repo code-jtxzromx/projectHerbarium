@@ -56,10 +56,20 @@
                 <TextBlock x:Name="msgCommonName" Visibility="Collapsed"
                            Grid.Column="2" Grid.Row="4" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
             </Grid>
-            <WrapPanel FlowDirection="RightToLeft" Margin="40 10 40 20">
-                <Button x:Name="btnSave" Click="btnSave_Click" Margin="5" Padding="10 5" Content="SAVE" />
-                <Button x:Name="btnClear" Click="btnClear_Click" Margin="5" Padding="10 5" Content="CLEAR" />
-            </WrapPanel>
+            <Grid Margin="40 10 40 20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Margin="5" VerticalAlignment="Center" Foreground="Red" FontWeight="DemiBold">
+                    * Required Fields
+                </TextBlock>
+                <WrapPanel Grid.Column="1" FlowDirection="RightToLeft">
+                    <Button x:Name="btnSave" Click="btnSave_Click" Margin="5" Padding="10 5" Content="SAVE" />
+                    <Button x:Name="btnClear" Click="btnClear_Click" Margin="5" Padding="10 5" Content="CLEAR" />
+                </WrapPanel>
+            </Grid>
         </StackPanel>
         <Separator x:Name="sprAddSpecie" Margin="10" DockPanel.Dock="Top" Visibility="Collapsed" />
         <!-- View List -->
@@ -90,9 +100,14 @@
                             <DataTemplate>
                                 <WrapPanel HorizontalAlignment="Center">
                                     <Button x:Name="btnEdit" Click="btnEdit_Click"
-                                            Padding="3" Margin="1" Height="20"
+                                            Margin="1" Height="20" Width="20" 
+                                            Background="SkyBlue" BorderBrush="SkyBlue"
                                             ToolTip="Edit">
-                                        <Image Source="{StaticResource glyphicon-edit}" />
+                                        <Rectangle Width="14" Height="14" Fill="White">
+                                            <Rectangle.OpacityMask>
+                                                <ImageBrush ImageSource="{StaticResource glyphicon-edit}"/>
+                                            </Rectangle.OpacityMask>
+                                        </Rectangle>
                                     </Button>
                                 </WrapPanel>
                             </DataTemplate>

@@ -13,8 +13,7 @@ namespace prototypeHerbarium
         //                                                    "Database=HerbariumDatabase;" +
         //                                                    "User ID=sa; Password=1234;" +
         //                                                    "Trusted_Connection=False;");
-        private SqlConnection connection = new SqlConnection("Server=MONO-CHROME; Database=HerbariumDatabase; Integrated Security=True");
-        // private SqlConnection connection = new SqlConnection("Server=DESKTOP-TL402RH; Database=HerbariumDatabase; Integrated Security=True");
+        private SqlConnection connection = new SqlConnection("Server=localhost; Database=HerbariumDatabase; Integrated Security=True");
 
         private SqlCommand command;
         private SqlDataAdapter dataAdapter;

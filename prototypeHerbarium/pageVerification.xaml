@@ -42,7 +42,7 @@
                 </DataGrid.Columns>
             </DataGrid>
         </DockPanel>
-        <Grid x:Name="pnlPlantDeposit" Visibility="Hidden">
+        <Grid x:Name="pnlPlantDeposit" Visibility="Collapsed">
             <Grid.Background>
                 <SolidColorBrush Color="#7F555555"/>
             </Grid.Background>
@@ -81,6 +81,11 @@
                 <WrapPanel Margin="15" DockPanel.Dock="Bottom" FlowDirection="RightToLeft">
                     <Button x:Name="btnConfirm" Click="btnConfirm_Click" Margin="5" Padding="10 5">VERIFIED</Button>
                     <Button x:Name="btnReject" Click="btnReject_Click" Margin="5" Padding="10 5">NOT VERIFIED</Button>
+                </WrapPanel>
+                <WrapPanel x:Name="pnlDuplicateMessage" Margin="15 5" DockPanel.Dock="Bottom" Visibility="Collapsed">
+                    <TextBlock Foreground="Red" FontWeight="DemiBold">
+                        * Our System detected this Herbarium Sheet as a Duplicate
+                    </TextBlock>
                 </WrapPanel>
                 <ScrollViewer Margin="5 0 0 5" ScrollViewer.VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="0 0 5 0">

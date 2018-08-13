@@ -182,10 +182,10 @@
                                 Style="{StaticResource subMenuButton}"
                                 Click="btnCollector_Click"
                                 Content="Collector"/>
-                        <Button x:Name="btnValidator"
+                        <!--<Button x:Name="btnValidator"
                                 Style="{StaticResource subMenuButton}"
                                 Click="btnValidator_Click"
-                                Content="External Validator"/>
+                                Content="External Validator"/>-->
                         <Button x:Name="btnCurator"
                                 Style="{StaticResource subMenuButton}"
                                 Click="btnCurator_Click"
