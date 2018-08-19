@@ -111,6 +111,46 @@ namespace prototypeHerbarium
                 txfShortcut.Text = data.ShortLocation;
             }
         }
+        
+        private void rbtCountries_Checked(object sender, RoutedEventArgs e)
+        {
+            if (rbtPhilippines.IsChecked == true)
+            {
+                cbxIsland.Visibility = Visibility.Visible;
+                cbxRegion.Visibility = Visibility.Visible;
+                cbxProvince.Visibility = Visibility.Visible;
+                txfCity.Visibility = Visibility.Visible;
+                txfArea.Visibility = Visibility.Visible;
+                txfSpecificLocation.Visibility = Visibility.Visible;
+                txfFullLocality.Visibility = Visibility.Collapsed;
+
+                lblIsland.Visibility = Visibility.Visible;
+                lblRegion.Visibility = Visibility.Visible;
+                lblProvince.Visibility = Visibility.Visible;
+                lblCity.Visibility = Visibility.Visible;
+                lblArea.Visibility = Visibility.Visible;
+                lblSpecificLocation.Visibility = Visibility.Visible;
+                lblFullLocality.Visibility = Visibility.Collapsed;
+            }
+            else if (rbtOtherCountries.IsChecked == true)
+            {
+                cbxIsland.Visibility = Visibility.Collapsed;
+                cbxRegion.Visibility = Visibility.Collapsed;
+                cbxProvince.Visibility = Visibility.Collapsed;
+                txfCity.Visibility = Visibility.Collapsed;
+                txfArea.Visibility = Visibility.Collapsed;
+                txfSpecificLocation.Visibility = Visibility.Collapsed;
+                txfFullLocality.Visibility = Visibility.Visible;
+
+                lblIsland.Visibility = Visibility.Collapsed;
+                lblRegion.Visibility = Visibility.Collapsed;
+                lblProvince.Visibility = Visibility.Collapsed;
+                lblCity.Visibility = Visibility.Collapsed;
+                lblArea.Visibility = Visibility.Collapsed;
+                lblSpecificLocation.Visibility = Visibility.Collapsed;
+                lblFullLocality.Visibility = Visibility.Visible;
+            }
+        }
 
         private void cbxIsland_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -149,6 +189,8 @@ namespace prototypeHerbarium
 
         public void resetForm()
         {
+            rbtPhilippines.IsChecked = true;
+
             pnlAddLocality.Visibility = Visibility.Collapsed;
             sprAddLocality.Visibility = Visibility.Collapsed;
             btnAddLocality.Content = "Add Locality";

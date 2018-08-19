@@ -213,3 +213,17 @@ C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbariu
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\prototypeHerbarium.csproj.CoreCompileInputs.cache
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\prototypeHerbarium.exe
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\prototypeHerbarium.pdb
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\bin\Debug\WebCam_Capture.dll
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\prototypeHerbarium.csproj.CopyComplete
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\bin\Debug\LiveCharts.dll
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\bin\Debug\LiveCharts.Wpf.dll
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\bin\Debug\LiveCharts.pdb
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\bin\Debug\LiveCharts.xml
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\bin\Debug\LiveCharts.Wpf.pdb
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\bin\Debug\LiveCharts.Wpf.xml
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\bin\Debug\ControlzEx.dll
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\bin\Debug\MahApps.Metro.dll
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\bin\Debug\System.Windows.Interactivity.dll
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\bin\Debug\ControlzEx.pdb
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\bin\Debug\MahApps.Metro.pdb
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\bin\Debug\MahApps.Metro.xml

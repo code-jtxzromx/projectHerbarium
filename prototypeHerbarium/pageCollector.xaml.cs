@@ -49,10 +49,7 @@ namespace prototypeHerbarium
         {
             InitializeComponent();
 
-            getCollectorTable();
-
-            foreach (string college in colleges)
-                cbxDepartment.Items.Add(college);
+            resetForm();
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
@@ -60,9 +57,13 @@ namespace prototypeHerbarium
             if (validateForm())
             {
                 if (txfCollectorID.Text is null || txfCollectorID.Text == "")
-                    addCollector();
+                {
+                    //addCollector();
+                }
                 else
-                    editCollector();
+                {
+                    //editCollector();
+                }
             }
         }
 
@@ -76,8 +77,8 @@ namespace prototypeHerbarium
             txfNameSuffix.Clear();
             txfContactNumber.Clear();
             txfEmailAddress.Clear();
-            cbxDepartment.SelectedIndex = -1;
-            txfSection.Clear();
+            //cbxDepartment.SelectedIndex = -1;
+            //txfSection.Clear();
 
             msgFirstname.Visibility = Visibility.Collapsed;
             msgMiddlename.Visibility = Visibility.Collapsed;
@@ -85,8 +86,8 @@ namespace prototypeHerbarium
             msgMiddleInitial.Visibility = Visibility.Collapsed;
             msgContactNumber.Visibility = Visibility.Collapsed;
             msgEmailAddress.Visibility = Visibility.Collapsed;
-            msgDepartment.Visibility = Visibility.Collapsed;
-            msgSection.Visibility = Visibility.Collapsed;
+            //msgDepartment.Visibility = Visibility.Collapsed;
+            //msgSection.Visibility = Visibility.Collapsed;
         }
 
         private void btnAddCollector_Click(object sender, RoutedEventArgs e)
@@ -134,9 +135,21 @@ namespace prototypeHerbarium
                 txfNameSuffix.Text = data.NameSuffix;
                 txfContactNumber.Text = data.ContactNumber;
                 txfEmailAddress.Text = data.Email;
-                cbxDepartment.SelectedItem = data.College;
-                txfSection.Text = data.CollegeSection;
+                //cbxDepartment.SelectedItem = data.College;
+                //txfSection.Text = data.CollegeSection;
             }
+        }
+
+        public void resetForm()
+        {
+            pnlAddCollector.Visibility = Visibility.Collapsed;
+            sprAddCollector.Visibility = Visibility.Collapsed;
+            btnAddCollector.Content = "Add Collector";
+            btnClear_Click(btnClear, null);
+
+            getCollectorTable();
+            //foreach (string college in colleges)
+            //    cbxDepartment.Items.Add(college);
         }
 
         public void getCollectorTable()
@@ -187,8 +200,8 @@ namespace prototypeHerbarium
             msgMiddleInitial.Visibility = Visibility.Collapsed;
             msgContactNumber.Visibility = Visibility.Collapsed;
             msgEmailAddress.Visibility = Visibility.Collapsed;
-            msgDepartment.Visibility = Visibility.Collapsed;
-            msgSection.Visibility = Visibility.Collapsed;
+            //msgDepartment.Visibility = Visibility.Collapsed;
+            //msgSection.Visibility = Visibility.Collapsed;
 
             if (txfFirstname.Text == "")
             {
@@ -220,16 +233,16 @@ namespace prototypeHerbarium
                 msgEmailAddress.Visibility = Visibility.Visible;
                 formOK = false;
             }
-            if (cbxDepartment.SelectedIndex == -1)
-            {
-                msgDepartment.Visibility = Visibility.Visible;
-                formOK = false;
-            }
-            if (txfSection.Text == "")
-            {
-                msgSection.Visibility = Visibility.Visible;
-                formOK = false;
-            }
+            //if (cbxDepartment.SelectedIndex == -1)
+            //{
+            //    msgDepartment.Visibility = Visibility.Visible;
+            //    formOK = false;
+            //}
+            //if (txfSection.Text == "")
+            //{
+            //    msgSection.Visibility = Visibility.Visible;
+            //    formOK = false;
+            //}
 
             return formOK;
         }
@@ -247,8 +260,8 @@ namespace prototypeHerbarium
             connection.addSprocParameter("@namesuffix", SqlDbType.VarChar, txfNameSuffix.Text);
             connection.addSprocParameter("@contactno", SqlDbType.VarChar, txfContactNumber.Text);
             connection.addSprocParameter("@email", SqlDbType.VarChar, txfEmailAddress.Text);
-            connection.addSprocParameter("@college", SqlDbType.VarChar, cbxDepartment.SelectedItem.ToString());
-            connection.addSprocParameter("@section", SqlDbType.VarChar, txfSection.Text);
+            //connection.addSprocParameter("@college", SqlDbType.VarChar, cbxDepartment.SelectedItem.ToString());
+            //connection.addSprocParameter("@section", SqlDbType.VarChar, txfSection.Text);
             status = connection.executeProcedure();
 
             switch (status)
@@ -280,8 +293,8 @@ namespace prototypeHerbarium
             connection.addSprocParameter("@namesuffix", SqlDbType.VarChar, txfNameSuffix.Text);
             connection.addSprocParameter("@contactno", SqlDbType.VarChar, txfContactNumber.Text);
             connection.addSprocParameter("@email", SqlDbType.VarChar, txfEmailAddress.Text);
-            connection.addSprocParameter("@college", SqlDbType.VarChar, cbxDepartment.SelectedItem.ToString());
-            connection.addSprocParameter("@section", SqlDbType.VarChar, txfSection.Text);
+            //connection.addSprocParameter("@college", SqlDbType.VarChar, cbxDepartment.SelectedItem.ToString());
+            //connection.addSprocParameter("@section", SqlDbType.VarChar, txfSection.Text);
             status = connection.executeProcedure();
 
             switch (status)

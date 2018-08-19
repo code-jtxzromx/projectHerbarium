@@ -28,8 +28,7 @@ namespace prototypeHerbarium
         {
             InitializeComponent();
 
-            getFamilyBoxTable();
-            getFamilyList();
+            resetForm();
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
@@ -93,6 +92,17 @@ namespace prototypeHerbarium
                 cbxFamily.SelectedItem = data.Family;
                 txfBoxLimit.Text = data.BoxLimit.ToString();
             }
+        }
+
+        public void resetForm()
+        {
+            pnlAddBox.Visibility = Visibility.Collapsed;
+            sprAddBox.Visibility = Visibility.Collapsed;
+            btnAddBox.Content = "Add Family Box";
+            btnClear_Click(btnClear, null);
+
+            getFamilyBoxTable();
+            getFamilyList();
         }
 
         public void getFamilyBoxTable()

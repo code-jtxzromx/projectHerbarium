@@ -5,19 +5,21 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:prototypeHerbarium"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="700" d:DesignWidth="800"
       Title="pageFamilyBox">
 
     <DockPanel>
         <!-- Add / Edit Form -->
         <StackPanel x:Name="pnlAddBox" Background="#5FEEEEEE" DockPanel.Dock="Top"
-                    Visibility="Collapsed" Margin="10">
+                    Visibility="Visible" Margin="10">
             <TextBlock FontSize="20" 
-                        FontFamily="SegoeUI" 
-                        FontWeight="DemiBold"
-                        Margin="40 20">Add Family Box</TextBlock>
-            <Grid Margin="40 10">
+                       FontFamily="SegoeUI" 
+                       FontWeight="DemiBold"
+                       Margin="45 20">Add Family Box</TextBlock>
+            <Grid Margin="40 5">
                 <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
@@ -26,29 +28,53 @@
                     <ColumnDefinition />
                     <ColumnDefinition />
                     <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Column="0" Grid.Row="0" Margin="5">
                     Box Number:
                 </TextBlock>
-                <TextBlock Grid.Column="1" Grid.Row="0" Margin="5">
+                <TextBox x:Name="txfBoxNumber" Background="LightGray" BorderBrush="Gray"
+                         Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Height="25" Margin="3" VerticalContentAlignment="Center" IsEnabled="False"/>
+                <TextBlock Grid.Column="0" Grid.Row="2" Margin="5">
                     Plant Family: <Span Foreground="Red">*</Span>
                 </TextBlock>
-                <TextBlock Grid.Column="2" Grid.Row="0" Margin="5">
+                <TextBlock Grid.Column="2" Grid.Row="2" Margin="5">
                     Box Limit: <Span Foreground="Red">*</Span>
                 </TextBlock>
-                <TextBox x:Name="txfBoxNumber" 
-                         Grid.Column="0" Grid.Row="1" Height="25" Margin="3" VerticalContentAlignment="Center" IsEnabled="False"/>
+                <TextBlock Grid.Column="3" Grid.Row="2" Margin="5">
+                    Rack: <Span Foreground="Red">*</Span>
+                </TextBlock>
+                <TextBlock Grid.Column="4" Grid.Row="2" Margin="5">
+                    Rack Row: <Span Foreground="Red">*</Span>
+                </TextBlock>
+                <TextBlock Grid.Column="5" Grid.Row="2" Margin="5">
+                    Rack Column: <Span Foreground="Red">*</Span>
+                </TextBlock>
                 <ComboBox x:Name="cbxFamily" 
-                          Grid.Column="1" Grid.Row="1" Height="25" Margin="3" VerticalContentAlignment="Center"/>
+                          Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Height="25" Margin="3" VerticalContentAlignment="Center"/>
                 <TextBox x:Name="txfBoxLimit" 
-                         Grid.Column="2" Grid.Row="1" Height="25" Margin="3" VerticalContentAlignment="Center"/>
+                         Grid.Column="2" Grid.Row="3" Height="25" Margin="3" VerticalContentAlignment="Center"/>
+                <TextBox x:Name="txfRack" 
+                         Grid.Column="3" Grid.Row="3" Height="25" Margin="3" VerticalContentAlignment="Center"/>
+                <TextBox x:Name="txfRackRow" 
+                         Grid.Column="4" Grid.Row="3" Height="25" Margin="3" VerticalContentAlignment="Center"/>
+                <TextBox x:Name="txfRackColumn" 
+                         Grid.Column="5" Grid.Row="3" Height="25" Margin="3" VerticalContentAlignment="Center"/>
                 <TextBlock x:Name="msgFamily" Visibility="Collapsed"
-                           Grid.Column="1" Grid.Row="2" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
+                           Grid.Column="0" Grid.Row="4" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
                 <TextBlock x:Name="msgBoxLimit" Visibility="Collapsed"
-                           Grid.Column="2" Grid.Row="2" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
+                           Grid.Column="2" Grid.Row="4" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
+                <TextBlock x:Name="msgRack" Visibility="Collapsed"
+                           Grid.Column="3" Grid.Row="4" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
+                <TextBlock x:Name="msgRackRow" Visibility="Collapsed"
+                           Grid.Column="4" Grid.Row="4" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
+                <TextBlock x:Name="msgRackColumn" Visibility="Collapsed"
+                           Grid.Column="4" Grid.Row="4" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
             </Grid>
-            <Grid Margin="40 10 40 20">
+            <Grid Margin="40 10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
@@ -68,7 +94,7 @@
         <DockPanel>
             <Grid DockPanel.Dock="Top" Margin="2" Height="35">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="120" />
+                    <ColumnDefinition Width="150" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="200" />
                 </Grid.ColumnDefinitions>
@@ -81,19 +107,21 @@
                     <TextBox x:Name="txfSearch" TextChanged="txfSearch_TextChanged" Width="135" VerticalContentAlignment="Center"/>
                 </WrapPanel>
             </Grid>
-            <DataGrid x:Name="dgrBoxTable" DockPanel.Dock="Top" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0">
+            <DataGrid x:Name="dgrBoxTable" DockPanel.Dock="Top" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0" GridLinesVisibility="Horizontal">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Box Number" Binding="{Binding BoxNumber}" Width="*"/>
-                    <DataGridTextColumn Header="Box Family" Binding="{Binding Family}" Width="*"/>
+                    <DataGridTextColumn Header="Box Number" Binding="{Binding BoxNumber}" Width="2*"/>
+                    <DataGridTextColumn Header="Box Family" Binding="{Binding Family}" Width="2*"/>
+                    <DataGridTextColumn Header="Location" Width="*"/>
+                    <DataGridTextColumn Header="Status" Width="*"/>
                     <DataGridTemplateColumn Header="Actions" Width="100">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <WrapPanel HorizontalAlignment="Center">
                                     <Button x:Name="btnEdit" Click="btnEdit_Click"
-                                            Margin="1" Height="20" Width="20" 
+                                            Margin="1" Height="25" Width="25" 
                                             Background="SkyBlue" BorderBrush="SkyBlue"
                                             ToolTip="Edit">
-                                        <Rectangle Width="14" Height="14" Fill="White">
+                                        <Rectangle Width="13" Height="11" Fill="Black">
                                             <Rectangle.OpacityMask>
                                                 <ImageBrush ImageSource="{StaticResource glyphicon-edit}"/>
                                             </Rectangle.OpacityMask>

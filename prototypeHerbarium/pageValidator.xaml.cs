@@ -28,7 +28,7 @@ namespace prototypeHerbarium
         {
             InitializeComponent();
 
-            getValidatorTable();
+            resetForm();
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
@@ -110,6 +110,16 @@ namespace prototypeHerbarium
                 txfEmailAddress.Text = data.Email;
                 txfInstitution.Text = data.Institution;
             }
+        }
+        
+        public void resetForm()
+        {
+            pnlAddValidator.Visibility = Visibility.Collapsed;
+            sprAddValidator.Visibility = Visibility.Collapsed;
+            btnAddValidator.Content = "Add Validator";
+            btnClear_Click(btnClear, null);
+
+            getValidatorTable();
         }
 
         public void getValidatorTable()

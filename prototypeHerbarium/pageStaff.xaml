@@ -5,18 +5,18 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:prototypeHerbarium"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="700" d:DesignWidth="800"
       Title="pageStaff">
 
     <DockPanel>
         <!-- Add / Edit Form -->
         <StackPanel x:Name="pnlAddStaff" Background="#5FEEEEEE" DockPanel.Dock="Top"
-                    Visibility="Collapsed" Margin="10">
+                    Visibility="Visible" Margin="10">
             <TextBlock FontSize="20" 
-                        FontFamily="SegoeUI" 
-                        FontWeight="DemiBold"
-                        Margin="40 20">Add Staff</TextBlock>
-            <Grid Margin="40 10">
+                       FontFamily="SegoeUI" 
+                       FontWeight="DemiBold"
+                       Margin="45 20">Add Staff</TextBlock>
+            <Grid Margin="40 5">
                 <Grid.RowDefinitions>
                     <RowDefinition />
                     <RowDefinition />
@@ -43,7 +43,7 @@
                 <TextBlock Grid.Column="1" Grid.Row="0" Margin="5">
                     Role: <Span Foreground="Red">*</Span>
                 </TextBlock>
-                <TextBox x:Name="txfStaffID" 
+                <TextBox x:Name="txfStaffID" Background="LightGray" BorderBrush="Gray"
                          Grid.Column="0" Grid.Row="1" Height="25" Margin="3" VerticalContentAlignment="Center" IsEnabled="False"/>
                 <ComboBox x:Name="cbxRole" SelectionChanged="cbxRole_SelectionChanged" 
                           Grid.Column="1" Grid.Row="1" Height="25" Margin="3" VerticalContentAlignment="Center"/>
@@ -98,23 +98,16 @@
                 <TextBlock Grid.Column="1" Grid.Row="9" Margin="5">
                     College Department: <Span Foreground="Red">*</Span>
                 </TextBlock>
-                <TextBlock x:Name="lblSection" Grid.Column="2" Grid.Row="9" Margin="5" Visibility="Hidden">
-                    Course/Year/Section: <Span Foreground="Red">*</Span>
-                </TextBlock>
                 <TextBox x:Name="txfEmailAddress" 
                          Grid.Column="0" Grid.Row="10" Height="25" Margin="3" VerticalContentAlignment="Center"/>
                 <ComboBox x:Name="cbxDepartment" 
                           Grid.Column="1" Grid.Row="10" Height="25" Margin="3" VerticalContentAlignment="Center"/>
-                <TextBox x:Name="txfSection" 
-                         Grid.Column="2" Grid.Row="10" Height="25" Margin="3" VerticalContentAlignment="Center" Visibility="Hidden"/>
                 <TextBlock x:Name="msgEmailAddress" Visibility="Collapsed"
                            Grid.Column="0" Grid.Row="11" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
                 <TextBlock x:Name="msgDepartment" Visibility="Collapsed"
                            Grid.Column="1" Grid.Row="11" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
-                <TextBlock x:Name="msgSection" Visibility="Collapsed"
-                           Grid.Column="2" Grid.Row="11" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
             </Grid>
-            <Grid Margin="40 10 40 20">
+            <Grid Margin="40 10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
@@ -134,7 +127,7 @@
         <DockPanel>
             <Grid DockPanel.Dock="Top" Margin="2" Height="35">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="150" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="200" />
                 </Grid.ColumnDefinitions>
@@ -147,33 +140,32 @@
                     <TextBox x:Name="txfSearch" TextChanged="txfSearch_TextChanged" Width="135" VerticalContentAlignment="Center"/>
                 </WrapPanel>
             </Grid>
-            <DataGrid x:Name="dgrStaffTable" DockPanel.Dock="Top" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0">
+            <DataGrid x:Name="dgrStaffTable" DockPanel.Dock="Top" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0" GridLinesVisibility="Horizontal">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Lastname" Binding="{Binding LastName}" Width="*"/>
                     <DataGridTextColumn Header="Firstname" Binding="{Binding FirstName}" Width="*"/>
-                    <DataGridTextColumn Header="Position" Binding="{Binding Position}" Width="*"/>
                     <DataGridTextColumn Header="Role" Binding="{Binding Role}" Width="*" />
                     <DataGridTemplateColumn Header="Actions" Width="100">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <WrapPanel HorizontalAlignment="Center">
                                     <Button x:Name="btnEdit" Click="btnEdit_Click"
-                                            Margin="1" Height="20" Width="20" 
+                                            Margin="1" Height="25" Width="25" 
                                             Background="SkyBlue" BorderBrush="SkyBlue"
                                             ToolTip="Edit">
-                                        <Rectangle Width="14" Height="14" Fill="White">
+                                        <Rectangle Width="13" Height="11" Fill="Black">
                                             <Rectangle.OpacityMask>
                                                 <ImageBrush ImageSource="{StaticResource glyphicon-edit}"/>
                                             </Rectangle.OpacityMask>
                                         </Rectangle>
                                     </Button>
                                     <Button x:Name="btnDelete" Click="btnDelete_Click"
-                                            Margin="1" Height="20" Width="20"
+                                            Margin="1" Height="25" Width="25"
                                             Background="OrangeRed" BorderBrush="OrangeRed"
                                             ToolTip="Deactivate">
-                                        <Rectangle Width="14" Height="14" Fill="White">
+                                        <Rectangle Width="12" Height="12" Fill="White">
                                             <Rectangle.OpacityMask>
-                                                <ImageBrush ImageSource="{StaticResource glyphicon-remove-circle}" />
+                                                <ImageBrush ImageSource="{StaticResource glyphicon-remove-circle}"/>
                                             </Rectangle.OpacityMask>
                                         </Rectangle>
                                     </Button>

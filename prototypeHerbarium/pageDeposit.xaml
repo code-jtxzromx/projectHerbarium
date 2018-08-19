@@ -7,112 +7,161 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Deposit Plant">
-    <DockPanel Margin="40 10">
-        <TextBlock DockPanel.Dock="Top" Margin="0 20" 
-                   FontSize="20" FontFamily="SegoeUI" FontWeight="DemiBold"
-                   Text="Plant Deposit" />
+    <Grid>
+        <DockPanel Margin="40 10">
+            <TextBlock DockPanel.Dock="Top" Margin="0 20" 
+                       FontSize="20" FontFamily="SegoeUI" FontWeight="DemiBold"
+                       Text="Plant Deposit" />
 
-        <Grid Margin="0 20" DockPanel.Dock="Bottom">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="180" />
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="150" />
-            </Grid.ColumnDefinitions>
-            <WrapPanel>
-                <Button x:Name="btnUploadPicture" Grid.Column="0" Click="btnUploadPicture_Click"
-                        Margin="5" Padding="10 5">
-                    <TextBlock>
+            <Grid Margin="0 20" DockPanel.Dock="Bottom">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="300" />
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="150" />
+                </Grid.ColumnDefinitions>
+                <WrapPanel Grid.Column="0">
+                    <Button x:Name="btnUploadPicture" Click="btnUploadPicture_Click"
+                            Margin="5" Padding="10 5">
                         Upload Herbarium Sheet
-                        <Span Foreground="Red">*</Span>
+                    </Button>
+                    <Button x:Name="btnCapturePicture" Click="btnCapturePicture_Click"
+                            Margin="5" Padding="10 5">
+                        Capture Picture
+                    </Button>
+                </WrapPanel>
+                <WrapPanel Grid.Column="2" FlowDirection="RightToLeft">
+                    <Button x:Name="btnProceed" Click="btnProceed_Click" Margin="5" Padding="10 5" Content="PROCEED" />
+                    <Button x:Name="btnClear" Click="btnClear_Click" Margin="5" Padding="10 5" Content="CLEAR" />
+                </WrapPanel>
+            </Grid>
+
+            <TextBlock DockPanel.Dock="Top" Margin="15 5" x:Name="lblErrorPicture" Foreground="Red" 
+                       Text="Herbarium Sheet Picture is Required" Visibility="Collapsed" />
+
+            <Border DockPanel.Dock="Left" Margin="10" Height="400" Width="300" Background="#1FFFFFFF">
+                <Image x:Name="picHerbariumPlant" Stretch="Uniform"/>
+            </Border>
+
+            <WrapPanel DockPanel.Dock="Top">
+                <RadioButton x:Name="rbtNew" Checked="rbtDepositTransaction_Checked"
+                             GroupName="DepositMode"
+                             Content="New Deposit"
+                             Margin="20 10" />
+                <RadioButton x:Name="rbtExisting" Checked="rbtDepositTransaction_Checked"
+                             GroupName="DepositMode"
+                             Content="Existing Deposit"
+                             Margin="5 10" />
+            </WrapPanel>
+
+            <ScrollViewer  Grid.Column="1" Margin="20 10" VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <local:ctrlTextField x:Name="txfAccessionNumber" Grid.Column="0" Label="Original Accession No:" />
+                        <local:ctrlTextField x:Name="txfReferenceNumber" Grid.Column="1" Label="Verified Accession No:" />
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition x:Name="defValidator" />
+                        </Grid.ColumnDefinitions>
+
+                        <local:ctrlComboBox x:Name="cbxCollector" Grid.Column="0" Label="Collector's Name:" />
+                        <local:ctrlComboBox x:Name="cbxValidator" Grid.Column="1" Label="Validator's Name:" />
+                    </Grid>
+
+                    <local:ctrlComboBox x:Name="cbxLocality" Label="Location:" />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <local:ctrlComboBox x:Name="cbxTaxonName" Grid.Column="0" Grid.ColumnSpan="2" Label="Scientific Name:" />
+                        <!--<local:ctrlTextField x:Name="txfCommonName" Grid.Column="1" Label="Common Plant Name:" />-->
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition x:Name="defDateCollected"/>
+                        </Grid.ColumnDefinitions>
+
+                        <local:ctrlDateField x:Name="dpkDateCollected" Grid.Column="0" Label="Date Collected:" />
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <local:ctrlDateField x:Name="dpkDateDeposited" Grid.Column="0" Label="Date Deposited:" />
+                        <local:ctrlDateField x:Name="dpkDateVerified" Grid.Column="1" Label="Date Verified:" />
+                    </Grid>
+
+                    <TextBlock Margin="5">
+                        Plant Description:
                     </TextBlock>
-                </Button>
-            </WrapPanel>
-            <TextBlock x:Name="lblPictureFile" Grid.Column="1" Margin="5" Padding="5" 
-                       Text="[No Uploaded Photo]" TextWrapping="Wrap" />
-            <WrapPanel Grid.Column="2" FlowDirection="RightToLeft">
-                <Button x:Name="btnProceed" Click="btnProceed_Click" Margin="5" Padding="10 5" Content="PROCEED" />
-                <Button x:Name="btnClear" Click="btnClear_Click" Margin="5" Padding="10 5" Content="CLEAR" />
-            </WrapPanel>
-        </Grid>
+                    <TextBox x:Name="txaDescription" Grid.Row="7" Height="75" Margin="3" VerticalContentAlignment="Top" Padding="5" 
+                             AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" 
+                             ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto"/>
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+        <Grid x:Name="pnlCapturePicture" Visibility="Collapsed">
+            <Grid.Background>
+                <SolidColorBrush Color="#7F555555" />
+            </Grid.Background>
 
-        <TextBlock DockPanel.Dock="Top" Margin="15 5" x:Name="lblErrorPicture" Foreground="Red" 
-                   Text="Herbarium Sheet Picture is Required" Visibility="Collapsed" />
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="500" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="550" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
 
-        <Border DockPanel.Dock="Left" Margin="10" Height="400" Width="350" Background="#1FFFFFFF">
-            <Image x:Name="picHerbariumPlant" />
-        </Border>
-
-        <WrapPanel DockPanel.Dock="Top">
-            <RadioButton x:Name="rbtNew" Checked="rbtDepositTransaction_Checked"
-                         GroupName="DepositMode"
-                         Content="New Deposit"
-                         Margin="10" />
-            <RadioButton x:Name="rbtExisting" Checked="rbtDepositTransaction_Checked"
-                         GroupName="DepositMode"
-                         Content="Existing Deposit"
-                         Margin="10" />
-        </WrapPanel>
-
-        <ScrollViewer  Grid.Column="1" Margin="20 10" VerticalScrollBarVisibility="Auto">
-            <StackPanel>
-                <Grid>
+            <StackPanel Grid.Column="1" Grid.Row="1" Margin="50 10" Background="White">
+                <Grid Margin="5" DockPanel.Dock="Top">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
+                        <ColumnDefinition Width="auto"/>
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
 
-                    <local:ctrlTextField x:Name="txfAccessionNumber" Grid.Column="0" Label="Original Accession No:" />
-                    <local:ctrlTextField x:Name="txfReferenceNumber" Grid.Column="1" Label="Verified Accession No:" />
+                    <Label FontWeight="DemiBold" Margin="5">Capture Herbarium Sheet Picture</Label>
+                    <WrapPanel Margin="5" Grid.Column="1" FlowDirection="RightToLeft" VerticalAlignment="Center">
+                        <Button x:Name="btnReturn" Click="btnReturn_Click"
+                                Padding="2" ToolTip="Close" Height="20" VerticalAlignment="Bottom"
+                                Background="#55FFFFFF" BorderBrush="#00FFFFFF" >
+                            <Image Source="{StaticResource glyphicon-remove}"/>
+                        </Button>
+                    </WrapPanel>
                 </Grid>
-                
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition x:Name="defValidator" />
-                    </Grid.ColumnDefinitions>
-
-                    <local:ctrlComboBox x:Name="cbxCollector" Grid.Column="0" Label="Collector's Name:" />
-                    <local:ctrlComboBox x:Name="cbxValidator" Grid.Column="1" Label="Validator's Name:" />
-                </Grid>
-                
-                <local:ctrlComboBox x:Name="cbxLocality" Label="Location:" />
-
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-
-                    <local:ctrlComboBox x:Name="cbxTaxonName" Grid.Column="0" Grid.ColumnSpan="2" Label="Scientific Name:" />
-                    <!--<local:ctrlTextField x:Name="txfCommonName" Grid.Column="1" Label="Common Plant Name:" />-->
-                </Grid>
-
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition x:Name="defDateCollected"/>
-                    </Grid.ColumnDefinitions>
-
-                    <local:ctrlDateField x:Name="dpkDateCollected" Grid.Column="0" Label="Date Collected:" />
-                </Grid>
-
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-
-                    <local:ctrlDateField x:Name="dpkDateDeposited" Grid.Column="0" Label="Date Deposited:" />
-                    <local:ctrlDateField x:Name="dpkDateVerified" Grid.Column="1" Label="Date Verified:" />
-                </Grid>
-
-                <TextBlock Margin="5">
-                    Plant Description:
-                </TextBlock>
-                <TextBox x:Name="txaDescription" Grid.Row="7" Height="75" Margin="3" VerticalContentAlignment="Top" Padding="5" 
-                         AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" 
-                         ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto"/>
+                <Border BorderBrush="Gray" BorderThickness="1" Margin="45 5" VerticalAlignment="Center">
+                    <Grid>
+                        <Image x:Name="picHerbariumSheet" Visibility="Collapsed" Height="400" Width="300" Stretch="UniformToFill" />
+                        <Image x:Name="picCamera" Visibility="Visible" Height="400" Width="300" Stretch="UniformToFill" />
+                    </Grid>
+                </Border>
+                <WrapPanel HorizontalAlignment="Center">
+                    <Button x:Name="btnCapturePic" Click="btnCapturePic_Click"
+                            Width="90" Margin="10" Padding="5" Content="Capture Photo" />
+                    <Button x:Name="btnDiscardPic" Click="btnDiscardPic_Click"
+                            Width="90" Margin="10" Padding="5" Content="Discard Photo" />
+                    <Button x:Name="btnSavePic" Click="btnSavePic_Click"
+                            Width="90" Margin="10" Padding="5" Content="Save Photo" />
+                </WrapPanel>
             </StackPanel>
-        </ScrollViewer>
-    </DockPanel>
+        </Grid>
+    </Grid>
 </Page>

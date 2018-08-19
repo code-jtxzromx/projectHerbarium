@@ -27,12 +27,6 @@
             <Setter Property="VerticalContentAlignment"     Value="Center" />
             <Setter Property="HorizontalContentAlignment"   Value="Center" />
         </Style>
-        <Style x:Key="loginButton" TargetType="Button">
-            <Setter Property="Width"                        Value="75" />
-            <Setter Property="Height"                       Value="30" />
-            <Setter Property="FontFamily"                   Value="Segoe UI" />
-            <Setter Property="Margin"                       Value="5" />
-        </Style>
     </Window.Resources>
     <Grid>
         <!--<Grid.Background>
@@ -90,7 +84,8 @@
                                  Grid.Column="1" Grid.Row="1"/>
                 </Grid>
                 <WrapPanel FlowDirection="RightToLeft" Margin="15 5">
-                    <Button x:Name="btnLogin" Style="{StaticResource loginButton}" Click="btnLogin_Click">LOGIN</Button>
+                    <Button x:Name="btnLogin" Click="btnLogin_Click"
+                            Width="75" Height="30" Margin="5" Content="LOGIN" />
                 </WrapPanel>
             </StackPanel>
         </Grid>

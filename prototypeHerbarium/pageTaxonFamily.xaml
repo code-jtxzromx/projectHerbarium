@@ -11,12 +11,12 @@
     <DockPanel>
         <!-- Add / Edit Form -->
         <StackPanel x:Name="pnlAddFamily" Background="#5FEEEEEE" DockPanel.Dock="Top" 
-                                Visibility="Collapsed" Margin="10">
+                    Visibility="Visible" Margin="10">
             <TextBlock FontSize="20" 
-                        FontFamily="SegoeUI" 
-                        FontWeight="DemiBold"
-                        Margin="40 20">Add Family</TextBlock>
-            <Grid Margin="40 10">
+                       FontFamily="SegoeUI" 
+                       FontWeight="DemiBold"
+                       Margin="45 20">Add Family</TextBlock>
+            <Grid Margin="40 5">
                 <Grid.RowDefinitions>
                     <RowDefinition />
                     <RowDefinition />
@@ -37,7 +37,7 @@
                 <TextBlock Grid.Column="2" Grid.Row="0" Margin="5">
                     Family Name: <Span Foreground="Red">*</Span>
                 </TextBlock>
-                <TextBox x:Name="txfFamilyID" 
+                <TextBox x:Name="txfFamilyID" Background="LightGray" BorderBrush="Gray"
                          Grid.Column="0" Grid.Row="1" Height="25" Margin="3" VerticalContentAlignment="Center" IsEnabled="False"/>
                 <ComboBox x:Name="cbxOrderName" 
                           Grid.Column="1" Grid.Row="1" Height="25" Margin="3" VerticalContentAlignment="Center"/>
@@ -48,7 +48,7 @@
                 <TextBlock x:Name="msgFamilyName" Visibility="Collapsed"
                            Grid.Column="2" Grid.Row="2" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
             </Grid>
-            <Grid Margin="40 10 40 20">
+            <Grid Margin="40 10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
@@ -68,7 +68,7 @@
         <DockPanel>
             <Grid DockPanel.Dock="Top" Margin="2" Height="35">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="120" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="200" />
                 </Grid.ColumnDefinitions>
@@ -81,7 +81,7 @@
                     <TextBox x:Name="txfSearch" TextChanged="txfSearch_TextChanged" Width="135" VerticalContentAlignment="Center"/>
                 </WrapPanel>
             </Grid>
-            <DataGrid x:Name="dgrFamilyTable" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0">
+            <DataGrid x:Name="dgrFamilyTable" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0" GridLinesVisibility="Horizontal">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Family ID" Binding="{Binding FamilyID}" Width="150" IsReadOnly="True" />
                     <DataGridTextColumn Header="Order Name" Binding="{Binding OrderName}" Width="*" IsReadOnly="True" />
@@ -91,10 +91,10 @@
                             <DataTemplate>
                                 <WrapPanel HorizontalAlignment="Center">
                                     <Button x:Name="btnEdit" Click="btnEdit_Click"
-                                            Margin="1" Height="20" Width="20" 
+                                            Margin="1" Height="25" Width="25" 
                                             Background="SkyBlue" BorderBrush="SkyBlue"
                                             ToolTip="Edit">
-                                        <Rectangle Width="14" Height="14" Fill="White">
+                                        <Rectangle Width="13" Height="11" Fill="Black">
                                             <Rectangle.OpacityMask>
                                                 <ImageBrush ImageSource="{StaticResource glyphicon-edit}"/>
                                             </Rectangle.OpacityMask>

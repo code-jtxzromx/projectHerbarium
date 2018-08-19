@@ -27,8 +27,7 @@ namespace prototypeHerbarium
         {
             InitializeComponent();
 
-            getStaffList();
-            getAccountTable();
+            resetForm();
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
@@ -121,6 +120,17 @@ namespace prototypeHerbarium
                 MessageBox.Show("Access Account Deactivated");
                 getAccountTable();
             }
+        }
+
+        public void resetForm()
+        {
+            pnlAddAccount.Visibility = Visibility.Collapsed;
+            sprAddAccount.Visibility = Visibility.Collapsed;
+            btnAddAccount.Content = "Add Account";
+            btnClear_Click(btnClear, null);
+
+            getStaffList();
+            getAccountTable();
         }
 
         public void getAccountTable()

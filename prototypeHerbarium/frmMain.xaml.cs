@@ -48,8 +48,8 @@ namespace prototypeHerbarium
                 btnPlantVerification.Visibility = Visibility.Collapsed;
                 btnPlantClassification.Visibility = Visibility.Collapsed;
                 btnPlantLoaning.Visibility = Visibility.Collapsed;
-                btnPlantTracking.Visibility = Visibility.Collapsed;
-                btnAuditTrailing.Visibility = Visibility.Collapsed;
+                //btnPlantTracking.Visibility = Visibility.Collapsed;
+                //btnAuditTrailing.Visibility = Visibility.Collapsed;
             }
 
             btnHome_Click(btnHome, null);
@@ -77,7 +77,7 @@ namespace prototypeHerbarium
         {
             pageHomepage page = new pageHomepage();
             pnlPageLoader.Content = page;
-            lblPageName.Text = "HOMEPAGE";
+            lblPageName.Text = "DASHBOARD";
         }
 
         // Event:           Click

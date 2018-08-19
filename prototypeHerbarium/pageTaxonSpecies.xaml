@@ -5,19 +5,24 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:prototypeHerbarium"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="700" d:DesignWidth="800"
       Title="Taxonomic Hierarchy: Species">
 
     <DockPanel>
         <!-- Add / Edit Form -->
         <StackPanel x:Name="pnlAddSpecie" Background="#5FEEEEEE" DockPanel.Dock="Top"
-                                Visibility="Collapsed" Margin="10">
+                    Visibility="Visible" Margin="10">
             <TextBlock FontSize="20" 
-                        FontFamily="SegoeUI" 
-                        FontWeight="DemiBold"
-                        Margin="40 20">Add Species</TextBlock>
-            <Grid Margin="40 10">
+                       FontFamily="SegoeUI" 
+                       FontWeight="DemiBold"
+                       Margin="45 20">Add Species</TextBlock>
+            <Grid Margin="40 5">
                 <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
@@ -33,7 +38,12 @@
                 <TextBlock Grid.Column="0" Grid.Row="0" Margin="5">
                     Species ID:
                 </TextBlock>
-                <TextBox x:Name="txfSpecieID" Grid.Column="0" Grid.Row="1" Height="25" Margin="3" VerticalContentAlignment="Center" IsEnabled="False"/>
+                <TextBox x:Name="txfSpecieID" Background="LightGray" BorderBrush="Gray"
+                         Grid.Column="0" Grid.Row="1" Height="25" Margin="3" VerticalContentAlignment="Center" IsEnabled="False"/>
+                <CheckBox x:Name="chkIsUndeterminedSpecies" Grid.Column="1" Grid.Row="1" Margin="10 3" VerticalContentAlignment="Center">
+                    Known Species
+                </CheckBox>
+
                 <TextBlock Grid.Column="0" Grid.Row="2" Margin="5">
                     Genus Name: <Span Foreground="Red">*</Span>
                 </TextBlock>
@@ -41,22 +51,46 @@
                     Species Name: <Span Foreground="Red">*</Span>
                 </TextBlock>
                 <TextBlock Grid.Column="2" Grid.Row="2" Margin="5">
-                    Common Name: <Span Foreground="Red">*</Span>
+                    Scientific Name: <Span Foreground="Red">*</Span>
                 </TextBlock>
                 <ComboBox x:Name="cbxGenusName" 
                           Grid.Column="0" Grid.Row="3" Height="25" Margin="3" VerticalContentAlignment="Center"/>
                 <TextBox x:Name="txfSpeciesName" 
                          Grid.Column="1" Grid.Row="3" Height="25" Margin="3" VerticalContentAlignment="Center"/>
-                <TextBox x:Name="txfCommonName" 
+                <TextBox x:Name="txfScientificName" 
                          Grid.Column="2" Grid.Row="3" Height="25" Margin="3" VerticalContentAlignment="Center"/>
+                
                 <TextBlock x:Name="msgGenusName" Visibility="Collapsed"
                            Grid.Column="0" Grid.Row="4" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
                 <TextBlock x:Name="msgSpeciesName" Visibility="Collapsed"
                            Grid.Column="1" Grid.Row="4" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
-                <TextBlock x:Name="msgCommonName" Visibility="Collapsed"
+                <TextBlock x:Name="msgScientificName" Visibility="Collapsed"
                            Grid.Column="2" Grid.Row="4" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
+
+                <TextBlock Grid.Column="0" Grid.Row="5" Margin="5">
+                    Common Name: <Span Foreground="Red">*</Span>
+                </TextBlock>
+                <TextBlock Grid.Column="1" Grid.Row="5" Margin="5">
+                    Species' Author: <Span Foreground="Red">*</Span>
+                </TextBlock>
+                <TextBox x:Name="txfCommonName" 
+                         Grid.Column="0" Grid.Row="6" Height="25" Margin="3" VerticalContentAlignment="Center"/>
+                <TextBox x:Name="txfAuthor" 
+                         Grid.Column="1" Grid.Row="6" Height="25" Margin="3" VerticalContentAlignment="Center"/>
+                <TextBlock x:Name="msgCommonName" Visibility="Collapsed"
+                           Grid.Column="0" Grid.Row="7" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
+                <TextBlock x:Name="msgAuthor" Visibility="Collapsed"
+                           Grid.Column="1" Grid.Row="7" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
+
+                <TextBlock Grid.Column="0" Grid.Row="8" Margin="5" Grid.ColumnSpan="3">
+                    Alternate Names: <TabItem/> <Span Foreground="Red">Each Synonym must be separated by Semicolon ( ; )</Span>
+                </TextBlock>
+                <TextBox x:Name="txfSynonyms" 
+                         Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="3" Height="30" TextWrapping="WrapWithOverflow" 
+                         Margin="3" VerticalContentAlignment="Center"/>
+
             </Grid>
-            <Grid Margin="40 10 40 20">
+            <Grid Margin="40 10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
@@ -76,7 +110,7 @@
         <DockPanel>
             <Grid DockPanel.Dock="Top" Margin="2" Height="35">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="120" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="200" />
                 </Grid.ColumnDefinitions>
@@ -89,21 +123,22 @@
                     <TextBox x:Name="txfSearch" TextChanged="txfSearch_TextChanged" Width="135" VerticalContentAlignment="Center"/>
                 </WrapPanel>
             </Grid>
-            <DataGrid x:Name="dgrSpeciesTable" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0">
+            <DataGrid x:Name="dgrSpeciesTable" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0" GridLinesVisibility="Horizontal">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Species ID" Binding="{Binding SpecieID}" Width="180"/>
-                    <DataGridTextColumn Header="Genus Name" Binding="{Binding GenusName}" Width="*"/>
-                    <DataGridTextColumn Header="Species Name" Binding="{Binding SpecieName}" Width="*"/>
-                    <DataGridTextColumn Header="Common Name" Binding="{Binding CommonName}" Width="1.5*"/>
+                    <DataGridTextColumn Header="Species ID" Binding="{Binding SpecieID}" Width="160"/>
+                    <DataGridTextColumn Header="Genus Name" Binding="{Binding GenusName}" Width="2*"/>
+                    <DataGridTextColumn Header="Species Name" Binding="{Binding SpecieName}" Width="2*"/>
+                    <DataGridTextColumn Header="Common Name" Binding="{Binding CommonName}" Width="3*"/>
+                    <DataGridTextColumn Header="Status" Width="2*"/>
                     <DataGridTemplateColumn Header="Actions" Width="100">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <WrapPanel HorizontalAlignment="Center">
                                     <Button x:Name="btnEdit" Click="btnEdit_Click"
-                                            Margin="1" Height="20" Width="20" 
+                                            Margin="1" Height="25" Width="25" 
                                             Background="SkyBlue" BorderBrush="SkyBlue"
                                             ToolTip="Edit">
-                                        <Rectangle Width="14" Height="14" Fill="White">
+                                        <Rectangle Width="13" Height="11" Fill="Black">
                                             <Rectangle.OpacityMask>
                                                 <ImageBrush ImageSource="{StaticResource glyphicon-edit}"/>
                                             </Rectangle.OpacityMask>

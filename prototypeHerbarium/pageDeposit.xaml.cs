@@ -23,6 +23,9 @@ namespace prototypeHerbarium
     /// </summary>
     public partial class pageDeposit : Page
     {
+        WebCam camera;
+        bool webcamOpened = false;
+
         public pageDeposit()
         {
             InitializeComponent();
@@ -33,6 +36,9 @@ namespace prototypeHerbarium
             getValidatorList();
             getLocalityList();
             getTaxonList();
+
+            camera = new WebCam();
+            camera.InitializeCamera(ref picCamera);
         }
         
         private void rbtDepositTransaction_Checked(object sender, RoutedEventArgs e)
@@ -92,8 +98,55 @@ namespace prototypeHerbarium
             if (dialog.ShowDialog() == true)
             {
                 picHerbariumPlant.Source = new BitmapImage(new Uri(dialog.FileName));
-                lblPictureFile.Text = dialog.FileName;
+                //lblPictureFile.Text = dialog.FileName;
             }
+        }
+
+        private void btnCapturePicture_Click(object sender, RoutedEventArgs e)
+        {
+            pnlCapturePicture.Visibility = Visibility.Visible;
+            if (!webcamOpened)
+                camera.Start();
+            else
+                camera.Continue();
+
+            btnCapturePic.Visibility = Visibility.Visible;
+            btnDiscardPic.Visibility = Visibility.Collapsed;
+            btnSavePic.Visibility = Visibility.Collapsed;
+        }
+
+        private void btnReturn_Click(object sender, RoutedEventArgs e)
+        {
+            pnlCapturePicture.Visibility = Visibility.Collapsed;
+            btnDiscardPic_Click(btnDiscardPic, null);
+            camera.Stop();
+        }
+
+        private void btnCapturePic_Click(object sender, RoutedEventArgs e)
+        {
+            picHerbariumSheet.Source = picCamera.Source;
+            picHerbariumSheet.Visibility = Visibility.Visible;
+            picCamera.Visibility = Visibility.Collapsed;
+
+            btnCapturePic.Visibility = Visibility.Collapsed;
+            btnDiscardPic.Visibility = Visibility.Visible;
+            btnSavePic.Visibility = Visibility.Visible;
+        }
+
+        private void btnDiscardPic_Click(object sender, RoutedEventArgs e)
+        {
+            picCamera.Visibility = Visibility.Visible;
+            picHerbariumSheet.Visibility = Visibility.Collapsed;
+
+            btnCapturePic.Visibility = Visibility.Visible;
+            btnDiscardPic.Visibility = Visibility.Collapsed;
+            btnSavePic.Visibility = Visibility.Collapsed;
+        }
+
+        private void btnSavePic_Click(object sender, RoutedEventArgs e)
+        {
+            picHerbariumPlant.Source = picHerbariumSheet.Source;
+            btnReturn_Click(btnReturn, null);
         }
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
@@ -289,11 +342,11 @@ namespace prototypeHerbarium
                 dpkDateVerified.ErrorMessage = true;
                 formOK = false;
             }
-            if (lblPictureFile.Text == "[No Uploaded Photo]")
-            {
-                lblErrorPicture.Visibility = Visibility.Visible;
-                formOK = false;
-            }
+            //if (lblPictureFile.Text == "[No Uploaded Photo]")
+            //{
+            //    lblErrorPicture.Visibility = Visibility.Visible;
+            //    formOK = false;
+            //}
 
             return formOK;
         }

@@ -49,8 +49,7 @@ namespace prototypeHerbarium
         {
             InitializeComponent();
 
-            getStaffTable();
-            initializingFields();
+            resetForm();
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
@@ -76,7 +75,7 @@ namespace prototypeHerbarium
             txfContactNumber.Clear();
             txfEmailAddress.Clear();
             cbxDepartment.SelectedIndex = -1;
-            txfSection.Clear();
+            //txfSection.Clear();
             lblNote.Visibility = Visibility.Collapsed;
 
             msgRole.Visibility = Visibility.Collapsed;
@@ -87,7 +86,7 @@ namespace prototypeHerbarium
             msgContactNumber.Visibility = Visibility.Collapsed;
             msgEmailAddress.Visibility = Visibility.Collapsed;
             msgDepartment.Visibility = Visibility.Collapsed;
-            msgSection.Visibility = Visibility.Collapsed;
+            //msgSection.Visibility = Visibility.Collapsed;
         }
 
         private void btnAddStaff_Click(object sender, RoutedEventArgs e)
@@ -138,7 +137,7 @@ namespace prototypeHerbarium
                 txfEmailAddress.Text = data.Email;
                 cbxRole.SelectedItem = data.Role;
                 cbxDepartment.SelectedItem = data.College;
-                txfSection.Text = data.Position;
+                //txfSection.Text = data.Position;
             }
         }
 
@@ -172,14 +171,14 @@ namespace prototypeHerbarium
         {
             if (cbxRole.SelectedIndex == 2)
             {
-                lblSection.Visibility = Visibility.Visible;
-                txfSection.Visibility = Visibility.Visible;
+                //lblSection.Visibility = Visibility.Visible;
+                //txfSection.Visibility = Visibility.Visible;
                 lblNote.Visibility = Visibility.Collapsed;
             }
             else
             {
-                lblSection.Visibility = Visibility.Hidden;
-                txfSection.Visibility = Visibility.Hidden;
+                //lblSection.Visibility = Visibility.Hidden;
+                //txfSection.Visibility = Visibility.Hidden;
                 lblNote.Visibility = Visibility.Visible;
             }      
         }
@@ -191,6 +190,17 @@ namespace prototypeHerbarium
             
             foreach (string college in colleges)
                 cbxDepartment.Items.Add(college);
+        }
+
+        public void resetForm()
+        {
+            pnlAddStaff.Visibility = Visibility.Collapsed;
+            sprAddStaff.Visibility = Visibility.Collapsed;
+            btnAddStaff.Content = "Add Staff";
+            btnClear_Click(btnClear, null);
+
+            getStaffTable();
+            initializingFields();
         }
 
         private void getStaffTable()
@@ -245,7 +255,7 @@ namespace prototypeHerbarium
             msgContactNumber.Visibility = Visibility.Collapsed;
             msgEmailAddress.Visibility = Visibility.Collapsed;
             msgDepartment.Visibility = Visibility.Collapsed;
-            msgSection.Visibility = Visibility.Collapsed;
+            //msgSection.Visibility = Visibility.Collapsed;
 
             if (cbxRole.SelectedIndex == -1)
             {
@@ -287,11 +297,11 @@ namespace prototypeHerbarium
                 msgDepartment.Visibility = Visibility.Visible;
                 formOK = false;
             }
-            if (cbxRole.SelectedIndex == 2 && txfSection.Text == "")
-            {
-                msgSection.Visibility = Visibility.Visible;
-                formOK = false;
-            }
+            //if (cbxRole.SelectedIndex == 2 && txfSection.Text == "")
+            //{
+            //    msgSection.Visibility = Visibility.Visible;
+            //    formOK = false;
+            //}
 
             return formOK;
         }
@@ -300,7 +310,7 @@ namespace prototypeHerbarium
         {
             int status;
             DatabaseConnection connection = new DatabaseConnection();
-            string section = (cbxRole.SelectedIndex == 2) ? txfSection.Text : "Faculty";
+            //string section = (cbxRole.SelectedIndex == 2) ? txfSection.Text : "Faculty";
 
             connection.setStoredProc("dbo.procInsertHerbariumStaff");
             connection.addSprocParameter("@firstname", System.Data.SqlDbType.VarChar, txfFirstname.Text);
@@ -312,7 +322,7 @@ namespace prototypeHerbarium
             connection.addSprocParameter("@email", System.Data.SqlDbType.VarChar, txfEmailAddress.Text);
             connection.addSprocParameter("@role", System.Data.SqlDbType.VarChar, cbxRole.SelectedItem.ToString());
             connection.addSprocParameter("@department", System.Data.SqlDbType.VarChar, cbxDepartment.SelectedItem.ToString());
-            connection.addSprocParameter("@position", System.Data.SqlDbType.VarChar, section);
+            //connection.addSprocParameter("@position", System.Data.SqlDbType.VarChar, section);
             status = connection.executeProcedure();
 
             switch (status)
@@ -334,7 +344,7 @@ namespace prototypeHerbarium
         {
             int status;
             DatabaseConnection connection = new DatabaseConnection();
-            string section = (cbxRole.SelectedIndex == 2) ? txfSection.Text : "Faculty";
+            //string section = (cbxRole.SelectedIndex == 2) ? txfSection.Text : "Faculty";
 
             connection.setStoredProc("dbo.procUpdateHerbariumStaff");
             connection.addSprocParameter("@staffID", System.Data.SqlDbType.Int, txfStaffID.Text);
@@ -347,7 +357,7 @@ namespace prototypeHerbarium
             connection.addSprocParameter("@email", System.Data.SqlDbType.VarChar, txfEmailAddress.Text);
             connection.addSprocParameter("@role", System.Data.SqlDbType.VarChar, cbxRole.SelectedItem.ToString());
             connection.addSprocParameter("@department", System.Data.SqlDbType.VarChar, cbxDepartment.SelectedItem.ToString());
-            connection.addSprocParameter("@position", System.Data.SqlDbType.VarChar, section);
+            //connection.addSprocParameter("@position", System.Data.SqlDbType.VarChar, section);
             status = connection.executeProcedure();
 
             switch (status)

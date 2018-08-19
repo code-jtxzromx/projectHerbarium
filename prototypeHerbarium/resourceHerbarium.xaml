@@ -24,8 +24,16 @@
     <BitmapImage x:Key="glyphicon-search"           UriSource="Resources/glyphicons_free/glyphicons/png/glyphicons-28-search.png" />
     <BitmapImage x:Key="glyphicon-logout"           UriSource="Resources/glyphicons_free/glyphicons/png/glyphicons-388-log-out.png" />
     <BitmapImage x:Key="glyphicon-remove-circle"    UriSource="Resources/glyphicons_free/glyphicons/png/glyphicons-198-remove-circle.png" />
-    <BitmapImage x:Key="glyphicon-info-sign"        UriSource="Resources/glyphicons_free/glyphicons/png/glyphicons-196-info-sign.png" />        
-
+    <BitmapImage x:Key="glyphicon-info-sign"        UriSource="Resources/glyphicons_free/glyphicons/png/glyphicons-196-info-sign.png" />
+    <BitmapImage x:Key="glyphicon-user"             UriSource="Resources/glyphicons_free/glyphicons/png/glyphicons-4-user.png" />
+    <BitmapImage x:Key="glyphicon-file"             UriSource="Resources/glyphicons_free/glyphicons/png/glyphicons-37-file.png" />
+    <BitmapImage x:Key="glyphicon-package"          UriSource="Resources/glyphicons_free/glyphicons/png/glyphicons-412-package.png" />
+    <BitmapImage x:Key="glyphicon-flower"           UriSource="Resources/glyphicons_free/glyphicons/png/glyphicons-311-flower.png" />
+    <BitmapImage x:Key="glyphicon-file-plus"        UriSource="Resources/glyphicons_free/glyphicons/png/glyphicons-703-file-plus.png" />
+    <BitmapImage x:Key="glyphicon-collapse"         UriSource="Resources/glyphicons_free/glyphicons/png/glyphicons-369-collapse.png" />
+    <BitmapImage x:Key="glyphicon-list-alt"         UriSource="Resources/glyphicons_free/glyphicons/png/glyphicons-530-list-alt.png" />
+    <BitmapImage x:Key="glyphicon-file-download"    UriSource="Resources/glyphicons_free/glyphicons/png/glyphicons-707-file-cloud-download.png" />
+    
     <!-- Styles used in this Application -->
     <Style x:Key="mainWindow" TargetType="{x:Type Window}">
         <Setter Property="WindowStyle" Value="None"/>

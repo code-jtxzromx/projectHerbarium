@@ -88,9 +88,9 @@
                                     <ColumnDefinition Width="35" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <Image Source="{StaticResource glyphicon-home}"
+                                <Image Source="{StaticResource glyphicon-stats}"
                                        Grid.Column="0" Margin="3"/>
-                                <TextBlock Grid.Column="1" Padding="2">HOME</TextBlock>
+                                <TextBlock Grid.Column="1" Padding="2">DASHBOARD</TextBlock>
                             </Grid>
                         </Button.Content>
                     </Button>
@@ -108,8 +108,8 @@
                                         Grid.Column="0" Margin="3"/>
                                 <TextBlock Grid.Column="1" Padding="2">MAINTENANCE</TextBlock>
                                 <Image x:Name="iconMaintenanceChev" 
-                                        Source="{StaticResource glyphicon-chevron-right}"
-                                        Grid.Column="2" Margin="5" RenderTransformOrigin="0.5,0.5">
+                                        Source="{StaticResource glyphicon-collapse}"
+                                        Grid.Column="2" Margin="2" RenderTransformOrigin="0.5,0.5">
                                     <Image.RenderTransform>
                                         <TransformGroup>
                                             <RotateTransform Angle="0"/>
@@ -132,8 +132,8 @@
 
                                     <TextBlock Grid.Column="0" Padding="0 3">Taxonomic Hierarchy</TextBlock>
                                     <Image x:Name="iconTaxonChev" 
-                                            Source="{StaticResource glyphicon-chevron-right}"
-                                            Grid.Column="1" Margin="5" RenderTransformOrigin="0.5,0.5">
+                                            Source="{StaticResource glyphicon-collapse}"
+                                            Grid.Column="1" Margin="2" RenderTransformOrigin="0.5,0.5">
                                         <Image.RenderTransform>
                                             <TransformGroup>
                                                 <RotateTransform Angle="0"/>
@@ -170,6 +170,9 @@
                                     Click="btnTaxonSpecies_Click"
                                     Content="Species"/>
                         </StackPanel>
+                        <!--<Button x:Name="btnSpeciesDescription"
+                                Style="{StaticResource subMenuButton}"
+                                Content="Species Description"/>-->
                         <Button x:Name="btnFamilyBox" 
                                 Style="{StaticResource subMenuButton}"
                                 Click="btnFamilyBox_Click"
@@ -209,8 +212,8 @@
                                        Grid.Column="0" Margin="3"/>
                                 <TextBlock Grid.Column="1" Padding="2">TRANSACTION</TextBlock>
                                 <Image x:Name="iconTransactionChev" 
-                                        Source="{StaticResource glyphicon-chevron-right}"
-                                        Grid.Column="2" Margin="5" RenderTransformOrigin="0.5,0.5">
+                                        Source="{StaticResource glyphicon-collapse}"
+                                        Grid.Column="2" Margin="2" RenderTransformOrigin="0.5,0.5">
                                     <Image.RenderTransform>
                                         <TransformGroup>
                                             <RotateTransform Angle="0"/>
@@ -245,6 +248,9 @@
                                 Style="{StaticResource subMenuButton}"
                                 Content="Loan Plant" 
                                 Click="btnPlantLoaning_Click" />
+                        <!--<Button x:Name="btnSpeciesIdentification"
+                                Style="{StaticResource subMenuButton}"
+                                Content="Species Identification" />-->
                     </StackPanel>
                     <Button x:Name="btnUtilities" 
                             Style="{StaticResource menuButton}"
@@ -260,8 +266,8 @@
                                        Grid.Column="0" Margin="3"/>
                                 <TextBlock Grid.Column="1" Padding="2">MANAGEMENT TOOLS</TextBlock>
                                 <Image x:Name="iconUtilitiesChev" 
-                                       Source="{StaticResource glyphicon-chevron-right}"
-                                       Grid.Column="2" Margin="5" RenderTransformOrigin="0.5,0.5">
+                                       Source="{StaticResource glyphicon-collapse}"
+                                       Grid.Column="2" Margin="2" RenderTransformOrigin="0.5,0.5">
                                     <Image.RenderTransform>
                                         <TransformGroup>
                                             <RotateTransform Angle="0"/>
@@ -276,14 +282,17 @@
                                 Style="{StaticResource subMenuButton}"
                                 Content="Herbarium Inventory"
                                 Click="btnHerbariumInventory_Click" />
-                        <Button x:Name="btnPlantTracking" 
+                        <!--<Button x:Name="btnPlantTracking" 
                                 Style="{StaticResource subMenuButton}"
                                 Content="Herbarium Specimen Tracking" 
-                                Click="btnPlantTracking_Click"/>
-                        <Button x:Name="btnAuditTrailing"
+                                Click="btnPlantTracking_Click"/>-->
+                        <!--<Button x:Name="btnBackupDeposits" 
+                                Style="{StaticResource subMenuButton}"
+                                Content="Herbarium Back-Up"/>-->
+                        <!--<Button x:Name="btnAuditTrailing"
                                 Style="{StaticResource subMenuButton}"
                                 Click="btnAuditTrailing_Click"
-                                Content="Audit Trailing"/>
+                                Content="Audit Trailing"/>-->
                     </StackPanel>
                     <Button x:Name="btnQuery"
                             Style="{StaticResource menuButton}"
@@ -294,7 +303,7 @@
                                     <ColumnDefinition Width="35" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <Image Source="{StaticResource glyphicon-stats}"
+                                <Image Source="{StaticResource glyphicon-list-alt}"
                                        Grid.Column="0" Margin="3"/>
                                 <TextBlock Grid.Column="1" Padding="2">QUERY</TextBlock>
                             </Grid>
@@ -309,7 +318,7 @@
                                     <ColumnDefinition Width="35" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <Image Source="{StaticResource glyphicon-notes}"
+                                <Image Source="{StaticResource glyphicon-file-download}"
                                        Grid.Column="0" Margin="3"/>
                                 <TextBlock Grid.Column="1" Padding="2">REPORTS</TextBlock>
                             </Grid>
