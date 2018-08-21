@@ -22,7 +22,7 @@ namespace prototypeHerbarium
     public partial class pageStaff : Page
     {
         List<Staff> HerbariumStaff = new List<Staff>();
-        string[] roles = new string[] { "SUPER-ADMINISTRATOR", "CURATOR", "STUDENT ASSISTANT" };
+        string[] roles = new string[] { "ADMINISTRATOR", "CURATOR", "STUDENT ASSISTANT" };
         string[] colleges = new string[]
         {
             "College of Accountancy and Finance",
@@ -75,18 +75,14 @@ namespace prototypeHerbarium
             txfContactNumber.Clear();
             txfEmailAddress.Clear();
             cbxDepartment.SelectedIndex = -1;
-            //txfSection.Clear();
             lblNote.Visibility = Visibility.Collapsed;
 
             msgRole.Visibility = Visibility.Collapsed;
             msgFirstname.Visibility = Visibility.Collapsed;
-            msgMiddlename.Visibility = Visibility.Collapsed;
             msgLastname.Visibility = Visibility.Collapsed;
-            msgMiddleInitial.Visibility = Visibility.Collapsed;
             msgContactNumber.Visibility = Visibility.Collapsed;
             msgEmailAddress.Visibility = Visibility.Collapsed;
             msgDepartment.Visibility = Visibility.Collapsed;
-            //msgSection.Visibility = Visibility.Collapsed;
         }
 
         private void btnAddStaff_Click(object sender, RoutedEventArgs e)
@@ -107,7 +103,6 @@ namespace prototypeHerbarium
             var result = from record in HerbariumStaff
                          where record.LastName.ToUpper().Contains(input) ||
                                 record.FirstName.ToUpper().Contains(input) ||
-                                record.Position.ToUpper().Contains(input) ||
                                 record.Role.ToUpper().Contains(input)
                          select record;
 
@@ -137,7 +132,6 @@ namespace prototypeHerbarium
                 txfEmailAddress.Text = data.Email;
                 cbxRole.SelectedItem = data.Role;
                 cbxDepartment.SelectedItem = data.College;
-                //txfSection.Text = data.Position;
             }
         }
 
@@ -167,21 +161,8 @@ namespace prototypeHerbarium
             }
         }
 
-        private void cbxRole_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (cbxRole.SelectedIndex == 2)
-            {
-                //lblSection.Visibility = Visibility.Visible;
-                //txfSection.Visibility = Visibility.Visible;
-                lblNote.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                //lblSection.Visibility = Visibility.Hidden;
-                //txfSection.Visibility = Visibility.Hidden;
-                lblNote.Visibility = Visibility.Visible;
-            }      
-        }
+        private void cbxRole_SelectionChanged(object sender, SelectionChangedEventArgs e) 
+            => lblNote.Visibility = (cbxRole.SelectedIndex == 2) ? Visibility.Collapsed : Visibility.Visible;
 
         private void initializingFields()
         {
@@ -213,7 +194,7 @@ namespace prototypeHerbarium
 
             // Query Command Setting
             connection.setQuery("SELECT intStaffID, strFirstname, strMiddlename, strLastname, strMiddleInitial, strNameSuffix, " +
-                                        "strContactNumber, strEmailAddress, strFullName, strRole, strCollegeDepartment, strPosition " +
+                                        "strContactNumber, strEmailAddress, strFullName, strRole, strCollegeDepartment " +
                                 "FROM viewHerbariumStaff");
             
             // Query Execution
@@ -234,8 +215,7 @@ namespace prototypeHerbarium
                     Email = sqlData[7].ToString(),
                     FullName = sqlData[8].ToString(),
                     Role = sqlData[9].ToString(),
-                    College = sqlData[10].ToString(),
-                    Position = sqlData[11].ToString()
+                    College = sqlData[10].ToString()
                 });
             }
             connection.closeResult();
@@ -249,13 +229,10 @@ namespace prototypeHerbarium
             bool formOK = true;
             msgRole.Visibility = Visibility.Collapsed;
             msgFirstname.Visibility = Visibility.Collapsed;
-            msgMiddlename.Visibility = Visibility.Collapsed;
             msgLastname.Visibility = Visibility.Collapsed;
-            msgMiddleInitial.Visibility = Visibility.Collapsed;
             msgContactNumber.Visibility = Visibility.Collapsed;
             msgEmailAddress.Visibility = Visibility.Collapsed;
             msgDepartment.Visibility = Visibility.Collapsed;
-            //msgSection.Visibility = Visibility.Collapsed;
 
             if (cbxRole.SelectedIndex == -1)
             {
@@ -267,19 +244,9 @@ namespace prototypeHerbarium
                 msgFirstname.Visibility = Visibility.Visible;
                 formOK = false;
             }
-            if (txfMiddlename.Text == "")
-            {
-                msgMiddlename.Visibility = Visibility.Visible;
-                formOK = false;
-            }
             if (txfLastname.Text == "")
             {
                 msgLastname.Visibility = Visibility.Visible;
-                formOK = false;
-            }
-            if (txfMiddleInitial.Text == "")
-            {
-                msgMiddleInitial.Visibility = Visibility.Visible;
                 formOK = false;
             }
             if (txfContactNumber.Text == "")
@@ -297,11 +264,6 @@ namespace prototypeHerbarium
                 msgDepartment.Visibility = Visibility.Visible;
                 formOK = false;
             }
-            //if (cbxRole.SelectedIndex == 2 && txfSection.Text == "")
-            //{
-            //    msgSection.Visibility = Visibility.Visible;
-            //    formOK = false;
-            //}
 
             return formOK;
         }
@@ -310,7 +272,6 @@ namespace prototypeHerbarium
         {
             int status;
             DatabaseConnection connection = new DatabaseConnection();
-            //string section = (cbxRole.SelectedIndex == 2) ? txfSection.Text : "Faculty";
 
             connection.setStoredProc("dbo.procInsertHerbariumStaff");
             connection.addSprocParameter("@firstname", System.Data.SqlDbType.VarChar, txfFirstname.Text);
@@ -322,7 +283,6 @@ namespace prototypeHerbarium
             connection.addSprocParameter("@email", System.Data.SqlDbType.VarChar, txfEmailAddress.Text);
             connection.addSprocParameter("@role", System.Data.SqlDbType.VarChar, cbxRole.SelectedItem.ToString());
             connection.addSprocParameter("@department", System.Data.SqlDbType.VarChar, cbxDepartment.SelectedItem.ToString());
-            //connection.addSprocParameter("@position", System.Data.SqlDbType.VarChar, section);
             status = connection.executeProcedure();
 
             switch (status)
@@ -344,7 +304,6 @@ namespace prototypeHerbarium
         {
             int status;
             DatabaseConnection connection = new DatabaseConnection();
-            //string section = (cbxRole.SelectedIndex == 2) ? txfSection.Text : "Faculty";
 
             connection.setStoredProc("dbo.procUpdateHerbariumStaff");
             connection.addSprocParameter("@staffID", System.Data.SqlDbType.Int, txfStaffID.Text);
@@ -357,7 +316,6 @@ namespace prototypeHerbarium
             connection.addSprocParameter("@email", System.Data.SqlDbType.VarChar, txfEmailAddress.Text);
             connection.addSprocParameter("@role", System.Data.SqlDbType.VarChar, cbxRole.SelectedItem.ToString());
             connection.addSprocParameter("@department", System.Data.SqlDbType.VarChar, cbxDepartment.SelectedItem.ToString());
-            //connection.addSprocParameter("@position", System.Data.SqlDbType.VarChar, section);
             status = connection.executeProcedure();
 
             switch (status)
@@ -387,5 +345,4 @@ public class Staff
     public string Email { get; set; }
     public string Role { get; set; }
     public string College { get; set; }
-    public string Position { get; set; }
 }

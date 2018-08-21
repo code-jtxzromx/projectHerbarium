@@ -55,9 +55,7 @@ namespace prototypeHerbarium
             txfInstitution.Clear();
 
             msgFirstname.Visibility = Visibility.Collapsed;
-            msgMiddlename.Visibility = Visibility.Collapsed;
             msgLastname.Visibility = Visibility.Collapsed;
-            msgMiddleInitial.Visibility = Visibility.Collapsed;
             msgContactNumber.Visibility = Visibility.Collapsed;
             msgEmailAddress.Visibility = Visibility.Collapsed;
             msgInstitution.Visibility = Visibility.Collapsed;
@@ -165,9 +163,7 @@ namespace prototypeHerbarium
         {
             bool formOK = true;
             msgFirstname.Visibility = Visibility.Collapsed;
-            msgMiddlename.Visibility = Visibility.Collapsed;
             msgLastname.Visibility = Visibility.Collapsed;
-            msgMiddleInitial.Visibility = Visibility.Collapsed;
             msgContactNumber.Visibility = Visibility.Collapsed;
             msgEmailAddress.Visibility = Visibility.Collapsed;
             msgInstitution.Visibility = Visibility.Collapsed;
@@ -177,19 +173,9 @@ namespace prototypeHerbarium
                 msgFirstname.Visibility = Visibility.Visible;
                 formOK = false;
             }
-            if (txfMiddlename.Text == "")
-            {
-                msgMiddlename.Visibility = Visibility.Visible;
-                formOK = false;
-            }
             if (txfLastname.Text == "")
             {
                 msgLastname.Visibility = Visibility.Visible;
-                formOK = false;
-            }
-            if (txfMiddleInitial.Text == "")
-            {
-                msgMiddleInitial.Visibility = Visibility.Visible;
                 formOK = false;
             }
             if (txfContactNumber.Text == "")

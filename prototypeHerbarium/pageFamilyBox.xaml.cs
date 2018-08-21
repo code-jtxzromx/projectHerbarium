@@ -47,9 +47,15 @@ namespace prototypeHerbarium
             txfBoxNumber.Clear();
             cbxFamily.SelectedIndex = -1;
             txfBoxLimit.Clear();
+            txfRack.Clear();
+            txfRackRow.Clear();
+            txfRackColumn.Clear();
 
             msgFamily.Visibility = Visibility.Collapsed;
             msgBoxLimit.Visibility = Visibility.Collapsed;
+            msgRack.Visibility = Visibility.Collapsed;
+            msgRackRow.Visibility = Visibility.Collapsed;
+            msgRackColumn.Visibility = Visibility.Collapsed;
         }
 
         private void btnAddBox_Click(object sender, RoutedEventArgs e)
@@ -91,6 +97,9 @@ namespace prototypeHerbarium
                 txfBoxNumber.Text = data.BoxNumber;
                 cbxFamily.SelectedItem = data.Family;
                 txfBoxLimit.Text = data.BoxLimit.ToString();
+                txfRack.Text = data.RackNumber.ToString();
+                txfRackRow.Text = data.RackRow.ToString();
+                txfRackColumn.Text = data.RackColumn.ToString();
             }
         }
 
@@ -114,7 +123,9 @@ namespace prototypeHerbarium
             btnClear_Click(btnClear, null);
 
             // Query Command Setting
-            connection.setQuery("SELECT strBoxNumber, strFamilyName, intBoxLimit FROM viewFamilyBox");
+            connection.setQuery("SELECT FB.strBoxNumber, FB.strFamilyName, FB.intBoxLimit, FB.intRackNo, FB.intRackRow, FB.intRackColumn, COUNT(HI.intStoredSheetID)  " +
+                                "FROM viewFamilyBox FB LEFT JOIN viewHerbariumInventory HI ON FB.strBoxNumber = HI.strBoxNumber " +
+                                "GROUP BY FB.strBoxNumber, FB.strFamilyName, FB.intBoxLimit, FB.intRackNo, FB.intRackRow, FB.intRackColumn");
 
             // Query Execution
             SqlDataReader sqlData = connection.executeResult();
@@ -126,7 +137,12 @@ namespace prototypeHerbarium
                 {
                     BoxNumber = sqlData[0].ToString(),
                     Family = sqlData[1].ToString(),
-                    BoxLimit = Convert.ToInt32(sqlData[2])
+                    BoxLimit = Convert.ToInt32(sqlData[2]),
+                    RackNumber = Convert.ToInt32(sqlData[3]),
+                    RackRow = Convert.ToInt32(sqlData[4]),
+                    RackColumn = Convert.ToInt32(sqlData[5]),
+                    Location = "Rack #" + sqlData[3].ToString() + " (R:" + sqlData[4].ToString() + ", C:" + sqlData[5].ToString() + ")",
+                    Status = (Convert.ToInt32(sqlData[2]) == Convert.ToInt32(sqlData[6]) ? "Full" : "Available")
                 });
             }
             connection.closeResult();
@@ -172,6 +188,21 @@ namespace prototypeHerbarium
                 msgBoxLimit.Visibility = Visibility.Visible;
                 formOK = false;
             }
+            if (txfRack.Text == "")
+            {
+                msgRack.Visibility = Visibility.Visible;
+                formOK = false;
+            }
+            if (txfRackRow.Text == "")
+            {
+                msgRackRow.Visibility = Visibility.Visible;
+                formOK = false;
+            }
+            if (txfRackColumn.Text == "")
+            {
+                msgRackColumn.Visibility = Visibility.Visible;
+                formOK = false;
+            }
 
             return formOK;
         }
@@ -184,6 +215,9 @@ namespace prototypeHerbarium
             connection.setStoredProc("dbo.procInsertFamilyBox");
             connection.addSprocParameter("@familyName", SqlDbType.VarChar, cbxFamily.SelectedItem);
             connection.addSprocParameter("@boxLimit", SqlDbType.Int, txfBoxLimit.Text);
+            connection.addSprocParameter("@rack", SqlDbType.Int, txfRack.Text);
+            connection.addSprocParameter("@row", SqlDbType.Int, txfRackRow.Text);
+            connection.addSprocParameter("@column", SqlDbType.Int, txfRackColumn.Text);
             status = connection.executeProcedure();
 
             switch (status)
@@ -193,6 +227,9 @@ namespace prototypeHerbarium
                     break;
                 case 1:
                     MessageBox.Show("The System had run to an Error");
+                    break;
+                case 2:
+                    MessageBox.Show("There is another Family Box in the Location you are trying Add");
                     break;
             }
             getFamilyBoxTable();
@@ -207,6 +244,9 @@ namespace prototypeHerbarium
             connection.addSprocParameter("@boxNumber", SqlDbType.VarChar, txfBoxNumber.Text);
             connection.addSprocParameter("@familyName", SqlDbType.VarChar, cbxFamily.SelectedItem);
             connection.addSprocParameter("@boxLimit", SqlDbType.Int, txfBoxLimit.Text);
+            connection.addSprocParameter("@rack", SqlDbType.Int, txfRack.Text);
+            connection.addSprocParameter("@row", SqlDbType.Int, txfRackRow.Text);
+            connection.addSprocParameter("@column", SqlDbType.Int, txfRackColumn.Text);
             status = connection.executeProcedure();
 
             switch (status)
@@ -216,6 +256,12 @@ namespace prototypeHerbarium
                     break;
                 case 1:
                     MessageBox.Show("The System had run to an Error");
+                    break;
+                case 2:
+                    MessageBox.Show("There is another Family Box in the Location you are trying Add");
+                    break;
+                case 3:
+                    MessageBox.Show("You cannot decrease the Box Limit lower than the current number of Specimens in that box");
                     break;
             }
             getFamilyBoxTable();
@@ -228,4 +274,9 @@ public class FamilyBox
     public string BoxNumber { get; set; }
     public string Family { get; set; }
     public int BoxLimit { get; set; }
+    public string Location { get; set; }
+    public int RackNumber { get; set; }
+    public int RackRow { get; set; }
+    public int RackColumn { get; set; }
+    public string Status { get; set; }
 }

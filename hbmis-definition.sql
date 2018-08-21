@@ -103,10 +103,29 @@ CREATE TABLE tblSpecies
 	intSpeciesID INT IDENTITY(1, 1) NOT NULL,
 	intGenusID INT NOT NULL,
 	strSpeciesName VARCHAR(50) NOT NULL,
+	boolSpeciesIdentified BIT NOT NULL,
 	strCommonName VARCHAR(50) NOT NULL,
+	strScientificName VARCHAR(100) NOT NULL,
+	strSpeciesAuthor VARCHAR(100),
+	strSpeciesAlternateName VARCHAR(MAX)
 	CONSTRAINT pk_tblSpecies PRIMARY KEY(intSpeciesID),
 	CONSTRAINT fk_tblSpecies_tblGenus FOREIGN KEY(intGenusID)
 		REFERENCES tblGenus(intGenusID)
+)
+GO
+
+-- Taxonomic Hierarchy : Species > Alternate Name
+IF OBJECT_ID('tblSpeciesAlternateName', 'U') IS NOT NULL
+	DROP TABLE tblSpeciesAlternateName 
+GO
+CREATE TABLE tblSpeciesAlternateName
+(
+	intAltNameID INT IDENTITY(1, 1) NOT NULL,
+	intSpeciesID INT NOT NULL,
+	strAlternateName VARCHAR(50) NOT NULL,
+	CONSTRAINT pk_tblSpeciesAlternateName PRIMARY KEY(intAltNameID),
+	CONSTRAINT fk_tblSpeciesAlternateName_tblSpecies FOREIGN KEY(intSpeciesID)
+		REFERENCES tblSpecies(intSpeciesID)
 )
 GO
 
@@ -119,7 +138,10 @@ CREATE TABLE tblFamilyBox
 	intBoxID INT IDENTITY(1000, 1) NOT NULL,
 	strBoxNumber VARCHAR(10) NOT NULL,
 	intFamilyID INT NOT NULL,
-	intBoxLimit INT NOT NULL
+	intBoxLimit INT NOT NULL,
+	intRackNo INT NOT NULL,
+	intRackRow INT NOT NULL,
+	intRackColumn INT NOT NULL,
 	CONSTRAINT pk_tblFamilyBox PRIMARY KEY (intBoxID),
 	CONSTRAINT fk_tblFamilyBox_tblFamily FOREIGN KEY (intFamilyID)
 		REFERENCES tblFamily(intFamilyID)
@@ -133,24 +155,48 @@ GO
 CREATE TABLE tblLocality
 (
 	intLocalityID INT IDENTITY(1000, 1) NOT NULL,
-	strIsland VARCHAR(50) NOT NULL,
-	strRegion VARCHAR(50) NOT NULL,
-	strProvince VARCHAR(50) NOT NULL,
-	strCity VARCHAR(50) NOT NULL,
-	strArea VARCHAR(50) NOT NULL,
-	strSpecificLocation VARCHAR(255) NOT NULL,
-	strShortLocation VARCHAR(50) NOT NULL
+	strCountry VARCHAR(50) NOT NULL,
+	strIsland VARCHAR(50),
+	strRegion VARCHAR(50),
+	strProvince VARCHAR(50),
+	strCity VARCHAR(50),
+	strArea VARCHAR(50),
+	strSpecificLocation VARCHAR(255),
+	strShortLocation VARCHAR(255),
+	strFullLocality VARCHAR(50),
+	strLatitude VARCHAR(20),
+	strLongtitude VARCHAR(20),
 	CONSTRAINT pk_tblLocality PRIMARY KEY(intLocalityID)
 )
 GO
 
--- "Superclass" Person
-IF OBJECT_ID('tblPerson', 'U') IS NOT NULL
-	DROP TABLE tblPerson
+-- Collector
+IF OBJECT_ID('tblCollector', 'U') IS NOT NULL
+	DROP TABLE tblCollector
 GO
-CREATE TABLE tblPerson
+CREATE TABLE tblCollector
 (
-	intPersonID INT IDENTITY(1000, 1) NOT NULL,
+	intCollectorID INT IDENTITY(1000, 1) NOT NULL,
+	strFirstname VARCHAR(50) NOT NULL,
+	strMiddlename VARCHAR(50),
+	strLastname VARCHAR(50) NOT NULL,
+	strMiddleInitial VARCHAR(3),
+	strNameSuffix VARCHAR(5),
+	strHomeAddress VARCHAR(MAX) NOT NULL,
+	strContactNumber VARCHAR(15) NOT NULL,
+	strEmailAddress VARCHAR(255) NOT NULL,
+	strAffiliation VARCHAR(100) NOT NULL,
+	CONSTRAINT pk_tblCollector PRIMARY KEY(intCollectorID)
+)
+GO
+
+-- Validator
+IF OBJECT_ID('tblValidator', 'U') IS NOT NULL
+	DROP TABLE tblValidator
+GO
+CREATE TABLE tblValidator
+(
+	intValidatorID INT IDENTITY(1000, 1) NOT NULL,
 	strFirstname VARCHAR(50) NOT NULL,
 	strMiddlename VARCHAR(50),
 	strLastname VARCHAR(50) NOT NULL,
@@ -158,57 +204,30 @@ CREATE TABLE tblPerson
 	strNameSuffix VARCHAR(5),
 	strContactNumber VARCHAR(15) NOT NULL,
 	strEmailAddress VARCHAR(255) NOT NULL,
-	CONSTRAINT pk_tblPerson PRIMARY KEY(intPersonID)
-)
-GO
-
--- Person -> Collector
-IF OBJECT_ID('tblCollector', 'U') IS NOT NULL
-	DROP TABLE tblCollector
-GO
-CREATE TABLE tblCollector
-(
-	intCollectorID INT IDENTITY(1000, 1) NOT NULL,
-	intPersonID INT NOT NULL,
-	strCollege VARCHAR(100) NOT NULL,
-	strSection VARCHAR(50) NOT NULL
-	CONSTRAINT pk_tblCollector PRIMARY KEY(intCollectorID),
-	CONSTRAINT fk_tblCollector_tblPerson FOREIGN KEY(intPersonID)
-		REFERENCES tblPerson(intPersonID)
-)
-GO
-
--- Person -> Validator
-IF OBJECT_ID('tblValidator', 'U') IS NOT NULL
-	DROP TABLE tblValidator
-GO
-CREATE TABLE tblValidator
-(
-	intValidatorID INT IDENTITY(1000, 1) NOT NULL,
-	intPersonID INT NOT NULL,
 	strInstitution VARCHAR(255) NOT NULL,
 	strValidatorType VARCHAR(10) NOT NULL
-	CONSTRAINT pk_tblValidator PRIMARY KEY(intValidatorID),
-	CONSTRAINT fk_tblValidator_tblPerson FOREIGN KEY(intPersonID)
-		REFERENCES tblPerson(intPersonID)
+	CONSTRAINT pk_tblValidator PRIMARY KEY(intValidatorID)
 )
 GO
 
--- Person -> Herbarium Staff
+-- Herbarium Staff
 IF OBJECT_ID('tblHerbariumStaff', 'U') IS NOT NULL
 	DROP TABLE tblHerbariumStaff
 GO
 CREATE TABLE tblHerbariumStaff
 (
 	intStaffID INT IDENTITY(1000, 1) NOT NULL,
-	intPersonID INT NOT NULL,
+	strFirstname VARCHAR(50) NOT NULL,
+	strMiddlename VARCHAR(50),
+	strLastname VARCHAR(50) NOT NULL,
+	strMiddleInitial VARCHAR(3),
+	strNameSuffix VARCHAR(5),
+	strContactNumber VARCHAR(15) NOT NULL,
+	strEmailAddress VARCHAR(255) NOT NULL,
 	strRole VARCHAR(50) NOT NULL,
 	strCollegeDepartment VARCHAR(100) NOT NULL,
-	strPosition VARCHAR(50) NOT NULL,
 	boolActive BIT NOT NULL
-	CONSTRAINT pk_tblHerbariumStaff PRIMARY KEY(intStaffID),
-	CONSTRAINT fk_tblHerbariumStaff_tblPerson FOREIGN KEY(intPersonID)
-		REFERENCES tblPerson(intPersonID)
+	CONSTRAINT pk_tblHerbariumStaff PRIMARY KEY(intStaffID)
 )
 GO
 
@@ -243,12 +262,14 @@ CREATE TABLE tblPlantDeposit
 	intPlantDepositID INT IDENTITY(1000, 1) NOT NULL,
 	strAccessionNumber VARCHAR(50) NOT NULL,
 	picHerbariumSheet VARBINARY(MAX) NOT NULL,
+	strPlantType VARCHAR(5) NOT NULL,
 	intCollectorID INT NOT NULL,
 	intLocalityID INT NOT NULL,
 	intStaffID INT NOT NULL,
 	dateCollected DATE NOT NULL,
 	dateDeposited DATE NOT NULL,
 	strDescription VARCHAR(MAX) NOT NULL,
+	boolDuplicate BIT NOT NULL,
 	strStatus VARCHAR(50) NOT NULL,
 	CONSTRAINT pk_tblPlantDeposit PRIMARY KEY(intPlantDepositID),
 	CONSTRAINT fk_tblPlantDeposit_tblCollector FOREIGN KEY(intCollectorID)
@@ -301,29 +322,40 @@ CREATE TABLE tblStoredHerbarium
 		REFERENCES tblFamilyBox(intBoxID)
 )
 
--- Loan Herbarium Sheet
-IF OBJECT_ID('tblPlantLoan', 'U') IS NOT NULL
-	DROP TABLE tblPlantLoan
+-- Loan Transaction
+IF OBJECT_ID('tblPlantLoanTransaction', 'U') IS NOT NULL
+	DROP TABLE tblPlantLoanTransaction
 GO
-CREATE TABLE tblPlantLoan
+CREATE TABLE tblPlantLoanTransaction
 (
-	intLoanID INT IDENTITY(1000, 1) NOT NULL,
-	strLoanNumber VARCHAR(10) NOT NULL,
+	intLoanID INT IDENTITY(1, 1) NOT NULL,
 	intCollectorID INT NOT NULL,
-	intSpeciesID INT NOT NULL,
 	dateLoan DATE NOT NULL,
 	dateReturning DATE NOT NULL,
 	dateProcessed DATETIME NOT NULL,
-	intCopies INT NOT NULL,
 	strPurpose VARCHAR(255) NOT NULL,
 	strStatus VARCHAR(10) NOT NULL,
-	CONSTRAINT pk_tblPlantLoan PRIMARY KEY(intLoanID),
-	CONSTRAINT fk_tblPlantLoan_tblCollector FOREIGN KEY(intCollectorID)
-		REFERENCES tblCollector(intCollectorID),
-	CONSTRAINT fk_tblPlantLoan_tblSpecies FOREIGN KEY(intSpeciesID)
-		REFERENCES tblSpecies(intSpeciesID)
+	CONSTRAINT pk_tblPlantLoanTransaction PRIMARY KEY(intLoanID),
+	CONSTRAINT fk_tblPlantLoanTransaction_tblCollector FOREIGN KEY(intCollectorID)
+		REFERENCES tblCollector(intCollectorID)
 )
 GO
+
+-- Plants in Loan
+IF OBJECT_ID('tblLoaningPlants', 'U') IS NOT NULL
+	DROP TABLE tblLoaningPlants
+GO
+CREATE TABLE tblLoaningPlants
+(
+	intPlantLoanID INT IDENTITY(1, 1) NOT NULL,
+	intLoanID INT NOT NULL,
+	intHerbariumSheetID INT NOT NULL,
+	CONSTRAINT pk_tblLoaningPlants PRIMARY KEY(intPlantLoanID),
+	CONSTRAINT fk_tblLoaningPlants_tblPlantLoanTransaction FOREIGN KEY(intLoanID)
+		REFERENCES tblPlantLoanTransaction(intLoanID),
+	CONSTRAINT fk_tblLoaningPlants_tblHerbariumSheet FOREIGN KEY(intHerbariumSheetID)
+		REFERENCES tblHerbariumSheet(intHerbariumSheetID)
+)
 
 -------------- VIEWS CREATION --------------
 
@@ -432,7 +464,7 @@ AS
 				   'G', FORMAT(TG.intGenusID, '0#'), 
 				   'S', FORMAT(TS.intSpeciesID, '0#')) strSpeciesNo,
 			TP.strDomainName, TP.strKingdomName, TP.strPhylumName, TC.strClassName, TD.strOrderName, TF.strFamilyName, TG.strGenusName, 
-			TS.strSpeciesName, TS.strCommonName, CONCAT(TG.strGenusName, ' ', TS.strSpeciesName) strScientificName
+			TS.strSpeciesName, TS.strCommonName, TS.strScientificName, TS.strSpeciesAuthor, TS.strSpeciesAlternateName, TS.boolSpeciesIdentified
 	FROM tblSpecies TS
 		INNER JOIN tblGenus TG ON TS.intGenusID = TG.intGenusID
 		INNER JOIN tblFamily TF ON TG.intFamilyID = TF.intFamilyID
@@ -449,7 +481,7 @@ GO
 CREATE VIEW viewFamilyBox
 AS
 (
-	SELECT FB.intBoxID, FB.strBoxNumber, TF.strFamilyName, FB.intBoxLimit
+	SELECT FB.intBoxID, FB.strBoxNumber, TF.strFamilyName, FB.intBoxLimit, FB.intRackNo, FB.intRackRow, FB.intRackColumn
 	FROM tblFamilyBox FB
 		INNER JOIN tblFamily TF ON FB.intFamilyID = TF.intFamilyID
 ) 
@@ -462,8 +494,11 @@ GO
 CREATE VIEW viewLocality
 AS
 (
-	SELECT intLocalityID, strIsland, strRegion, strProvince, strCity, strArea, strSpecificLocation, strShortLocation,
-		CONCAT(strSpecificLocation, ', ', strArea, ', ', strCity, ', ', strProvince, ', ', strRegion, ', ', strIsland) AS strFullLocality
+	SELECT intLocalityID, strCountry, strIsland, strRegion, strProvince, strCity, strArea, strSpecificLocation, strShortLocation,
+		CASE
+			WHEN strCountry = 'Philippines' THEN CONCAT(strSpecificLocation, ', ', strArea, ', ', strCity, ', ', strProvince, ', ', strRegion, ', ', strIsland)
+			ELSE strFullLocality
+		END strFullLocality, strLatitude, strLongtitude
 	FROM tblLocality
 )
 GO
@@ -475,10 +510,9 @@ GO
 CREATE VIEW viewCollector
 AS
 (
-	SELECT Co.intCollectorID, Pe.strFirstname, Pe.strMiddlename, Pe.strLastname, Pe.strMiddleInitial, Pe.strNameSuffix, Pe.strContactNumber,
-		PE.strEmailAddress, CONCAT(Pe.strFirstname, ' ', Pe.strLastname, ' ', PE.strNameSuffix) strFullName, Co.strCollege, Co.strSection
+	SELECT Co.intCollectorID, Co.strFirstname, Co.strMiddlename, Co.strLastname, Co.strMiddleInitial, Co.strNameSuffix, Co.strHomeAddress, Co.strContactNumber,
+		Co.strEmailAddress, RTRIM(LTRIM(CONCAT(Co.strFirstname, ' ', Co.strLastname, ' ', Co.strNameSuffix))) strFullName, Co.strAffiliation
 	FROM tblCollector Co
-		INNER JOIN tblPerson Pe On Co.intPersonID = Pe.intPersonID
 )
 GO
 
@@ -489,10 +523,9 @@ GO
 CREATE VIEW viewValidator
 AS
 (
-	SELECT Va.intValidatorID, Pe.strFirstname, Pe.strMiddlename, Pe.strLastname, Pe.strMiddleInitial, Pe.strNameSuffix, Pe.strContactNumber,
-		PE.strEmailAddress, CONCAT(Pe.strFirstname, ' ', Pe.strLastname, ' ', PE.strNameSuffix) strFullName, Va.strInstitution, Va.strValidatorType
+	SELECT Va.intValidatorID, Va.strFirstname, Va.strMiddlename, Va.strLastname, Va.strMiddleInitial, Va.strNameSuffix, Va.strContactNumber,
+		Va.strEmailAddress, RTRIM(LTRIM(CONCAT(Va.strFirstname, ' ', Va.strLastname, ' ', Va.strNameSuffix))) strFullName, Va.strInstitution, Va.strValidatorType
 	FROM tblValidator Va
-		INNER JOIN tblPerson Pe On Va.intPersonID = Pe.intPersonID
 )
 GO
 
@@ -503,11 +536,10 @@ GO
 CREATE VIEW viewHerbariumStaff
 AS
 (
-	SELECT St.intStaffID, Pe.strFirstname, Pe.strMiddlename, Pe.strLastname, Pe.strMiddleInitial, Pe.strNameSuffix, Pe.strContactNumber,
-		PE.strEmailAddress, CONCAT(Pe.strFirstname, ' ', Pe.strLastname, ' ', PE.strNameSuffix) strFullName, 
-		St.strRole, St.strCollegeDepartment, St.strPosition, St.boolActive
+	SELECT St.intStaffID, St.strFirstname, St.strMiddlename, St.strLastname, St.strMiddleInitial, St.strNameSuffix, St.strContactNumber,
+		St.strEmailAddress, RTRIM(LTRIM(CONCAT(St.strFirstname, ' ', St.strLastname, ' ', St.strNameSuffix))) strFullName, 
+		St.strRole, St.strCollegeDepartment, St.boolActive
 	FROM tblHerbariumStaff St
-		INNER JOIN tblPerson Pe On St.intPersonID = Pe.intPersonID
 	WHERE St.boolActive = 1
 )
 GO

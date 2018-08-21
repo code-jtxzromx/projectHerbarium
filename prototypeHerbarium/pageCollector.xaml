@@ -49,7 +49,7 @@
                     First Name: <Span Foreground="Red">*</Span>
                 </TextBlock>
                 <TextBlock Grid.Column="1" Grid.Row="2" Margin="5">
-                    Middle Name: <Span Foreground="Red">*</Span>
+                    Middle Name: 
                 </TextBlock>
                 <TextBlock Grid.Column="2" Grid.Row="2" Margin="5">
                     Last Name: <Span Foreground="Red">*</Span>
@@ -62,13 +62,11 @@
                          Grid.Column="2" Grid.Row="3" Height="25" Margin="3" VerticalContentAlignment="Center"/>
                 <TextBlock x:Name="msgFirstname" Visibility="Collapsed"
                            Grid.Column="0" Grid.Row="4" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
-                <TextBlock x:Name="msgMiddlename" Visibility="Collapsed"
-                           Grid.Column="1" Grid.Row="4" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
                 <TextBlock x:Name="msgLastname" Visibility="Collapsed"
                            Grid.Column="2" Grid.Row="4" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
                 
                 <TextBlock Grid.Column="0" Grid.Row="5" Margin="5">
-                    Middle Initial: <Span Foreground="Red">*</Span>
+                    Middle Initial:
                 </TextBlock>
                 <TextBlock Grid.Column="1" Grid.Row="5" Margin="5">
                     Name Suffix:
@@ -77,8 +75,6 @@
                          Grid.Column="0" Grid.Row="6" Height="25" Margin="3" VerticalContentAlignment="Center"/>
                 <TextBox x:Name="txfNameSuffix" 
                          Grid.Column="1" Grid.Row="6" Height="25" Margin="3" VerticalContentAlignment="Center"/>
-                <TextBlock x:Name="msgMiddleInitial" Visibility="Collapsed"
-                           Grid.Column="0" Grid.Row="7" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
 
                 <TextBlock Grid.Column="0" Grid.Row="8" Margin="5" Grid.ColumnSpan="3">
                     Home Address: <Span Foreground="Red">*</Span>
@@ -145,9 +141,9 @@
             </Grid>
             <DataGrid x:Name="dgrCollectorTable" DockPanel.Dock="Top" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0" GridLinesVisibility="Horizontal">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Lastname" Binding="{Binding LastName}" Width="2*"/>
-                    <DataGridTextColumn Header="Firstname" Binding="{Binding FirstName}" Width="2*"/>
-                    <DataGridTextColumn Header="Affiliation" Binding="{Binding CollegeSection}" Width="3*"/>
+                    <DataGridTextColumn Header="Lastname" Binding="{Binding LastName}" Width="2*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Firstname" Binding="{Binding FirstName}" Width="2*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Affiliation" Binding="{Binding Affiliation}" Width="3*" IsReadOnly="True"/>
                     <DataGridTemplateColumn Header="Actions" Width="100">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

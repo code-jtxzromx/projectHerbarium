@@ -29,9 +29,6 @@
                     <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
@@ -62,13 +59,11 @@
                          Grid.Column="2" Grid.Row="3" Height="25" Margin="3" VerticalContentAlignment="Center"/>
                 <TextBlock x:Name="msgFirstname" Visibility="Collapsed"
                            Grid.Column="0" Grid.Row="4" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
-                <TextBlock x:Name="msgMiddlename" Visibility="Collapsed"
-                           Grid.Column="1" Grid.Row="4" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
                 <TextBlock x:Name="msgLastname" Visibility="Collapsed"
                            Grid.Column="2" Grid.Row="4" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
                 
                 <TextBlock Grid.Column="0" Grid.Row="5" Margin="5">
-                    Middle Initial: <Span Foreground="Red">*</Span>
+                    Middle Initial: 
                 </TextBlock>
                 <TextBlock Grid.Column="1" Grid.Row="5" Margin="5">
                     Name Suffix:
@@ -77,39 +72,29 @@
                          Grid.Column="0" Grid.Row="6" Height="25" Margin="3" VerticalContentAlignment="Center"/>
                 <TextBox x:Name="txfNameSuffix" 
                          Grid.Column="1" Grid.Row="6" Height="25" Margin="3" VerticalContentAlignment="Center"/>
-                <TextBlock x:Name="msgMiddleInitial" Visibility="Collapsed"
-                           Grid.Column="0" Grid.Row="7" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
 
-                <TextBlock Grid.Column="0" Grid.Row="8" Margin="5" Grid.ColumnSpan="3">
-                    Home Address: <Span Foreground="Red">*</Span>
-                </TextBlock>
-                <TextBox x:Name="txfHomeAddress" 
-                         Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="3" Height="25" Margin="3" VerticalContentAlignment="Center"/>
-                <TextBlock x:Name="msgHomeAddress" Visibility="Collapsed"
-                           Grid.Column="0" Grid.Row="10" Grid.ColumnSpan="3" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
-
-                <TextBlock Grid.Column="0" Grid.Row="11" Margin="5">
+                <TextBlock Grid.Column="0" Grid.Row="8" Margin="5">
                     Contact Number: <Span Foreground="Red">*</Span>
                 </TextBlock>
-                <TextBlock Grid.Column="1" Grid.Row="11" Margin="5">
+                <TextBlock Grid.Column="1" Grid.Row="8" Margin="5">
                     E-mail Address: <Span Foreground="Red">*</Span>
                 </TextBlock>
-                <TextBlock Grid.Column="2" Grid.Row="11" Margin="5">
+                <TextBlock Grid.Column="2" Grid.Row="8" Margin="5">
                     Institution: <Span Foreground="Red">*</Span>
                 </TextBlock>
 
                 <TextBox x:Name="txfContactNumber" 
-                         Grid.Column="0" Grid.Row="12" Height="25" Margin="3" VerticalContentAlignment="Center"/>
+                         Grid.Column="0" Grid.Row="9" Height="25" Margin="3" VerticalContentAlignment="Center"/>
                 <TextBox x:Name="txfEmailAddress" 
-                         Grid.Column="1" Grid.Row="12" Height="25" Margin="3" VerticalContentAlignment="Center"/>
+                         Grid.Column="1" Grid.Row="9" Height="25" Margin="3" VerticalContentAlignment="Center"/>
                 <TextBox x:Name="txfInstitution" 
-                         Grid.Column="2" Grid.Row="12" Height="25" Margin="3" VerticalContentAlignment="Center"/>
+                         Grid.Column="2" Grid.Row="9" Height="25" Margin="3" VerticalContentAlignment="Center"/>
                 <TextBlock x:Name="msgContactNumber" Visibility="Collapsed"
-                           Grid.Column="0" Grid.Row="13" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
+                           Grid.Column="0" Grid.Row="10" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
                 <TextBlock x:Name="msgEmailAddress" Visibility="Collapsed"
-                           Grid.Column="1" Grid.Row="13" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
+                           Grid.Column="1" Grid.Row="10" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
                 <TextBlock x:Name="msgInstitution" Visibility="Collapsed"
-                           Grid.Column="2" Grid.Row="13" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
+                           Grid.Column="2" Grid.Row="10" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
             </Grid>
             <Grid Margin="40 10">
                 <Grid.ColumnDefinitions>
@@ -146,9 +131,9 @@
             </Grid>
             <DataGrid x:Name="dgrValidatorTable" DockPanel.Dock="Top" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0" GridLinesVisibility="Horizontal">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Lastname" Binding="{Binding LastName}" Width="2*"/>
-                    <DataGridTextColumn Header="Firstname" Binding="{Binding FirstName}" Width="2*"/>
-                    <DataGridTextColumn Header="Institution" Binding="{Binding Institution}" Width="3*"/>
+                    <DataGridTextColumn Header="Lastname" Binding="{Binding LastName}" Width="2*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Firstname" Binding="{Binding FirstName}" Width="2*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Institution" Binding="{Binding Institution}" Width="3*" IsReadOnly="True"/>
                     <DataGridTemplateColumn Header="Actions" Width="100">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

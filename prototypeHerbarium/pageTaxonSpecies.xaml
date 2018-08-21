@@ -40,7 +40,8 @@
                 </TextBlock>
                 <TextBox x:Name="txfSpecieID" Background="LightGray" BorderBrush="Gray"
                          Grid.Column="0" Grid.Row="1" Height="25" Margin="3" VerticalContentAlignment="Center" IsEnabled="False"/>
-                <CheckBox x:Name="chkIsUndeterminedSpecies" Grid.Column="1" Grid.Row="1" Margin="10 3" VerticalContentAlignment="Center">
+                <CheckBox x:Name="chkIsUndeterminedSpecies" Checked="chkIsUndeterminedSpecies_CheckedChanged" Unchecked="chkIsUndeterminedSpecies_CheckedChanged" 
+                          Grid.Column="1" Grid.Row="1" Margin="10 3" VerticalContentAlignment="Center">
                     Known Species
                 </CheckBox>
 
@@ -127,9 +128,9 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Species ID" Binding="{Binding SpecieID}" Width="160"/>
                     <DataGridTextColumn Header="Genus Name" Binding="{Binding GenusName}" Width="2*"/>
-                    <DataGridTextColumn Header="Species Name" Binding="{Binding SpecieName}" Width="2*"/>
+                    <DataGridTextColumn Header="Species Name" Binding="{Binding SpeciesName}" Width="2*"/>
                     <DataGridTextColumn Header="Common Name" Binding="{Binding CommonName}" Width="3*"/>
-                    <DataGridTextColumn Header="Status" Width="2*"/>
+                    <DataGridTextColumn Header="Status" Binding="{Binding IdentifiedStatus}" Width="2*"/>
                     <DataGridTemplateColumn Header="Actions" Width="100">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

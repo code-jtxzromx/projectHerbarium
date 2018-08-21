@@ -437,9 +437,13 @@ IF OBJECT_ID('procInsertSpecies', 'P') IS NOT NULL
 	DROP PROCEDURE procInsertSpecies
 GO
 CREATE PROCEDURE procInsertSpecies
-	@genusName		VARCHAR(50) = NULL,
-	@speciesName	VARCHAR(50) = NULL,
-	@commonName		VARCHAR(100) = NULL
+	@genusName		VARCHAR(50),
+	@speciesName	VARCHAR(50),
+	@commonName		VARCHAR(100),
+	@scientificName	VARCHAR(100),
+	@author			VARCHAR(100),
+	@alternateName	VARCHAR(MAX),
+	@isVerified		BIT
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -457,8 +461,9 @@ BEGIN
 					   FROM		tblSpecies
 					   WHERE	intGenusID = @genusID AND strSpeciesName = @speciesName)
 		BEGIN
-			INSERT INTO tblSpecies (intGenusID, strSpeciesName, strCommonName)
-			VALUES (@genusID, @speciesName, @commonName)
+			INSERT INTO tblSpecies (intGenusID, strSpeciesName, strCommonName, strScientificName, 
+				strSpeciesAuthor, strSpeciesAlternateName, boolSpeciesIdentified)
+			VALUES (@genusID, @speciesName, @commonName, @scientificName, @author, @alternateName, @isVerified)
 		END
 		ELSE
 		BEGIN
@@ -485,7 +490,10 @@ CREATE PROCEDURE procUpdateSpecies
 	@speciesNo		VARCHAR(50),
 	@genusName		VARCHAR(50),
 	@speciesName	VARCHAR(50),
-	@commonName		VARCHAR(50)
+	@commonName		VARCHAR(100),
+	@scientificName	VARCHAR(100),
+	@author			VARCHAR(100),
+	@alternateName	VARCHAR(MAX)
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -507,7 +515,10 @@ BEGIN
 		UPDATE tblSpecies
 		SET intGenusID = @genusID,
 			strSpeciesName = @speciesName,
-			strCommonName = @commonName
+			strCommonName = @commonName,
+			strScientificName = @scientificName,
+			strSpeciesAuthor = @author,
+			strSpeciesAlternateName = @alternateName
 		WHERE intSpeciesID = @speciesID
 	END TRY
 	BEGIN CATCH
@@ -528,7 +539,10 @@ IF OBJECT_ID('procInsertFamilyBox', 'P') IS NOT NULL
 GO
 CREATE PROCEDURE procInsertFamilyBox
 	@familyName		VARCHAR(50),
-	@boxLimit		INT
+	@boxLimit		INT,
+	@rack			INT,
+	@row			INT,
+	@column			INT
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -549,8 +563,17 @@ BEGIN
 		ELSE 
 			SET @boxNumber = 'BOX-' + FORMAT(@identifier + 1, '00#')
 
-		INSERT INTO tblFamilyBox (strBoxNumber, intFamilyID, intBoxLimit)
-		VALUES (@boxNumber, @familyID, @boxLimit);
+		IF NOT EXISTS (SELECT intBoxID
+					   FROM tblFamilyBox
+					   WHERE intRackNo = @rack AND intRackRow = @row AND intRackColumn = @column)
+		BEGIN
+			INSERT INTO tblFamilyBox (strBoxNumber, intFamilyID, intBoxLimit, intRackNo, intRackRow, intRackColumn)
+			VALUES (@boxNumber, @familyID, @boxLimit, @rack, @row, @column);
+		END
+		ELSE
+		BEGIN
+			SET @Result = 2;
+		END
 	END TRY
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
@@ -571,7 +594,10 @@ GO
 CREATE PROCEDURE procUpdateFamilyBox
 	@boxNumber		VARCHAR(10),
 	@familyName		VARCHAR(50),
-	@boxLimit		INT
+	@boxLimit		INT,
+	@rack			INT,
+	@row			INT,
+	@column			INT
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -581,13 +607,35 @@ BEGIN
 
 	BEGIN TRY
 		DECLARE @familyID INT
+		DECLARE @currentStoredSheets INT
 
 		SET @familyID = (SELECT intFamilyID FROM tblFamily WHERE strFamilyName = @familyName)
+		SET @currentStoredSheets = (SELECT COUNT(intStoredSheetID) FROM viewHerbariumInventory WHERE strBoxNumber = @boxNumber);
 
-		UPDATE tblFamilyBox
-		SET intFamilyID = @familyID,
-			intBoxLimit = @boxLimit
-		WHERE strBoxNumber = @boxNumber
+		IF NOT EXISTS (SELECT intBoxID
+					   FROM tblFamilyBox
+					   WHERE intRackNo = @rack AND intRackRow = @row AND intRackColumn = @column)
+		BEGIN
+			IF @currentStoredSheets < @boxLimit
+			BEGIN
+				UPDATE tblFamilyBox
+				SET intFamilyID = @familyID,
+					intBoxLimit = @boxLimit,
+					intRackNo = @rack,
+					intRackRow = @row,
+					intRackColumn = @column
+				WHERE strBoxNumber = @boxNumber
+			END
+			ELSE
+			BEGIN
+				SET @Result = 3;
+			END
+		END
+		ELSE
+		BEGIN
+			SET @Result = 2;
+		END
+
 	END TRY
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
@@ -606,13 +654,17 @@ IF OBJECT_ID('procInsertLocality', 'P') IS NOT NULL
 	DROP PROCEDURE procInsertLocality
 GO
 CREATE PROCEDURE procInsertLocality
-	@island				VARCHAR(50),
-	@region				VARCHAR(50),
-	@province			VARCHAR(50),
-	@city				VARCHAR(50),
-	@area				VARCHAR(50),
-	@specificLocation	VARCHAR(255),
-	@shortLocation		VARCHAR(255)
+	@country			VARCHAR(50),
+	@island				VARCHAR(50) = NULL,
+	@region				VARCHAR(50) = NULL,
+	@province			VARCHAR(50) = NULL,
+	@city				VARCHAR(50) = NULL,
+	@area				VARCHAR(50) = NULL,
+	@specificLocation	VARCHAR(255) = NULL,
+	@shortLocation		VARCHAR(255) = NULL,
+	@fullLocation		VARCHAR(MAX) = NULL,
+	@latitude			VARCHAR(20) = NULL,
+	@longtitude			VARCHAR(20) = NULL
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -623,15 +675,18 @@ BEGIN
 	BEGIN TRY
 		IF NOT EXISTS (SELECT intLocalityID
 					   FROM tblLocality
-					   WHERE strIsland = @island AND strRegion = @region AND strProvince = @province AND strCity = @city AND strArea = @area
-							AND strSpecificLocation = @specificLocation AND strShortLocation = @shortLocation)
+					   wHERE strCountry = @country AND strIsland = @island AND strProvince = @province
+							AND strCity = @city AND strArea = @area AND strSpecificLocation = @specificLocation
+							AND strShortLocation = @shortLocation AND strFullLocality = @fullLocation 
+							AND strLatitude = @latitude AND strLongtitude = @longtitude)
 		BEGIN
-			INSERT INTO tblLocality(strIsland, strRegion, strProvince, strCity, strArea, strSpecificLocation, strShortLocation)
-			VALUES (@island, @region, @province, @city, @area, @specificLocation, @shortLocation)
+			INSERT INTO tblLocality(strCountry, strIsland, strRegion, strProvince, strCity, strArea, strSpecificLocation,
+									strFullLocality, strShortLocation, strLatitude, strLongtitude)
+			VALUES (@country, @island, @region, @province, @city, @area, @shortLocation, @fullLocation, @shortLocation, @latitude, @longtitude)
 		END
 		ELSE
 		BEGIN
-			SET @Result = 2
+			SET @Result = 2;
 		END
 	END TRY
 	BEGIN CATCH
@@ -652,13 +707,17 @@ IF OBJECT_ID('procUpdateLocality', 'P') IS NOT NULL
 GO
 CREATE PROCEDURE procUpdateLocality
 	@localityID			INT,
+	@country			VARCHAR(50),
 	@island				VARCHAR(50),
 	@region				VARCHAR(50),
 	@province			VARCHAR(50),
 	@city				VARCHAR(50),
 	@area				VARCHAR(50),
 	@specificLocation	VARCHAR(255),
-	@shortLocation		VARCHAR(255)
+	@shortLocation		VARCHAR(255),
+	@fullLocation		VARCHAR(MAX) = NULL,
+	@latitude			VARCHAR(20) = NULL,
+	@longtitude			VARCHAR(20) = NULL
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -667,14 +726,19 @@ BEGIN
 	BEGIN TRANSACTION
 
 	BEGIN TRY
+		
 		UPDATE tblLocality
-		SET strIsland = @island,
+		SET strCountry = @country, 
+			strIsland = @island,
 			strRegion = @region,
 			strProvince = @province,
 			strCity = @city,
 			strArea = @area,
 			strSpecificLocation = @specificLocation,
-			strShortLocation = @shortLocation
+			strFullLocality = @fullLocation,
+			strShortLocation = @shortLocation,
+			strLatitude = @latitude,
+			strLongtitude = @longtitude
 		WHERE intLocalityID = @localityID
 	END TRY
 	BEGIN CATCH
@@ -695,14 +759,14 @@ IF OBJECT_ID('procInsertCollector', 'P') IS NOT NULL
 GO
 CREATE PROCEDURE procInsertCollector
 	@firstname		VARCHAR(50),
-	@middlename		VARCHAR(50),
+	@middlename		VARCHAR(50) = NULL,
 	@lastname		VARCHAR(50),
-	@middleinitial	VARCHAR(3),
-	@namesuffix		VARCHAR(5),
+	@middleinitial	VARCHAR(3) = NULL,
+	@namesuffix		VARCHAR(5) = NULL,
+	@address		VARCHAR(MAX),
 	@contactno		VARCHAR(15),
 	@email			VARCHAR(255),
-	@college		VARCHAR(100),
-	@section		VARCHAR(50)
+	@affiliation	VARCHAR(100)
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -711,43 +775,15 @@ BEGIN
 	BEGIN TRANSACTION
 	
 	BEGIN TRY
-		DECLARE @personID INT;
-		DECLARE @duplicateID INT;
-
-		SELECT @duplicateID = intPersonID
-		FROM tblPerson 
-		WHERE strFirstname = @firstname
-			AND strMiddlename = @middlename
-			AND strLastname = @lastname
-			AND strMiddleInitial = @middleinitial
-			AND strNameSuffix = @namesuffix
-
-		IF @duplicateID IS NULL
-			BEGIN
-				INSERT INTO tblPerson(strFirstname, strMiddlename, strLastname, 
-									  strMiddleInitial, strNameSuffix, 
-									  strContactNumber, strEmailAddress)
-				VALUES(@firstname, @middlename, @lastname, @middleinitial, @namesuffix, @contactno, @email)
-
-				SELECT @personID = intPersonID
-				FROM tblPerson 
-				WHERE strFirstname = @firstname
-					AND strMiddlename = @middlename
-					AND strLastname = @lastname
-					AND strMiddleInitial = @middleinitial
-					AND strNameSuffix = @namesuffix
-					AND strContactNumber = @contactno
-					AND strEmailAddress = @email 
-			END
-		ELSE
-			SET @personID = @duplicateID
-
 		IF NOT EXISTS (SELECT intCollectorID
 					   FROM tblCollector
-					   WHERE intPersonID = @personID AND strCollege = @college AND strSection = @section)
+					   WHERE strFirstname = @firstname AND strMiddlename = @middlename AND strLastname = @lastname
+							AND strMiddleInitial = @middleinitial AND strNameSuffix = @namesuffix AND strHomeAddress = @address
+							AND strContactNumber = @contactno AND strEmailAddress = @email AND strAffiliation = @affiliation)
 		BEGIN
-			INSERT INTO tblCollector (intPersonID, strCollege, strSection)
-			VALUES (@personID, @college, @section)
+			INSERT INTO tblCollector (strFirstname, strMiddlename, strLastname, strMiddleInitial, strNameSuffix, strHomeAddress, 
+										strContactNumber, strEmailAddress, strAffiliation)
+			VALUES (@firstname, @middlename, @lastname, @middleinitial, @namesuffix, @address, @contactno, @email, @affiliation);
 		END
 		ELSE
 		BEGIN
@@ -773,14 +809,14 @@ GO
 CREATE PROCEDURE procUpdateCollector
 	@collectorID	INT,
 	@firstname		VARCHAR(50),
-	@middlename		VARCHAR(50),
+	@middlename		VARCHAR(50) = NULL,
 	@lastname		VARCHAR(50),
-	@middleinitial	VARCHAR(3),
-	@namesuffix		VARCHAR(5),
+	@middleinitial	VARCHAR(3) = NULL,
+	@namesuffix		VARCHAR(5) = NULL,
+	@address		VARCHAR(MAX),
 	@contactno		VARCHAR(15),
 	@email			VARCHAR(255),
-	@college		VARCHAR(100),
-	@section		VARCHAR(50)
+	@affiliation	VARCHAR(100)
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -789,23 +825,16 @@ BEGIN
 	BEGIN TRANSACTION
 	
 	BEGIN TRY
-		DECLARE @personID INT;
-		
-		SET @personID = (SELECT intPersonID FROM tblCollector WHERE intCollectorID = @collectorID)
-
-		UPDATE tblPerson
+		UPDATE tblCollector
 		SET strFirstname = @firstname,
 			strMiddlename = @middlename,
 			strLastname = @lastname,
 			strMiddleInitial = @middleinitial,
 			strNameSuffix = @namesuffix,
+			strHomeAddress = @address,
 			strContactNumber = @contactno,
-			strEmailAddress = @email
-		WHERE intPersonID = @personID;
-
-		UPDATE tblCollector
-		SET strCollege = @college,
-			strSection = @section
+			strEmailAddress = @email,
+			strAffiliation = @affiliation
 		WHERE intCollectorID = @collectorID
 	END TRY
 	BEGIN CATCH
@@ -841,43 +870,15 @@ BEGIN
 	BEGIN TRANSACTION
 	
 	BEGIN TRY
-		DECLARE @personID INT;
-		DECLARE @duplicateID INT;
-
-		SELECT @duplicateID = intPersonID
-		FROM tblPerson 
-		WHERE strFirstname = @firstname
-			AND strMiddlename = @middlename
-			AND strLastname = @lastname
-			AND strMiddleInitial = @middleinitial
-			AND strNameSuffix = @namesuffix
-
-		IF @duplicateID IS NULL
-			BEGIN
-				INSERT INTO tblPerson(strFirstname, strMiddlename, strLastname, 
-									  strMiddleInitial, strNameSuffix, 
-									  strContactNumber, strEmailAddress)
-				VALUES(@firstname, @middlename, @lastname, @middleinitial, @namesuffix, @contactno, @email)
-
-				SELECT @personID = intPersonID
-				FROM tblPerson 
-				WHERE strFirstname = @firstname
-					AND strMiddlename = @middlename
-					AND strLastname = @lastname
-					AND strMiddleInitial = @middleinitial
-					AND strNameSuffix = @namesuffix
-					AND strContactNumber = @contactno
-					AND strEmailAddress = @email 
-			END
-		ELSE
-			SET @personID = @duplicateID
-
 		IF NOT EXISTS (SELECT intValidatorID
 					   FROM tblValidator
-					   WHERE intPersonID = @personID AND @institution = @institution)
+					   WHERE strFirstname = @firstname AND strMiddlename = @middlename AND strLastname = @lastname
+							AND strMiddleInitial = @middleinitial AND strNameSuffix = @namesuffix
+							AND strContactNumber = @contactno AND strEmailAddress = @email AND strInstitution = @institution)
 		BEGIN
-			INSERT INTO tblValidator(intPersonID, strInstitution, strValidatorType)
-			VALUES (@personID, @institution, 'External')
+			INSERT INTO tblValidator(strFirstname, strMiddlename, strLastname, strMiddleInitial, strNameSuffix, 
+											strContactNumber, strEmailAddress, strInstitution, strValidatorType)
+			VALUES (@firstname, @middlename, @lastname, @middleinitial, @namesuffix, @contactno, @email, @institution, 'External');
 		END
 		ELSE
 		BEGIN
@@ -917,22 +918,15 @@ BEGIN
 	BEGIN TRANSACTION
 	
 	BEGIN TRY
-		DECLARE @personID INT;
-		
-		SET @personID = (SELECT intPersonID FROM tblValidator WHERE intValidatorID = @validatorID)
-
-		UPDATE tblPerson
+		UPDATE tblValidator
 		SET strFirstname = @firstname,
 			strMiddlename = @middlename,
 			strLastname = @lastname,
 			strMiddleInitial = @middleinitial,
 			strNameSuffix = @namesuffix,
 			strContactNumber = @contactno,
-			strEmailAddress = @email
-		WHERE intPersonID = @personID;
-
-		UPDATE tblValidator
-		SET strInstitution = @institution
+			strEmailAddress = @email,
+			strInstitution = @institution
 		WHERE intValidatorID = @validatorID
 	END TRY
 	BEGIN CATCH
@@ -960,8 +954,7 @@ CREATE PROCEDURE procInsertHerbariumStaff
 	@contactno		VARCHAR(15),
 	@email			VARCHAR(255),
 	@role			VARCHAR(50),
-	@department		VARCHAR(100),
-	@position		VARCHAR(50)
+	@department		VARCHAR(100)
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -970,50 +963,25 @@ BEGIN
 	BEGIN TRANSACTION
 	
 	BEGIN TRY
-		DECLARE @personID INT
-		DECLARE @duplicateID INT
-
-		SELECT @duplicateID = intPersonID
-		FROM tblPerson 
-		WHERE strFirstname = @firstname
-			AND strMiddlename = @middlename
-			AND strLastname = @lastname
-			AND strMiddleInitial = @middleinitial
-			AND strNameSuffix = @namesuffix
-
-		IF @duplicateID IS NULL
-			BEGIN
-				INSERT INTO tblPerson(strFirstname, strMiddlename, strLastname, 
-									  strMiddleInitial, strNameSuffix, 
-									  strContactNumber, strEmailAddress)
-				VALUES(@firstname, @middlename, @lastname, @middleinitial, @namesuffix, @contactno, @email)
-
-				SELECT @personID = intPersonID
-				FROM tblPerson 
-				WHERE strFirstname = @firstname
-					AND strMiddlename = @middlename
-					AND strLastname = @lastname
-					AND strMiddleInitial = @middleinitial
-					AND strNameSuffix = @namesuffix
-					AND strContactNumber = @contactno
-					AND strEmailAddress = @email 
-			END
-		ELSE
-			SET @personID = @duplicateID
-
-		
 		IF NOT EXISTS (SELECT intStaffID
 					   FROM tblHerbariumStaff
-					   WHERE intPersonID = @personID AND strRole = @role AND strPosition = @position)
+					   WHERE strFirstname = @firstname AND strMiddlename = @middlename AND strLastname = @lastname
+							AND strMiddleInitial = @middleinitial AND strNameSuffix = @namesuffix
+							AND strContactNumber = @contactno AND strEmailAddress = @email 
+							AND strRole = @role AND strCollegeDepartment = @department)
 		BEGIN
-			INSERT INTO tblHerbariumStaff (intPersonID, strRole, strCollegeDepartment, strPosition)
-			VALUES (@personID, @role, @department, @position)
+			INSERT INTO tblHerbariumStaff(strFirstname, strMiddlename, strLastname, strMiddleInitial, strNameSuffix, 
+										  strContactNumber, strEmailAddress, strRole, strCollegeDepartment)
+			VALUES (@firstname, @middlename, @lastname, @middleinitial, @namesuffix, @contactno, @email, @role, @department);
 
-			IF @role IN ('CURATOR', 'SUPER-ADMINISTRATOR') AND 
-				NOT EXISTS(SELECT intValidatorID FROM tblValidator WHERE intPersonID = @personID)
+			IF @role IN ('CURATOR', 'ADMINISTRATOR') AND 
+				NOT EXISTS(SELECT intValidatorID FROM tblValidator 
+						   WHERE strFirstname = @firstname AND strMiddlename = @middlename AND strLastname = @lastname
+								AND strMiddleInitial = @middleinitial AND strNameSuffix = @namesuffix
+								AND strContactNumber = @contactno AND strEmailAddress = @email)
 			BEGIN
-				INSERT INTO tblValidator(intPersonID, strInstitution, strValidatorType)
-				VALUES (@personID, 'Polytechnic University of the Philippines', 'Internal')
+				INSERT INTO tblValidator(strFirstname, strMiddlename, strLastname, strMiddleInitial, strNameSuffix, strContactNumber, strEmailAddress, strInstitution, strValidatorType)
+				VALUES (@firstname, @middlename, @lastname, @middleinitial, @namesuffix, @contactno, @email, 'Polytechnic University of the Philippines', 'Internal')
 			END
 		END
 		ELSE
@@ -1047,8 +1015,7 @@ CREATE PROCEDURE procUpdateHerbariumStaff
 	@contactno		VARCHAR(15),
 	@email			VARCHAR(255),
 	@role			VARCHAR(50),
-	@department		VARCHAR(100),
-	@position		VARCHAR(50)
+	@department		VARCHAR(100)
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -1057,38 +1024,42 @@ BEGIN
 	BEGIN TRANSACTION
 	
 	BEGIN TRY
-		DECLARE @personID INT
 		DECLARE @prevRole VARCHAR(50)
 		DECLARE @validatorID INT
 
-		SELECT @personID = intPersonID, @prevRole = strRole FROM tblHerbariumStaff WHERE intStaffID = @staffID
+		SET @prevRole = (SELECT strRole FROM tblHerbariumStaff WHERE intStaffID = @staffID)
+		SET @validatorID = (SELECT intValidatorID 
+							FROM tblValidator 
+							WHERE strFirstname = @firstname AND strMiddlename = @middlename AND strLastname = @lastname
+									AND strMiddleInitial = @middleinitial AND strNameSuffix = @namesuffix)
 
-		UPDATE tblPerson
+		UPDATE tblHerbariumStaff
 		SET strFirstname = @firstname,
 			strMiddlename = @middlename,
 			strLastname = @lastname,
 			strMiddleInitial = @middleinitial,
 			strNameSuffix = @namesuffix,
 			strContactNumber = @contactno,
-			strEmailAddress = @email
-		WHERE intPersonID = @personID
-
-		UPDATE tblHerbariumStaff
-		SET strRole = @role,
-			strCollegeDepartment = @department,
-			strPosition = @position
+			strEmailAddress = @email,
+			strRole = @role,
+			strCollegeDepartment = @department
 		WHERE intStaffID = @staffID
 		
-		IF (@prevRole <> @role) AND (@role IN ('CURATOR', 'SUPER-ADMINISTRATOR'))
-			BEGIN 
-				SET @validatorID = (SELECT intValidatorID FROM tblValidator WHERE intPersonID = @personID);
+		IF (@prevRole <> @role) AND (@role IN ('CURATOR', 'ADMINISTRATOR'))
+		BEGIN 
+			SET @validatorID = (SELECT intValidatorID FROM tblValidator 
+								WHERE strFirstname = @firstname AND
+										strMiddlename = @middlename AND
+										strLastname = @lastname AND
+										strMiddleInitial = @middleinitial AND
+										strNameSuffix = @namesuffix);
 
-				IF @validatorID IS NULL
-				BEGIN
-					INSERT INTO tblValidator (intPersonID, strInstitution, strValidatorType)
-					VALUES (@personID, 'Polytechnic University of the Philippines', 'Internal');
-				END
+			IF @validatorID IS NULL
+			BEGIN
+				INSERT INTO tblValidator (strFirstname, strMiddlename, strLastname, strMiddleInitial, strNameSuffix, strContactNumber, strEmailAddress, strInstitution, strValidatorType)
+				VALUES (@firstname, @middlename, @lastname, @middleinitial, @namesuffix, @contactno, @email, 'Polytechnic University of the Philippines', 'Internal');
 			END
+		END
 
 	END TRY
 	BEGIN CATCH
@@ -1479,40 +1450,42 @@ GO
 
 -------------- SAMPLE DATA INITIALIZATION --------------
 
-EXECUTE procInsertLocality 'Luzon', 'National Capital Region', 'Metro Manila', 'Manila', 'Santa Mesa', 'Polytechnic University of the Philippines - Sta. Mesa (Main) Campus', 'PUP Main Campus, Sta. Mesa, Manila'
-EXECUTE procInsertLocality 'Luzon', 'National Capital Region', 'Metro Manila', 'Manila', 'Sampaloc', 'University of Sto. Tomas - Espana', 'UST Espana, Sampaloc, Manila'
-EXECUTE procInsertLocality 'Luzon', 'National Capital Region', 'Metro Manila', 'Quezon City', 'Diliman', 'University of the Philippines - Diliman Campus', 'UP Diliman, Diliman, Quezon City'
+--EXECUTE procInsertLocality 'Philippines', 'Luzon', 'National Capital Region', 'Metro Manila', 'Manila', 'Santa Mesa', 'Polytechnic University of the Philippines - Sta. Mesa (Main) Campus', 'PUP Main Campus, Sta. Mesa, Manila', '', '14°35''52.44" N', '121°0''38.88" E'
+--EXECUTE procInsertLocality 'Luzon', 'National Capital Region', 'Metro Manila', 'Manila', 'Sampaloc', 'University of Sto. Tomas - Espana', 'UST Espana, Sampaloc, Manila'
+--EXECUTE procInsertLocality 'Luzon', 'National Capital Region', 'Metro Manila', 'Quezon City', 'Diliman', 'University of the Philippines - Diliman Campus', 'UP Diliman, Diliman, Quezon City'
 
-EXECUTE procInsertCollector 'Jake', 'M', 'Magpantay', 'M', '', '09991357924', 'jakemagpantay@yahoo.com', 'College of Engineering', 'BSCpE 4-1'
-EXECUTE procInsertCollector 'Anna', 'B', 'Balingit', 'B', '', '09051234567', 'annabalingit@gmail.com', 'College of Science', 'BSCHEM 4-1'
-EXECUTE procInsertCollector 'Rhisiel', 'V', 'Valle', 'V', '', '09361234567', 'rvalle1233@hotmail.com', 'College of Arts and Letters', 'AB-PHILO 4-1' 
-EXECUTE procInsertCollector 'Maica', 'C', 'Opena', 'O', '', '09219876543', 'opena_maica@ymail.com', 'College of Accounting and Finance', 'BSBAMM 4-1'
+--EXECUTE procInsertCollector 'Jake', 'M', 'Magpantay', 'M', '', 'Quezon City', '09991357924', 'jakemagpantay@yahoo.com', 'College of Engineering'
+--EXECUTE procInsertCollector 'Anna', 'B', 'Balingit', 'B', '', '09051234567', 'annabalingit@gmail.com', 'College of Science', 'BSCHEM 4-1'
+--EXECUTE procInsertCollector 'Rhisiel', 'V', 'Valle', 'V', '', '09361234567', 'rvalle1233@hotmail.com', 'College of Arts and Letters', 'AB-PHILO 4-1' 
+--EXECUTE procInsertCollector 'Maica', 'C', 'Opena', 'O', '', '09219876543', 'opena_maica@ymail.com', 'College of Accounting and Finance', 'BSBAMM 4-1'
 
-EXECUTE procInsertValidator 'Paolo', 'J', 'Labrador', 'J', '', '09881234567', 'paololabrador@gmail.com', 'National Herbarium Center'
-EXECUTE procInsertValidator 'Marie Annthonite', 'N', 'Buena', 'N', '', '09111234567', 'tonetbuena@yahoo.com', 'University of Santo Tomas'
-EXECUTE procInsertValidator 'Michael John', 'D', 'Ducut', 'D', '', '09991234567', 'mjducut@outlook.com', 'University of the Philippines - Los Banos'
+--EXECUTE procInsertValidator 'Paolo', 'J', 'Labrador', 'J', '', '09881234567', 'paololabrador@gmail.com', 'National Herbarium Center'
+--EXECUTE procInsertValidator 'Marie Annthonite', 'N', 'Buena', 'N', '', '09111234567', 'tonetbuena@yahoo.com', 'University of Santo Tomas'
+--EXECUTE procInsertValidator 'Michael John', 'D', 'Ducut', 'D', '', '09991234567', 'mjducut@outlook.com', 'University of the Philippines - Los Banos'
 
-EXECUTE procInsertHerbariumStaff 'Jerome', 'B', 'Casingal', 'B', '', '09161234567', 'jetcasingal@hotmail.com', 'SUPER-ADMINISTRATOR', 'College of Computer and Infomation Sciences', 'Faculty'
-EXECUTE procInsertHerbariumStaff 'Althea Nicole', 'M', 'Cruz', 'M', '', '09181237654', 'theapanda@yahoo.com', 'STUDENT ASSISTANT', 'College of Architecture and Fine Arts', 'BS-ARCH 4-1'
-EXECUTE procInsertHerbariumStaff 'Nino Danielle', 'C', 'Escueta', 'C', '', '09456969123', 'ndescueta@ymail.com', 'CURATOR', 'College of Science', 'Faculty'
+--EXECUTE procInsertHerbariumStaff 'Jerome', 'B', 'Casingal', 'B', '', '09161234567', 'jetcasingal@hotmail.com', 'ADMINISTRATOR', 'College of Computer and Infomation Sciences'
+--EXECUTE procInsertHerbariumStaff 'Althea Nicole', 'M', 'Cruz', 'M', '', '09181237654', 'theapanda@yahoo.com', 'STUDENT ASSISTANT', 'College of Computer and Infomation Sciences'
+--EXECUTE procInsertHerbariumStaff 'Nino Danielle', 'C', 'Escueta', 'C', '', '09989991700', 'ndescueta@ymail.com', 'CURATOR', 'College of Computer and Information Sciences'
+--EXECUTE procInsertHerbariumStaff 'Armin','S', 'Coronado', 'S', '', '09123456789', 'armin_coronado@pup.edu.ph', 'ADMINISTRATOR', 'College of Science'
+--EXECUTE procInsertHerbariumStaff 'Ma. Eleanor', 'C', 'Salvador', '', '09178482910', 'maria_salvador@pup.edu.ph', 'ADMINISTRATOR', 'College of Science'
 
-EXECUTE procInsertAccount 'Jerome Casingal ', 'jetcasingal', 'jetcasingal'
-EXECUTE procInsertAccount 'Nino Danielle Escueta ', 'ndescueta', 'ndescueta'
-EXECUTE procInsertAccount 'Althea Nicole Cruz ', 'theacruz', 'theacruz'
+--EXECUTE procInsertAccount 'Jerome Casingal ', 'jetcasingal', 'jetcasingal'
+--EXECUTE procInsertAccount 'Nino Danielle Escueta ', 'ndescueta', 'ndescueta'
+--EXECUTE procInsertAccount 'Althea Nicole Cruz ', 'theacruz', 'theacruz'
 
-EXECUTE procInsertPhylum 'Eukaryota', 'Plantae', 'Magnoliophyta'
+--EXECUTE procInsertPhylum 'Eukaryota', 'Plantae', 'Magnoliophyta'
 
-EXECUTE procInsertClass 'Magnoliophyta', 'Magnoliopsida'
+--EXECUTE procInsertClass 'Magnoliophyta', 'Magnoliopsida'
 
-EXECUTE procInsertOrder 'Magnoliopsida', 'Lamiales'
+--EXECUTE procInsertOrder 'Magnoliopsida', 'Lamiales'
 
-EXECUTE procInsertFamily 'Lamiales', 'Lamiaceae'
+--EXECUTE procInsertFamily 'Lamiales', 'Lamiaceae'
 
-EXECUTE procInsertGenus 'Lamiaceae', 'Vitex'
+--EXECUTE procInsertGenus 'Lamiaceae', 'Vitex'
 
-EXECUTE procInsertSpecies 'Vitex', 'negundo', 'Chinese chastetree'
+--EXECUTE procInsertSpecies 'Vitex', 'negundo', 'Chinese chastetree', 'Vitex Negundo L.', 'Carl Linneaus', 'Lagundi; Nirgundi;', '1'
 
-EXECUTE procInsertFamilyBox 'Lamiaceae', '20'
+--EXECUTE procInsertFamilyBox 'Lamiaceae', '20', 1, 1, 1
 
 --SELECT * FROM tblFamily
 --SELECT * FROM tblGenus
@@ -1520,5 +1493,23 @@ EXECUTE procInsertFamilyBox 'Lamiaceae', '20'
 --SELECT * FROM tblLocality
 --SELECT * FROM tblPerson
 --SELECT * FROM tblCollector
---SELECT * FROM tblValidator
---SELECT * FROM tblHerbariumStaff
+SELECT * FROM tblValidator
+SELECT * FROM tblHerbariumStaff
+
+SELECT * FROM viewTaxonPhylum
+SELECT * FROM viewTaxonClass
+SELECT * FROM viewTaxonOrder
+SELECT * FROM viewTaxonFamily
+SELECT * FROM viewTaxonGenus
+SELECT strSpeciesNo, strGenusName, strSpeciesName, strCommonName, strScientificName, strSpeciesAuthor, strSpeciesAlternateName, boolSpeciesIdentified FROM viewTaxonSpecies
+
+SELECT FB.strBoxNumber, FB.strFamilyName, FB.intBoxLimit, FB.intRackNo, FB.intRackRow, FB.intRackColumn, COUNT(HI.intStoredSheetID) 
+FROM viewFamilyBox FB LEFT JOIN viewHerbariumInventory HI ON FB.strBoxNumber = HI.strBoxNumber
+GROUP BY FB.strBoxNumber, FB.strFamilyName, FB.intBoxLimit, FB.intRackNo, FB.intRackRow, FB.intRackColumn
+
+SELECT intLocalityID, strCountry, strIsland, strRegion, strProvince, strCity, strArea, strSpecificLocation, strShortLocation, strFullLocality, strLatitude, strLongtitude
+FROM viewLocality
+
+SELECT intCollectorID, strFirstname, strMiddlename, strLastname, strMiddleInitial, strNameSuffix, strHomeAddress, strContactNumber, strEmailAddress, strFullName, strAffiliation 
+FROM viewCollector
+SELECT * FROM viewAccounts

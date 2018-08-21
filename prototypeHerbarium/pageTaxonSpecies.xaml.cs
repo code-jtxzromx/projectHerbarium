@@ -22,7 +22,7 @@ namespace prototypeHerbarium
     /// </summary>
     public partial class pageTaxonSpecies : Page
     {
-        List<TaxonSpecie> TaxonomicSpecies = new List<TaxonSpecie>();
+        List<TaxonSpecies> TaxonomicSpecies = new List<TaxonSpecies>();
 
         public pageTaxonSpecies()
         {
@@ -44,14 +44,21 @@ namespace prototypeHerbarium
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
+            chkIsUndeterminedSpecies.IsChecked = true;
+            chkIsUndeterminedSpecies.IsEnabled = true;
             txfSpecieID.Clear();
             cbxGenusName.SelectedIndex = -1;
             txfSpeciesName.Clear();
             txfCommonName.Clear();
+            txfScientificName.Clear();
+            txfAuthor.Clear();
+            txfSynonyms.Clear();
 
             msgGenusName.Visibility = Visibility.Collapsed;
             msgSpeciesName.Visibility = Visibility.Collapsed;
             msgCommonName.Visibility = Visibility.Collapsed;
+            msgScientificName.Visibility = Visibility.Collapsed;
+            msgAuthor.Visibility = Visibility.Collapsed;
         }
 
         private void btnAddSpecie_Click(object sender, RoutedEventArgs e)
@@ -72,7 +79,7 @@ namespace prototypeHerbarium
             var result = from record in TaxonomicSpecies
                          where record.SpecieID.ToUpper().Contains(input) ||
                                 record.GenusName.ToUpper().Contains(input) ||
-                                record.SpecieName.ToUpper().Contains(input) ||
+                                record.SpeciesName.ToUpper().Contains(input) ||
                                 record.CommonName.ToUpper().Contains(input) ||
                                 record.ScientificName.ToUpper().Contains(input)
                          select record;
@@ -82,7 +89,7 @@ namespace prototypeHerbarium
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
-            TaxonSpecie SelectedSpecie = dgrSpeciesTable.SelectedValue as TaxonSpecie;
+            TaxonSpecies SelectedSpecie = dgrSpeciesTable.SelectedValue as TaxonSpecies;
 
             var result = from specie in TaxonomicSpecies
                          where specie.SpecieID == SelectedSpecie.SpecieID
@@ -91,12 +98,31 @@ namespace prototypeHerbarium
             if (pnlAddSpecie.Visibility == Visibility.Collapsed)
                 btnAddSpecie_Click(btnAddSpecie, null);
 
-            foreach (TaxonSpecie data in result)
+            foreach (TaxonSpecies data in result)
             {
+                chkIsUndeterminedSpecies.IsChecked = (data.IdentifiedStatus == "Known");
+                chkIsUndeterminedSpecies.IsEnabled = false;
                 txfSpecieID.Text = data.SpecieID;
                 cbxGenusName.SelectedItem = data.GenusName;
-                txfSpeciesName.Text = data.SpecieName;
+                txfSpeciesName.Text = data.SpeciesName;
+                txfScientificName.Text = data.ScientificName;
                 txfCommonName.Text = data.CommonName;
+                txfAuthor.Text = data.SpeciesAuthor;
+                txfSynonyms.Text = data.AlternateNames;
+            }
+        }
+        
+        private void chkIsUndeterminedSpecies_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+            if(chkIsUndeterminedSpecies.IsChecked == true)
+            {
+                txfSpeciesName.IsEnabled = true;
+                txfSpeciesName.Clear();
+            }
+            else
+            {
+                txfSpeciesName.IsEnabled = false;
+                txfSpeciesName.Text = "sp.";
             }
         }
 
@@ -114,22 +140,27 @@ namespace prototypeHerbarium
         private void getSpecieTable()
         {
             DatabaseConnection connection = new DatabaseConnection();
-            List<TaxonSpecie> species = new List<TaxonSpecie>();
+            List<TaxonSpecies> species = new List<TaxonSpecies>();
 
             btnClear_Click(btnClear, null);
 
-            connection.setQuery("SELECT strSpeciesNo, strGenusName, strSpeciesName, strCommonName, strScientificName FROM viewTaxonSpecies");
+            connection.setQuery("SELECT strSpeciesNo, strGenusName, strSpeciesName, strCommonName, strScientificName, " +
+                                    "strSpeciesAuthor, strSpeciesAlternateName, boolSpeciesIdentified " +
+                                "FROM viewTaxonSpecies");
             SqlDataReader sqlData = connection.executeResult();
              
             while (sqlData.Read())
             {
-                species.Add(new TaxonSpecie()
+                species.Add(new TaxonSpecies()
                 {
                     SpecieID = sqlData[0].ToString(),
                     GenusName = sqlData[1].ToString(),
-                    SpecieName = sqlData[2].ToString(),
+                    SpeciesName = sqlData[2].ToString(),
                     CommonName = sqlData[3].ToString(),
-                    ScientificName = sqlData[4].ToString()
+                    ScientificName = sqlData[4].ToString(),
+                    SpeciesAuthor = sqlData[5].ToString(),
+                    AlternateNames = sqlData[6].ToString(),
+                    IdentifiedStatus = (Convert.ToBoolean(sqlData[7].ToString())) ? "Known" : "Undetermined"
                 });
             }
             connection.closeResult();
@@ -181,6 +212,16 @@ namespace prototypeHerbarium
                 msgCommonName.Visibility = Visibility.Visible;
                 formOK = false;
             }
+            if (txfScientificName.Text == "")
+            {
+                msgScientificName.Visibility = Visibility.Visible;
+                formOK = false;
+            }
+            if (txfAuthor.Text == "")
+            {
+                msgAuthor.Visibility = Visibility.Visible;
+                formOK = false;
+            }
 
             return formOK;
         }
@@ -194,6 +235,10 @@ namespace prototypeHerbarium
             connection.addSprocParameter("@genusName", SqlDbType.VarChar, cbxGenusName.SelectedItem.ToString());
             connection.addSprocParameter("@speciesName", SqlDbType.VarChar, txfSpeciesName.Text);
             connection.addSprocParameter("@commonName", SqlDbType.VarChar, txfCommonName.Text);
+            connection.addSprocParameter("@scientificName", SqlDbType.VarChar, txfScientificName.Text);
+            connection.addSprocParameter("@author", SqlDbType.VarChar, txfAuthor.Text);
+            connection.addSprocParameter("@alternateName", SqlDbType.VarChar, txfSynonyms.Text);
+            connection.addSprocParameter("@isVerified", SqlDbType.Bit, (chkIsUndeterminedSpecies.IsChecked == true));
             status = connection.executeProcedure();
 
             switch (status)
@@ -221,6 +266,9 @@ namespace prototypeHerbarium
             connection.addSprocParameter("@genusName", SqlDbType.VarChar, cbxGenusName.SelectedItem.ToString());
             connection.addSprocParameter("@speciesName", SqlDbType.VarChar, txfSpeciesName.Text);
             connection.addSprocParameter("@commonName", SqlDbType.VarChar, txfCommonName.Text);
+            connection.addSprocParameter("@scientificName", SqlDbType.VarChar, txfScientificName.Text);
+            connection.addSprocParameter("@author", SqlDbType.VarChar, txfAuthor.Text);
+            connection.addSprocParameter("@alternateName", SqlDbType.VarChar, txfSynonyms.Text);
             status = connection.executeProcedure();
 
             switch (status)
@@ -237,11 +285,14 @@ namespace prototypeHerbarium
     }
 }
 
-public class TaxonSpecie
+public class TaxonSpecies
 {
     public string SpecieID { get; set; }
-    public string ScientificName { get; set; }
     public string GenusName { get; set; }
-    public string SpecieName { get; set; }
+    public string SpeciesName { get; set; }
     public string CommonName { get; set; }
+    public string ScientificName { get; set; }
+    public string SpeciesAuthor { get; set; }
+    public string AlternateNames { get; set; }
+    public string IdentifiedStatus { get; set; }
 }

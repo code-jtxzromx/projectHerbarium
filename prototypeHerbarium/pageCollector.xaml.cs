@@ -23,28 +23,7 @@ namespace prototypeHerbarium
     public partial class pageCollector : Page
     {
         List<Collector> CollectorsList = new List<Collector>();
-        string[] colleges = new string[]
-        {
-            "College of Accountancy and Finance",
-            "College of Architecture and Fine Arts",
-            "College of Arts and Letters",
-            "College of Business Administration",
-            "College of Communication",
-            "College of Computer and Information Sciences",
-            "College of Education",
-            "College of Engineering",
-            "College of Human Kinetics",
-            "College of Law",
-            "College of Public Administration",
-            "College of Science",
-            "College of Social Sciences and Development",
-            "College of Tourism, Hospitality and Transportation Management",
-            "Institute of Technology",
-            "Laboratory High School",
-            "Senior High School",
-            "Graduate School"
-        };
-
+        
         public pageCollector()
         {
             InitializeComponent();
@@ -57,13 +36,9 @@ namespace prototypeHerbarium
             if (validateForm())
             {
                 if (txfCollectorID.Text is null || txfCollectorID.Text == "")
-                {
-                    //addCollector();
-                }
+                    addCollector();
                 else
-                {
-                    //editCollector();
-                }
+                    editCollector();
             }
         }
 
@@ -75,19 +50,17 @@ namespace prototypeHerbarium
             txfLastname.Clear();
             txfMiddleInitial.Clear();
             txfNameSuffix.Clear();
+            txfHomeAddress.Clear();
             txfContactNumber.Clear();
             txfEmailAddress.Clear();
-            //cbxDepartment.SelectedIndex = -1;
-            //txfSection.Clear();
+            txfAffiliation.Clear();
 
             msgFirstname.Visibility = Visibility.Collapsed;
-            msgMiddlename.Visibility = Visibility.Collapsed;
             msgLastname.Visibility = Visibility.Collapsed;
-            msgMiddleInitial.Visibility = Visibility.Collapsed;
+            msgHomeAddress.Visibility = Visibility.Collapsed;
             msgContactNumber.Visibility = Visibility.Collapsed;
             msgEmailAddress.Visibility = Visibility.Collapsed;
-            //msgDepartment.Visibility = Visibility.Collapsed;
-            //msgSection.Visibility = Visibility.Collapsed;
+            msgAffiliation.Visibility = Visibility.Collapsed;
         }
 
         private void btnAddCollector_Click(object sender, RoutedEventArgs e)
@@ -107,8 +80,7 @@ namespace prototypeHerbarium
 
             var result = from record in CollectorsList
                          where record.LastName.ToUpper().Contains(input) ||
-                                record.FirstName.ToUpper().Contains(input) ||
-                                record.CollegeSection.ToUpper().Contains(input)
+                                record.FirstName.ToUpper().Contains(input)
                          select record;
 
             dgrCollectorTable.ItemsSource = result;
@@ -132,11 +104,11 @@ namespace prototypeHerbarium
                 txfMiddlename.Text = data.MiddleName;
                 txfLastname.Text = data.LastName;
                 txfMiddleInitial.Text = data.MiddleInitial;
+                txfHomeAddress.Text = data.HomeAddress;
                 txfNameSuffix.Text = data.NameSuffix;
                 txfContactNumber.Text = data.ContactNumber;
                 txfEmailAddress.Text = data.Email;
-                //cbxDepartment.SelectedItem = data.College;
-                //txfSection.Text = data.CollegeSection;
+                txfAffiliation.Text = data.Affiliation;
             }
         }
 
@@ -148,8 +120,6 @@ namespace prototypeHerbarium
             btnClear_Click(btnClear, null);
 
             getCollectorTable();
-            //foreach (string college in colleges)
-            //    cbxDepartment.Items.Add(college);
         }
 
         public void getCollectorTable()
@@ -162,7 +132,7 @@ namespace prototypeHerbarium
 
             // Query Command Setting
             connection.setQuery("SELECT intCollectorID, strFirstname, strMiddlename, strLastname, strMiddleInitial, strNameSuffix, " +
-                                        "strContactNumber, strEmailAddress, strFullName, strCollege, strSection " +
+                                    "strHomeAddress, strContactNumber, strEmailAddress, strFullName, strAffiliation  " +
                                 "FROM viewCollector");
 
             // Query Execution
@@ -178,11 +148,11 @@ namespace prototypeHerbarium
                     LastName = sqlData[3].ToString(),
                     MiddleInitial = sqlData[4].ToString(),
                     NameSuffix = sqlData[5].ToString(),
-                    ContactNumber = sqlData[6].ToString(),
-                    Email = sqlData[7].ToString(),
-                    FullName = sqlData[8].ToString(),
-                    College = sqlData[9].ToString(),
-                    CollegeSection = sqlData[10].ToString()
+                    HomeAddress = sqlData[6].ToString(),
+                    ContactNumber = sqlData[7].ToString(),
+                    Email = sqlData[8].ToString(),
+                    FullName = sqlData[9].ToString(),
+                    Affiliation = sqlData[10].ToString()
                 });
             }
             connection.closeResult();
@@ -195,22 +165,15 @@ namespace prototypeHerbarium
         {
             bool formOK = true;
             msgFirstname.Visibility = Visibility.Collapsed;
-            msgMiddlename.Visibility = Visibility.Collapsed;
             msgLastname.Visibility = Visibility.Collapsed;
-            msgMiddleInitial.Visibility = Visibility.Collapsed;
+            msgHomeAddress.Visibility = Visibility.Collapsed;
             msgContactNumber.Visibility = Visibility.Collapsed;
             msgEmailAddress.Visibility = Visibility.Collapsed;
-            //msgDepartment.Visibility = Visibility.Collapsed;
-            //msgSection.Visibility = Visibility.Collapsed;
+            msgAffiliation.Visibility = Visibility.Collapsed;
 
             if (txfFirstname.Text == "")
             {
                 msgFirstname.Visibility = Visibility.Visible;
-                formOK = false;
-            }
-            if (txfMiddlename.Text == "")
-            {
-                msgMiddlename.Visibility = Visibility.Visible;
                 formOK = false;
             }
             if (txfLastname.Text == "")
@@ -218,9 +181,9 @@ namespace prototypeHerbarium
                 msgLastname.Visibility = Visibility.Visible;
                 formOK = false;
             }
-            if (txfMiddleInitial.Text == "")
+            if (txfHomeAddress.Text == "")
             {
-                msgMiddleInitial.Visibility = Visibility.Visible;
+                msgHomeAddress.Visibility = Visibility.Visible;
                 formOK = false;
             }
             if (txfContactNumber.Text == "")
@@ -233,16 +196,11 @@ namespace prototypeHerbarium
                 msgEmailAddress.Visibility = Visibility.Visible;
                 formOK = false;
             }
-            //if (cbxDepartment.SelectedIndex == -1)
-            //{
-            //    msgDepartment.Visibility = Visibility.Visible;
-            //    formOK = false;
-            //}
-            //if (txfSection.Text == "")
-            //{
-            //    msgSection.Visibility = Visibility.Visible;
-            //    formOK = false;
-            //}
+            if (txfAffiliation.Text == "")
+            {
+                msgAffiliation.Visibility = Visibility.Visible;
+                formOK = false;
+            }
 
             return formOK;
         }
@@ -258,10 +216,10 @@ namespace prototypeHerbarium
             connection.addSprocParameter("@lastname", SqlDbType.VarChar, txfLastname.Text);
             connection.addSprocParameter("@middleinitial", SqlDbType.VarChar, txfMiddleInitial.Text);
             connection.addSprocParameter("@namesuffix", SqlDbType.VarChar, txfNameSuffix.Text);
+            connection.addSprocParameter("@address", SqlDbType.VarChar, txfHomeAddress.Text);
             connection.addSprocParameter("@contactno", SqlDbType.VarChar, txfContactNumber.Text);
             connection.addSprocParameter("@email", SqlDbType.VarChar, txfEmailAddress.Text);
-            //connection.addSprocParameter("@college", SqlDbType.VarChar, cbxDepartment.SelectedItem.ToString());
-            //connection.addSprocParameter("@section", SqlDbType.VarChar, txfSection.Text);
+            connection.addSprocParameter("@affiliation", SqlDbType.VarChar, txfAffiliation.Text);
             status = connection.executeProcedure();
 
             switch (status)
@@ -291,10 +249,10 @@ namespace prototypeHerbarium
             connection.addSprocParameter("@middlename", SqlDbType.VarChar, txfMiddlename.Text);
             connection.addSprocParameter("@middleinitial", SqlDbType.VarChar, txfMiddleInitial.Text);
             connection.addSprocParameter("@namesuffix", SqlDbType.VarChar, txfNameSuffix.Text);
+            connection.addSprocParameter("@address", SqlDbType.VarChar, txfHomeAddress.Text);
             connection.addSprocParameter("@contactno", SqlDbType.VarChar, txfContactNumber.Text);
             connection.addSprocParameter("@email", SqlDbType.VarChar, txfEmailAddress.Text);
-            //connection.addSprocParameter("@college", SqlDbType.VarChar, cbxDepartment.SelectedItem.ToString());
-            //connection.addSprocParameter("@section", SqlDbType.VarChar, txfSection.Text);
+            connection.addSprocParameter("@affiliation", SqlDbType.VarChar, txfAffiliation.Text);
             status = connection.executeProcedure();
 
             switch (status)
@@ -320,9 +278,8 @@ public class Collector
     public string LastName { get; set; }
     public string MiddleInitial { get; set; }
     public string NameSuffix { get; set; }
+    public string HomeAddress { get; set; }
     public string ContactNumber { get; set; }
     public string Email { get; set; }
-    public string CollegeSection { get; set; }
-    public string College { get; set; }
-    public string Section { get; set; }
+    public string Affiliation { get; set; }
 }

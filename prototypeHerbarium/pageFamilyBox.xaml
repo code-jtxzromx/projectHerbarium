@@ -72,7 +72,7 @@
                 <TextBlock x:Name="msgRackRow" Visibility="Collapsed"
                            Grid.Column="4" Grid.Row="4" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
                 <TextBlock x:Name="msgRackColumn" Visibility="Collapsed"
-                           Grid.Column="4" Grid.Row="4" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
+                           Grid.Column="5" Grid.Row="4" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
             </Grid>
             <Grid Margin="40 10">
                 <Grid.ColumnDefinitions>
@@ -109,10 +109,10 @@
             </Grid>
             <DataGrid x:Name="dgrBoxTable" DockPanel.Dock="Top" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0" GridLinesVisibility="Horizontal">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Box Number" Binding="{Binding BoxNumber}" Width="2*"/>
-                    <DataGridTextColumn Header="Box Family" Binding="{Binding Family}" Width="2*"/>
-                    <DataGridTextColumn Header="Location" Width="*"/>
-                    <DataGridTextColumn Header="Status" Width="*"/>
+                    <DataGridTextColumn Header="Box Number" Binding="{Binding BoxNumber}" Width="2*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Box Family" Binding="{Binding Family}" Width="2*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Location" Binding="{Binding Location}" Width="*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="*" IsReadOnly="True"/>
                     <DataGridTemplateColumn Header="Actions" Width="100">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

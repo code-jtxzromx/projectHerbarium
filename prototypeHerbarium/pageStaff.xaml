@@ -56,7 +56,7 @@
                     First Name: <Span Foreground="Red">*</Span>
                 </TextBlock>
                 <TextBlock Grid.Column="1" Grid.Row="3" Margin="5">
-                    Middle Name: <Span Foreground="Red">*</Span>
+                    Middle Name: 
                 </TextBlock>
                 <TextBlock Grid.Column="2" Grid.Row="3" Margin="5">
                     Last Name: <Span Foreground="Red">*</Span>
@@ -69,12 +69,10 @@
                          Grid.Column="2" Grid.Row="4" Height="25" Margin="3" VerticalContentAlignment="Center"/>
                 <TextBlock x:Name="msgFirstname" Visibility="Collapsed"
                            Grid.Column="0" Grid.Row="5" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
-                <TextBlock x:Name="msgMiddlename" Visibility="Collapsed"
-                           Grid.Column="1" Grid.Row="5" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
                 <TextBlock x:Name="msgLastname" Visibility="Collapsed"
                            Grid.Column="2" Grid.Row="5" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
                 <TextBlock Grid.Column="0" Grid.Row="6" Margin="5">
-                    Middle Initial: <Span Foreground="Red">*</Span>
+                    Middle Initial: 
                 </TextBlock>
                 <TextBlock Grid.Column="1" Grid.Row="6" Margin="5">
                     Name Suffix:
@@ -88,10 +86,9 @@
                          Grid.Column="1" Grid.Row="7" Height="25" Margin="3" VerticalContentAlignment="Center"/>
                 <TextBox x:Name="txfContactNumber" 
                          Grid.Column="2" Grid.Row="7" Height="25" Margin="3" VerticalContentAlignment="Center"/>
-                <TextBlock x:Name="msgMiddleInitial" Visibility="Collapsed"
-                           Grid.Column="0" Grid.Row="8" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
                 <TextBlock x:Name="msgContactNumber" Visibility="Collapsed"
                            Grid.Column="2" Grid.Row="8" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
+                
                 <TextBlock Grid.Column="0" Grid.Row="9" Margin="5">
                     E-mail Address: <Span Foreground="Red">*</Span>
                 </TextBlock>
@@ -142,9 +139,9 @@
             </Grid>
             <DataGrid x:Name="dgrStaffTable" DockPanel.Dock="Top" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0" GridLinesVisibility="Horizontal">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Lastname" Binding="{Binding LastName}" Width="*"/>
-                    <DataGridTextColumn Header="Firstname" Binding="{Binding FirstName}" Width="*"/>
-                    <DataGridTextColumn Header="Role" Binding="{Binding Role}" Width="*" />
+                    <DataGridTextColumn Header="Lastname" Binding="{Binding LastName}" Width="*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Firstname" Binding="{Binding FirstName}" Width="*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Role" Binding="{Binding Role}" Width="*" IsReadOnly="True"/>
                     <DataGridTemplateColumn Header="Actions" Width="100">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

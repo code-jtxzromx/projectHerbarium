@@ -92,9 +92,9 @@
             </Grid>
             <DataGrid x:Name="dgrAccountTable" DockPanel.Dock="Top" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0" GridLinesVisibility="Horizontal">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Curator Name" Binding="{Binding Staff}" Width="2*"/>
-                    <DataGridTextColumn Header="Username" Binding="{Binding Username}" Width="*"/>
-                    <DataGridTextColumn Header="Access Level" Binding="{Binding Role}" Width="*"/>
+                    <DataGridTextColumn Header="Curator Name" Binding="{Binding Staff}" Width="2*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Username" Binding="{Binding Username}" Width="*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Access Level" Binding="{Binding Role}" Width="*" IsReadOnly="True"/>
                     <DataGridTemplateColumn Header="Actions" Width="100">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

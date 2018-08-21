@@ -45,6 +45,7 @@ namespace prototypeHerbarium
         {
             if (rbtNew.IsChecked == true)
             {
+                btnDuplicateRecord.Visibility = Visibility.Collapsed;
                 txfAccessionNumber.Visibility = Visibility.Collapsed;
                 txfReferenceNumber.Visibility = Visibility.Collapsed;
                 cbxValidator.Visibility = Visibility.Collapsed;
@@ -66,8 +67,9 @@ namespace prototypeHerbarium
             }
             else if (rbtExisting.IsChecked == true)
             {
+                btnDuplicateRecord.Visibility = Visibility.Visible;
+                btnDuplicateRecord.IsChecked = false;
                 txfAccessionNumber.Visibility = Visibility.Visible;
-                txfReferenceNumber.Visibility = Visibility.Visible;
                 cbxValidator.Visibility = Visibility.Visible;
                 cbxTaxonName.Visibility = Visibility.Visible;
                 //txfCommonName.Visibility = Visibility.Visible;
@@ -86,6 +88,9 @@ namespace prototypeHerbarium
                 defDateCollected.Width = new GridLength(1, GridUnitType.Star);
             }
         }
+
+        private void btnDuplicateRecord_ToggleChange(object sender, RoutedEventArgs e) 
+            => txfReferenceNumber.Visibility = (btnDuplicateRecord.IsChecked == true) ? Visibility.Visible : Visibility.Collapsed;
 
         private void btnUploadPicture_Click(object sender, RoutedEventArgs e)
         {
