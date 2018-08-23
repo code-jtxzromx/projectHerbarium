@@ -417,12 +417,15 @@ namespace prototypeHerbarium
             int status;
             DatabaseConnection connection = new DatabaseConnection();
             string country = (rbtPhilippines.IsChecked == true) ? "Philippines" : txfCountry.Text;
+            string island = (cbxIsland.SelectedIndex == -1) ? "" : cbxIsland.SelectedItem.ToString();
+            string region = (cbxRegion.SelectedIndex == -1) ? "" : cbxRegion.SelectedItem.ToString();
+            string province = (cbxProvince.SelectedIndex == -1) ? "" : cbxProvince.SelectedItem.ToString();
 
             connection.setStoredProc("dbo.procInsertLocality");
             connection.addSprocParameter("@country", SqlDbType.VarChar, country);
-            connection.addSprocParameter("@island", SqlDbType.VarChar, cbxIsland.SelectedItem.ToString());
-            connection.addSprocParameter("@region", SqlDbType.VarChar, cbxRegion.SelectedItem.ToString());
-            connection.addSprocParameter("@province", SqlDbType.VarChar, cbxProvince.SelectedItem.ToString());
+            connection.addSprocParameter("@island", SqlDbType.VarChar, island);
+            connection.addSprocParameter("@region", SqlDbType.VarChar, region);
+            connection.addSprocParameter("@province", SqlDbType.VarChar, province);
             connection.addSprocParameter("@city", SqlDbType.VarChar, txfCity.Text);
             connection.addSprocParameter("@area", SqlDbType.VarChar, txfArea.Text);
             connection.addSprocParameter("@specificLocation", SqlDbType.VarChar, txfSpecificLocation.Text);
@@ -452,13 +455,16 @@ namespace prototypeHerbarium
             int status;
             DatabaseConnection connection = new DatabaseConnection();
             string country = (rbtPhilippines.IsChecked == true) ? "Philippines" : txfCountry.Text;
+            string island = (cbxIsland.SelectedIndex == -1) ? "" : cbxIsland.SelectedItem.ToString();
+            string region = (cbxRegion.SelectedIndex == -1) ? "" : cbxRegion.SelectedItem.ToString();
+            string province = (cbxProvince.SelectedIndex == -1) ? "" : cbxProvince.SelectedItem.ToString();
 
             connection.setStoredProc("dbo.procUpdateLocality");
             connection.addSprocParameter("@localityID", SqlDbType.Int, txfLocalityID.Text);
             connection.addSprocParameter("@country", SqlDbType.VarChar, country);
-            connection.addSprocParameter("@island", SqlDbType.VarChar, cbxIsland.SelectedItem.ToString());
-            connection.addSprocParameter("@region", SqlDbType.VarChar, cbxRegion.SelectedItem.ToString());
-            connection.addSprocParameter("@province", SqlDbType.VarChar, cbxProvince.SelectedItem.ToString());
+            connection.addSprocParameter("@island", SqlDbType.VarChar, island);
+            connection.addSprocParameter("@region", SqlDbType.VarChar, region);
+            connection.addSprocParameter("@province", SqlDbType.VarChar, province);
             connection.addSprocParameter("@city", SqlDbType.VarChar, txfCity.Text);
             connection.addSprocParameter("@area", SqlDbType.VarChar, txfArea.Text);
             connection.addSprocParameter("@specificLocation", SqlDbType.VarChar, txfSpecificLocation.Text);

@@ -55,7 +55,6 @@ namespace prototypeHerbarium
             // Query Result
             while (sqlData.Read())
             {
-                byte[] tempBlob = (byte[])sqlData[2];
                 string family = sqlData[3].ToString();
 
                 var result = from box in availableBoxes
@@ -69,8 +68,12 @@ namespace prototypeHerbarium
                 }
                 else
                 {
-                    picHerbariumSheet.Source = getHerbariumSheet(tempBlob);
-
+                    try
+                    {
+                        byte[] tempBlob = (byte[])sqlData[2];
+                        picHerbariumSheet.Source = getHerbariumSheet(tempBlob);
+                    } catch (Exception) { }
+                    
                     lblAccessionNumber.Text = sqlData[0].ToString();
                     lblReferenceNumber.Text = sqlData[1].ToString();
                     lblScientificName.Text = sqlData[4].ToString();
@@ -94,6 +97,8 @@ namespace prototypeHerbarium
 
         private void btnReturn_Click(object sender, RoutedEventArgs e)
         {
+            picHerbariumSheet.Source = null;
+            btnLoanAvailable.IsChecked = false;
             pnlPlantDeposit.Visibility = Visibility.Hidden;
         }
 
@@ -104,6 +109,7 @@ namespace prototypeHerbarium
             connection.setStoredProc("dbo.procStoreHerbariumSheet");
             connection.addSprocParameter("@accessionNumber", SqlDbType.VarChar, lblAccessionNumber.Text);
             connection.addSprocParameter("@boxNumber", SqlDbType.VarChar, lblBox.Text);
+            connection.addSprocParameter("@loanAvailable", SqlDbType.Bit, (btnLoanAvailable.IsChecked == true));
             status = connection.executeProcedure();
 
             switch (status)

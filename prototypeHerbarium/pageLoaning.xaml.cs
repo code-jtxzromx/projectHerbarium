@@ -22,126 +22,132 @@ namespace prototypeHerbarium
     /// </summary>
     public partial class pageLoaning : Page
     {
+        DateTime loanDate;
+        DateTime returnDate;
+        
         public pageLoaning()
         {
             InitializeComponent();
 
-            //getCollectorList();
-            //getTaxonList();
+            if (StaticData.role == "STUDENT ASSISTANT")
+                colActions.Visibility = Visibility.Collapsed;
+            rbtResearch.IsChecked = true;
+
+            getCollectorList();
             setDurationType();
-            //getLoanTable();
+            getFamilyList();
+            getLoanTable();
         }
 
-        private void btnAddLoan_Click(object sender, RoutedEventArgs e)
+        private void btnAddLoan_Click(object sender, RoutedEventArgs e) => pnlLoanTransactionForm.Visibility = Visibility.Visible;
+
+        private void rbtPurpose_CheckChanged(object sender, RoutedEventArgs e)
         {
-            bool state = (pnlAddLoan.Visibility == Visibility.Collapsed) ? true : false;
-            pnlAddLoan.Visibility = (state) ? Visibility.Visible : Visibility.Collapsed;
-            sprAddLoan.Visibility = (state) ? Visibility.Visible : Visibility.Collapsed;
-            btnAddLoan.Content = (state) ? "Close Panel" : "New Loan";
+            lblOtherPurpose.Visibility = (rbtOther.IsChecked == true) ? Visibility.Visible : Visibility.Collapsed;
+            txfOtherPurpose.Visibility = (rbtOther.IsChecked == true) ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        private void cbxTaxonName_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void btnLoadGenus_Click(object sender, RoutedEventArgs e)
         {
-            /*
-            if (cbxTaxonName.SelectedIndex != -1)
+            List<ListFamily> selectedFamilies = new List<ListFamily>();
+            foreach (ListFamily family in dgrTaxonFamilies.Items)
             {
-                DatabaseConnection connection = new DatabaseConnection();
-                connection.setQuery("SELECT COUNT(intStoredSheetID) FROM viewHerbariumInventory " +
-                    "WHERE boolLoanAvailable = 1 AND strScientificName = @taxonName GROUP BY strScientificName");
-                connection.addParameter("@taxonName", SqlDbType.VarChar, cbxTaxonName.SelectedItem.ToString());
-
-                SqlDataReader sqlData = connection.executeResult();
-                while (sqlData.Read())
-                {
-                    txfNoSpecimens.Text = sqlData[0].ToString();
-                }
-                connection.closeResult();
+                if (family.IsChecked)
+                    selectedFamilies.Add(family);
             }
-            */
+            getGenusList(selectedFamilies);
         }
 
-        private void txfNoCopies_TextChanged(object sender, TextChangedEventArgs e)
+        private void btnCancelTransactionA_Click(object sender, RoutedEventArgs e)
         {
-            /*
-            try
-            {
-                int available = Convert.ToInt32(txfNoSpecimens.Text);
-                int copies = Convert.ToInt32(txfNoCopies.Text);
+            MessageBoxResult response = MessageBox.Show("Do you want to Cancel this Transaction",
+                                                        "Cancel Loan Transaction",
+                                                        MessageBoxButton.YesNo,
+                                                        MessageBoxImage.Question);
+            if (response == MessageBoxResult.Yes)
+                pnlLoanTransactionForm.Visibility = Visibility.Hidden;
+        }
 
-                if(copies > available)
-                {
-                    MessageBox.Show("Required Number of Copies has exceeded the number of Available Specimens",
-                                    "Loan Problem",
-                                    MessageBoxButton.OK,
-                                    MessageBoxImage.Exclamation);
-                    txfNoCopies.Text = available.ToString();
-                    txfNoCopies.Focus();
-                }
-            }
-            catch (FormatException) {}
-            */
+        private void btnCancelTransactionB_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult response = MessageBox.Show("Do you want to Cancel this Transaction",
+                                                        "Cancel Loan Transaction",
+                                                        MessageBoxButton.YesNo,
+                                                        MessageBoxImage.Question);
+            if (response == MessageBoxResult.Yes)
+                pnlPlantLoaningForm.Visibility = Visibility.Hidden;
         }
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
             cbxCollector.SelectedIndex = -1;
-            cbxTaxonName.SelectedIndex = -1;
-            txfNoSpecimens.Clear();
             dpkLoanDate.Text = "";
-            txfDuration.Text = "";
+            txfDuration.Clear();
             cbxDuration.SelectedIndex = -1;
-            txfNoCopies.Text = "";
-            txfPurpose.Text = "";
+            rbtAcademic.IsChecked = true;
+            txfOtherPurpose.Clear();
+
+            foreach (ListFamily family in dgrTaxonFamilies.Items)
+                family.IsChecked = false;
+            dgrTaxonGenera.ItemsSource = null;
+            dgrTaxonSpecies.ItemsSource = null;
+
+            msgCollector.Visibility = Visibility.Collapsed;
+            msgLoanDate.Visibility = Visibility.Collapsed;
+            msgDuration.Visibility = Visibility.Collapsed;
+            msgPurpose.Visibility = Visibility.Collapsed;
         }
 
-        private void btnProcess_Click(object sender, RoutedEventArgs e)
+        private void btnNext_Click(object sender, RoutedEventArgs e)
         {
-            pnlConfirmationForm.Visibility = Visibility.Visible;
-
-            lblCollector.Text = cbxCollector.SelectedItem.ToString();
-            lblTaxonName.Text = cbxTaxonName.SelectedItem.ToString();
-            lblLoanDate.Text = dpkLoanDate.Text;
-            lblDuration.Text = txfDuration.Text;
-            lblDurationType.Text = cbxDuration.SelectedItem.ToString();
-            lblCopies.Text = txfNoCopies.Text;
-            lblPurpose.Text = txfPurpose.Text;
+            if (validateForm())
+            {
+                List<ListGenus> selectedGenus = new List<ListGenus>();
+                foreach (ListGenus genus in dgrTaxonGenera.Items)
+                {
+                    if (genus.IsChecked)
+                    {
+                        selectedGenus.Add(genus);
+                    }
+                }
+                loadSpeciesForm();
+                getSpeciesList(selectedGenus);
+                
+                pnlLoanTransactionForm.Visibility = Visibility.Hidden;
+                pnlPlantLoaningForm.Visibility = Visibility.Visible;
+            }
         }
 
-        private void btnReturn_Click(object sender, RoutedEventArgs e)
+        private void btnBack_Click(object sender, RoutedEventArgs e)
         {
-            pnlConfirmationForm.Visibility = Visibility.Hidden;
+            pnlLoanTransactionForm.Visibility = Visibility.Visible;
+            pnlPlantLoaningForm.Visibility = Visibility.Hidden;
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            /*
-            DatabaseConnection connection = new DatabaseConnection();
+            if (validateLoanSpecies())
+            {
+                MessageBoxResult response = MessageBox.Show("Do you want to Process this Loan Transaction?",
+                                                            "Confirm Transaction",
+                                                            MessageBoxButton.YesNo,
+                                                            MessageBoxImage.Question);
+                if (response == MessageBoxResult.Yes)
+                {
+                    if(StaticData.role == "STUDENT ASSISTANT")
+                    {
 
-            connection.setStoredProc("dbo.procProcessLoan");
-            connection.addSprocParameter("@collectorName", SqlDbType.VarChar, lblCollector.Text);
-            connection.addSprocParameter("@taxonName", SqlDbType.VarChar, lblTaxonName.Text);
-            connection.addSprocParameter("@startDate", SqlDbType.Date, lblLoanDate.Text);
-            connection.addSprocParameter("@duration", SqlDbType.Int, lblDuration.Text);
-            connection.addSprocParameter("@durationMode", SqlDbType.VarChar, lblDurationType.Text);
-            connection.addSprocParameter("@copies", SqlDbType.Int, lblCopies.Text);
-            connection.addSprocParameter("@purpose", SqlDbType.VarChar, lblPurpose.Text);
+                    }
+                    else
+                    {
 
-            connection.executeStoredProc();
-
-            MessageBox.Show("Loan Process Saved", "Record Saved", MessageBoxButton.OK, MessageBoxImage.Information);
-
-            pnlConfirmationForm.Visibility = Visibility.Hidden;
-            btnClear_Click(btnClear, null);
-
-            getLoanTable();
-            getTaxonList();
-            getCollectorList();
-            */
+                    }
+                }
+            }
         }
 
         private void getCollectorList()
         {
-            /*
             cbxCollector.Items.Clear();
 
             DatabaseConnection connection = new DatabaseConnection();
@@ -153,38 +159,93 @@ namespace prototypeHerbarium
                 cbxCollector.Items.Add(sqlData[0]);
             }
             connection.closeResult();
-            */
         }
 
-        private void getTaxonList()
+        private void getFamilyList()
         {
-            /*
-            cbxTaxonName.Items.Clear();
+            List<ListFamily> families = new List<ListFamily>();
+            dgrTaxonFamilies.Items.Clear();
 
             DatabaseConnection connection = new DatabaseConnection();
-            connection.setQuery("SELECT strScientificName FROM viewHerbariumInventory " +
-                                "WHERE boolLoanAvailable = 1 GROUP BY strScientificName");
+            connection.setQuery("SELECT strFamilyName FROM viewTaxonFamily");
 
             SqlDataReader sqlData = connection.executeResult();
             while (sqlData.Read())
             {
-                cbxTaxonName.Items.Add(sqlData[0]);
+                families.Add(new ListFamily()
+                {
+                    FamilyName = sqlData[0].ToString()
+                });
             }
             connection.closeResult();
-            */
+            dgrTaxonFamilies.ItemsSource = families;
+        }
+
+        private void getGenusList(List<ListFamily> families)
+        {
+            dgrTaxonGenera.ItemsSource = null;
+            List<ListGenus> genera = new List<ListGenus>();
+
+            foreach (ListFamily family in families)
+            {
+                DatabaseConnection connection = new DatabaseConnection();
+                connection.setQuery("SELECT strGenusName FROM viewTaxonGenus WHERE strFamilyName = @familyName");
+                connection.addParameter("@familyName", SqlDbType.VarChar, family.FamilyName);
+
+                SqlDataReader sqlData = connection.executeResult();
+                while (sqlData.Read())
+                {
+                    genera.Add(new ListGenus()
+                    {
+                        GenusName = sqlData[0].ToString()
+                    });
+                }
+                connection.closeResult();
+            }
+            dgrTaxonGenera.ItemsSource = genera;
+        }
+
+        private void getSpeciesList(List<ListGenus> genera)
+        {
+            dgrTaxonSpecies.ItemsSource = null;
+            List<ListSpecies> species = new List<ListSpecies>();
+
+            foreach (ListGenus genus in genera)
+            {
+                DatabaseConnection connection = new DatabaseConnection();
+                connection.setQuery("SELECT TS.strScientificName, COUNT(HI.intStoredSheetID) - ISNULL(SUM(LS.intCopies), 0) " +
+                                    "FROM viewTaxonSpecies TS " +
+                                        "LEFT JOIN viewHerbariumInventory HI ON TS.strScientificName = HI.strScientificName AND HI.boolLoanAvailable = 1 " +
+                                        "LEFT JOIN tblLoaningSpecies LS ON TS.intSpeciesID = LS.intSpeciesID " +
+                                        "LEFT JOIN tblPlantLoanTransaction LT ON LT.intLoanID = LS.intLoanID AND LT.strStatus IN('Approved', 'Requesting') " +
+                                    "WHERE TS.strGenusName = @genusname " +
+                                    "GROUP BY TS.strScientificName");
+                connection.addParameter("@genusName", SqlDbType.VarChar, genus.GenusName);
+
+                SqlDataReader sqlData = connection.executeResult();
+                while (sqlData.Read())
+                {
+                    species.Add(new ListSpecies()
+                    {
+                        TaxonName = sqlData[0].ToString(),
+                        Specimens = Convert.ToInt32(sqlData[1])
+                    });
+                }
+                connection.closeResult();
+            }
+            dgrTaxonSpecies.ItemsSource = species;
         }
 
         public void getLoanTable()
         {
-            /*
             // Database - Program Declaration
             DatabaseConnection connection = new DatabaseConnection();
             List<PlantLoans> loans = new List<PlantLoans>();
 
             // Query Command Setting
-            connection.setQuery("SELECT strLoanNumber, strCollector, strScientificName, " +
-                                    "CONCAT(CONVERT(VARCHAR, dateLoan, 107), ' - ', CONVERT(VARCHAR, dateReturning, 107)), " +
-                                "strStatus FROM viewPlantLoans");
+            connection.setQuery("SELECT strLoanNumber, strCollector, dateLoan, dateReturning, strDuration, " +
+                                    "dateProcessed, strPurpose, strStatus " +
+                                "FROM viewPlantLoans");
 
             // Query Execution
             SqlDataReader sqlData = connection.executeResult();
@@ -196,15 +257,17 @@ namespace prototypeHerbarium
                 {
                     LoanNumber = sqlData[0].ToString(),
                     Collector = sqlData[1].ToString(),
-                    TaxonName = sqlData[2].ToString(),
-                    Duration = sqlData[3].ToString(),
-                    Status = sqlData[4].ToString()
+                    StartDate = sqlData[2].ToString(),
+                    ReturningDate = sqlData[3].ToString(),
+                    Duration = sqlData[4].ToString(),
+                    DateProcessed = sqlData[5].ToString(),
+                    Purpose = sqlData[6].ToString(),
+                    Status = sqlData[7].ToString()
                 });
             }
             connection.closeResult();
             
             dgrPlantLoans.ItemsSource = loans;
-            */
         }
 
         private void setDurationType()
@@ -216,6 +279,78 @@ namespace prototypeHerbarium
                 cbxDuration.Items.Add(range);
             }
         }
+
+        private bool validateForm()
+        {
+            bool formOk = true;
+            msgCollector.Visibility = Visibility.Collapsed;
+            msgLoanDate.Visibility = Visibility.Collapsed;
+            msgDuration.Visibility = Visibility.Collapsed;
+            msgPurpose.Visibility = Visibility.Collapsed;
+
+            if (cbxCollector.SelectedIndex == -1)
+            {
+                msgCollector.Visibility = Visibility.Visible;
+                formOk = false;
+            }
+            if (dpkLoanDate.Text == "")
+            {
+                msgLoanDate.Visibility = Visibility.Visible;
+                formOk = false;
+            }
+            if (txfDuration.Text == "" || cbxDuration.SelectedIndex == -1)
+            {
+                msgDuration.Visibility = Visibility.Visible;
+                formOk = false;
+            }
+            if (rbtOther.IsChecked == true && txfOtherPurpose.Text == "")
+            {
+                msgPurpose.Visibility = Visibility.Visible;
+                formOk = false;
+            }
+
+            return formOk;
+        }
+
+        private void loadSpeciesForm()
+        {
+            loanDate = Convert.ToDateTime(dpkLoanDate.Text);
+            switch (cbxDuration.SelectedIndex)
+            {
+                case 1:
+                    returnDate = loanDate.AddDays(Convert.ToDouble(txfDuration.Text));
+                    break;
+                case 2:
+                    returnDate = loanDate.AddMonths(Convert.ToInt32(txfDuration.Text));
+                    break;
+            }
+            if (rbtResearch.IsChecked == true)
+                lblPurpose.Text = "Research";
+            else if (rbtAcademic.IsChecked == true)
+                lblPurpose.Text = "Academic";
+            else if (rbtOther.IsChecked == true)
+                lblPurpose.Text = txfOtherPurpose.Text;
+
+            lblCollector.Text = cbxCollector.SelectedItem.ToString();
+            lblDuration.Text = loanDate.ToShortDateString() + " - " + returnDate.ToShortDateString();
+        }
+
+        private bool validateLoanSpecies()
+        {
+            bool formOK = false;
+
+            foreach(ListSpecies species in dgrTaxonSpecies.Items)
+            {
+                if (species.IsChecked && species.Specimens < species.Copies)
+                {
+                    MessageBox.Show("The Number of Copies you Request should not be more than the actual Available Specimens",
+                                    "Required Copies exceeded available Specimens", MessageBoxButton.OK, MessageBoxImage.Error);
+                    formOK = false;
+                }
+            }
+
+            return formOK;
+        }
     }
 }
 
@@ -223,12 +358,30 @@ public class PlantLoans
 {
     public string LoanNumber { get; set; }
     public string Collector { get; set; }
-    public string TaxonName { get; set; }
     public string StartDate { get; set; }
     public string ReturningDate { get; set; }
     public string Duration { get; set; }
-    public string Copies { get; set; }
     public string DateProcessed { get; set; }
     public string Purpose { get; set; }
     public string Status { get; set; }
+}
+
+public class ListFamily
+{
+    public string FamilyName { get; set; }
+    public bool IsChecked { get; set; }
+}
+
+public class ListGenus
+{
+    public string GenusName { get; set; }
+    public bool IsChecked { get; set; }
+}
+
+public class ListSpecies
+{
+    public string TaxonName { get; set; }
+    public int Specimens { get; set; }
+    public int Copies { get; set; }
+    public bool IsChecked { get; set; }
 }

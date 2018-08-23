@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
@@ -48,9 +49,13 @@ namespace prototypeHerbarium
             // Query Result
             while (sqlData.Read())
             {
-                byte[] tempBlob = (byte[])sqlData[1];
-                picHerbariumSheet.Source = getHerbariumSheet(tempBlob);
-
+                try
+                {
+                    byte[] tempBlob = (byte[])sqlData[1];
+                    picHerbariumSheet.Source = getHerbariumSheet(tempBlob);
+                }
+                catch (Exception) { }
+                
                 lblAccessionNumber.Text = sqlData[0].ToString();
                 lblBox.Text = sqlData[2].ToString();
                 lblFamilyName.Text = "  [" + sqlData[3].ToString() + "]";
@@ -161,7 +166,7 @@ namespace prototypeHerbarium
             connection.setQuery("UPDATE tblStoredHerbarium " +
                                 "SET boolLoanAvailable = @availability " +
                                 "WHERE intHerbariumSheetID = (SELECT intHerbariumSheetID " +
-                                                             "FROM tblHerbariumSheet " +
+                                                             "FROM viewHerbariumSheet " +
                                                              "WHERE strAccessionNumber = @accessionNumber)");
             connection.addParameter("@availability", SqlDbType.Bit, AvailableStatus);
             connection.addParameter("@accessionNumber", SqlDbType.VarChar, AccessionNumber);

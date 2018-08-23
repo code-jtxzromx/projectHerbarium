@@ -10,7 +10,7 @@
             <TextBlock x:Name="lblFieldLabel" />
             <TextBlock x:Name="lblRequired" Margin="5 0" Text="*" Foreground="Red"/>
         </WrapPanel>
-        <ComboBox x:Name="cbxComboBox" Height="25" Margin="3" VerticalContentAlignment="Center"/>
+        <ComboBox x:Name="cbxComboBox" Height="25" Margin="3" VerticalContentAlignment="Center" SelectionChanged="cbxComboBox_SelectionChanged"/>
         <TextBlock x:Name="lblErrorMessage" Visibility="Collapsed"
                    Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
     </StackPanel>

@@ -50,19 +50,23 @@
             </ListView>
             <DataGrid x:Name="dgrHerbariumSheets" DockPanel.Dock="Top" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Width="*" Header="Accession Number" Binding="{Binding AccessionNumber}"/>
+                    <DataGridTextColumn Width="150" Header="Accession Number" Binding="{Binding AccessionNumber}"/>
                     <DataGridTextColumn Width="2*" Header="Scientific Name" Binding="{Binding ScientificName}"/>
-                    <DataGridTextColumn Width="*" Header="Box Number" Binding="{Binding BoxLocation}"/>
                     <DataGridTextColumn Width="*" Header="Status" Binding="{Binding Status}"/>
-                    <DataGridTemplateColumn Header="Actions" Width="110">
+                    <DataGridTemplateColumn Header="Actions" Width="100">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <WrapPanel HorizontalAlignment="Center">
-                                    <Button x:Name="btnView" 
-                                        Padding="2" Margin="2"
-                                        Click="btnView_Click"
-                                        ToolTip="View"
-                                        Content="VIEW" />
+                                    <Button x:Name="btnView" Click="btnView_Click"
+                                            Margin="1" Height="25" Width="25" 
+                                            Background="LightCyan" BorderBrush="SkyBlue"
+                                            ToolTip="View">
+                                        <Rectangle Width="14" Height="11" Fill="Black">
+                                            <Rectangle.OpacityMask>
+                                                <ImageBrush ImageSource="{StaticResource glyphicon-eye-open}"/>
+                                            </Rectangle.OpacityMask>
+                                        </Rectangle>
+                                    </Button>
                                 </WrapPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -99,7 +103,7 @@
                     <Label FontWeight="DemiBold" Margin="0 5">Herbarium Sheet Information</Label>
                     <WrapPanel Margin="5" Grid.Column="1" FlowDirection="RightToLeft" VerticalAlignment="Center">
                         <Button x:Name="btnReturn" Click="btnReturn_Click" 
-                            Padding="2" ToolTip="Close"
+                            Padding="5" ToolTip="Close"
                             Grid.Row="0" Grid.Column="2" Grid.RowSpan="2"
                             Background="#55FFFFFF" BorderBrush="#00FFFFFF" Height="20" VerticalAlignment="Bottom">
                             <Image Source="{StaticResource glyphicon-remove}"/>

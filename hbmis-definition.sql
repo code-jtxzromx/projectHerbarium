@@ -261,15 +261,13 @@ CREATE TABLE tblPlantDeposit
 (
 	intPlantDepositID INT IDENTITY(1000, 1) NOT NULL,
 	strAccessionNumber VARCHAR(50) NOT NULL,
-	picHerbariumSheet VARBINARY(MAX) NOT NULL,
-	strPlantType VARCHAR(5) NOT NULL,
+	picHerbariumSheet VARBINARY(MAX),
 	intCollectorID INT NOT NULL,
 	intLocalityID INT NOT NULL,
 	intStaffID INT NOT NULL,
 	dateCollected DATE NOT NULL,
 	dateDeposited DATE NOT NULL,
 	strDescription VARCHAR(MAX) NOT NULL,
-	boolDuplicate BIT NOT NULL,
 	strStatus VARCHAR(50) NOT NULL,
 	CONSTRAINT pk_tblPlantDeposit PRIMARY KEY(intPlantDepositID),
 	CONSTRAINT fk_tblPlantDeposit_tblCollector FOREIGN KEY(intCollectorID)
@@ -341,7 +339,7 @@ CREATE TABLE tblPlantLoanTransaction
 )
 GO
 
--- Plants in Loan
+-- Plants Deposits in Loan
 IF OBJECT_ID('tblLoaningPlants', 'U') IS NOT NULL
 	DROP TABLE tblLoaningPlants
 GO
@@ -355,6 +353,23 @@ CREATE TABLE tblLoaningPlants
 		REFERENCES tblPlantLoanTransaction(intLoanID),
 	CONSTRAINT fk_tblLoaningPlants_tblHerbariumSheet FOREIGN KEY(intHerbariumSheetID)
 		REFERENCES tblHerbariumSheet(intHerbariumSheetID)
+)
+
+-- Species in Loan
+IF OBJECT_ID('tblLoaningSpecies', 'U') IS NOT NULL
+	DROP TABLE tblLoaningSpecies
+GO
+CREATE TABLE tblLoaningSpecies
+(
+	intSpeciesLoanID INT IDENTITY(1, 1) NOT NULL,
+	intLoanID INT NOT NULL,
+	intSpeciesID INT NOT NULL,
+	intCopies INT NOT NULL,
+	CONSTRAINT pk_tblLoaningSpecies PRIMARY KEY(intSpeciesLoanID),
+	CONSTRAINT fk_tblLoaningSpecies_tblPlantLoanTransaction FOREIGN KEY(intLoanID)
+		REFERENCES tblPlantLoanTransaction(intLoanID),
+	CONSTRAINT fk_tblLoaningSpecies_tblSpecies FOREIGN KEY(intSpeciesID)
+		REFERENCES tblSpecies(intSpeciesID)
 )
 
 -------------- VIEWS CREATION --------------
@@ -611,19 +626,17 @@ AS
 GO
 
 -- Plant Loans
--- Conflicted Code
---IF OBJECT_ID('viewPlantLoans', 'V') IS NOT NULL
---	DROP VIEW viewPlantLoans
---GO
---CREATE VIEW viewPlantLoans
---AS
---(
---	SELECT PL.intLoanID, PL.strLoanNumber, Co.strFullName AS strCollector, Sp.strScientificName, PL.dateLoan,
---		PL.dateReturning, PL.dateProcessed, PL.intCopies, PL.strPurpose, PL.strStatus
---	FROM tblPlantLoan PL
---		INNER JOIN viewCollector Co ON PL.intCollectorID = Co.intCollectorID
---		INNER JOIN viewTaxonSpecies Sp ON PL.intSpeciesID = Sp.intSpeciesID
---)
---GO
+IF OBJECT_ID('viewPlantLoans', 'V') IS NOT NULL
+	DROP VIEW viewPlantLoans
+GO
+CREATE VIEW viewPlantLoans
+AS
+(
+	SELECT PL.intLoanID, CONCAT('HB-', FORMAT(PL.intLoanID, '00000#')) as strLoanNumber, Co.strFullName AS strCollector, 
+		PL.dateLoan, PL.dateReturning, CONCAT(PL.dateLoan, ' - ', PL.dateReturning) as strDuration, PL.dateProcessed, PL.strPurpose, PL.strStatus
+	FROM tblPlantLoanTransaction PL
+		INNER JOIN viewCollector Co ON PL.intCollectorID = Co.intCollectorID
+)
+GO
 
 -------------- END OF FILE --------------

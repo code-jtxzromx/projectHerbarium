@@ -33,7 +33,11 @@
     <BitmapImage x:Key="glyphicon-collapse"         UriSource="Resources/glyphicons_free/glyphicons/png/glyphicons-369-collapse.png" />
     <BitmapImage x:Key="glyphicon-list-alt"         UriSource="Resources/glyphicons_free/glyphicons/png/glyphicons-530-list-alt.png" />
     <BitmapImage x:Key="glyphicon-file-download"    UriSource="Resources/glyphicons_free/glyphicons/png/glyphicons-707-file-cloud-download.png" />
-    
+    <BitmapImage x:Key="glyphicon-cogwheel"         UriSource="Resources/glyphicons_free/glyphicons/png/glyphicons-137-cogwheel.png" />
+    <BitmapImage x:Key="glyphicon-camera"           UriSource="Resources/glyphicons_free/glyphicons/png/glyphicons-12-camera.png" />
+    <BitmapImage x:Key="glyphicon-eye-open"         UriSource="Resources/glyphicons_free/glyphicons/png/glyphicons-52-eye-open.png" />
+    <BitmapImage x:Key="glyphicon-ok-sign"          UriSource="Resources/glyphicons_free/glyphicons/png/glyphicons-194-ok-sign.png" />
+
     <!-- Styles used in this Application -->
     <Style x:Key="mainWindow" TargetType="{x:Type Window}">
         <Setter Property="WindowStyle" Value="None"/>

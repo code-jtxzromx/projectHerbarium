@@ -25,72 +25,79 @@ namespace prototypeHerbarium
     {
         WebCam camera;
         bool webcamOpened = false;
+        ctrlComboBox comboBox = new ctrlComboBox();
 
         public pageDeposit()
         {
             InitializeComponent();
-
-            rbtNew.IsChecked = true;
-
+            
             getCollectorList();
             getValidatorList();
             getLocalityList();
             getTaxonList();
 
+            rbtNew.IsChecked = true;
             camera = new WebCam();
             camera.InitializeCamera(ref picCamera);
         }
         
         private void rbtDepositTransaction_Checked(object sender, RoutedEventArgs e)
         {
-            if (rbtNew.IsChecked == true)
-            {
-                btnDuplicateRecord.Visibility = Visibility.Collapsed;
-                txfAccessionNumber.Visibility = Visibility.Collapsed;
-                txfReferenceNumber.Visibility = Visibility.Collapsed;
-                cbxValidator.Visibility = Visibility.Collapsed;
-                cbxTaxonName.Visibility = Visibility.Collapsed;
-                //txfCommonName.Visibility = Visibility.Collapsed;
-                dpkDateDeposited.Visibility = Visibility.Collapsed;
-                dpkDateVerified.Visibility = Visibility.Collapsed;
+            bool isNew = (rbtNew.IsChecked == true);
 
-                txfAccessionNumber.RequiredField = false;
-                txfReferenceNumber.RequiredField = false;
-                cbxValidator.RequiredField = false;
-                cbxTaxonName.RequiredField = false;
-                //txfCommonName.RequiredField = false;
-                dpkDateDeposited.RequiredField = false;
-                dpkDateVerified.RequiredField = false;
+            btnVerifiedRecord.Visibility = isNew ? Visibility.Collapsed : Visibility.Visible;
+            chkSameAccession.Visibility = isNew ? Visibility.Collapsed : Visibility.Visible;
+            txfAccessionNumber.Visibility = isNew ? Visibility.Collapsed : Visibility.Visible;
+            cbxReferenceNumber.Visibility = isNew ? Visibility.Collapsed : Visibility.Visible;
+            cbxValidator.Visibility = isNew ? Visibility.Collapsed : Visibility.Visible;
+            cbxTaxonName.Visibility = isNew ? Visibility.Collapsed : Visibility.Visible;
+            dpkDateDeposited.Visibility = isNew ? Visibility.Collapsed : Visibility.Visible;
+            dpkDateVerified.Visibility = isNew ? Visibility.Collapsed : Visibility.Visible;
 
-                defValidator.Width = new GridLength(0);
-                defDateCollected.Width = new GridLength(0);
-            }
-            else if (rbtExisting.IsChecked == true)
-            {
-                btnDuplicateRecord.Visibility = Visibility.Visible;
-                btnDuplicateRecord.IsChecked = false;
-                txfAccessionNumber.Visibility = Visibility.Visible;
-                cbxValidator.Visibility = Visibility.Visible;
-                cbxTaxonName.Visibility = Visibility.Visible;
-                //txfCommonName.Visibility = Visibility.Visible;
-                dpkDateDeposited.Visibility = Visibility.Visible;
-                dpkDateVerified.Visibility = Visibility.Visible;
+            txfAccessionNumber.RequiredField = !isNew;
+            cbxReferenceNumber.RequiredField = !isNew;
+            cbxValidator.RequiredField = !isNew;
+            cbxTaxonName.RequiredField = !isNew;
+            dpkDateDeposited.RequiredField = !isNew;
+            dpkDateVerified.RequiredField = !isNew;
 
-                txfAccessionNumber.RequiredField = true;
-                txfReferenceNumber.RequiredField = true;
-                cbxValidator.RequiredField = true;
-                cbxTaxonName.RequiredField = true;
-                //txfCommonName.RequiredField = true;
-                dpkDateDeposited.RequiredField = true;
-                dpkDateVerified.RequiredField = true;
+            defValidator.Width = isNew ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
+            defDateCollected.Width = isNew ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
 
-                defValidator.Width = new GridLength(1, GridUnitType.Star);
-                defDateCollected.Width = new GridLength(1, GridUnitType.Star);
-            }
+            btnVerifiedRecord.IsChecked = false;
+            btnVerifiedRecord_ToggleChange(btnVerifiedRecord, null);
         }
 
-        private void btnDuplicateRecord_ToggleChange(object sender, RoutedEventArgs e) 
-            => txfReferenceNumber.Visibility = (btnDuplicateRecord.IsChecked == true) ? Visibility.Visible : Visibility.Collapsed;
+        private void btnVerifiedRecord_ToggleChange(object sender, RoutedEventArgs e)
+        {
+            bool isVerified = (btnVerifiedRecord.IsChecked == true);
+
+            chkSameAccession.Visibility = isVerified ? Visibility.Visible : Visibility.Collapsed;
+            cbxReferenceNumber.Visibility = isVerified ? Visibility.Visible : Visibility.Collapsed;
+            cbxValidator.Visibility = isVerified ? Visibility.Visible : Visibility.Collapsed;
+            cbxTaxonName.Visibility = isVerified ? Visibility.Visible : Visibility.Collapsed;
+            dpkDateVerified.Visibility = isVerified ? Visibility.Visible : Visibility.Collapsed;
+            
+            cbxReferenceNumber.RequiredField = isVerified;
+            cbxValidator.RequiredField = isVerified;
+            cbxTaxonName.RequiredField = isVerified;
+            dpkDateVerified.RequiredField = isVerified;
+
+            defValidator.Width = isVerified ? new GridLength(1, GridUnitType.Star) : new GridLength(0);
+            chkSameAccession.IsChecked = isVerified;
+            chkSameAccession_CheckedChanged(chkSameAccession, null);
+        }
+
+        private void cbxTaxonName_SelectionChange(object sender, EventArgs e)
+        {
+            try
+            {
+                getAccessionList(cbxTaxonName.SelectedItem.ToString());
+            }
+            catch (Exception) { }
+        }
+
+        private void chkSameAccession_CheckedChanged(object sender, RoutedEventArgs e) => cbxReferenceNumber.IsEnabled = (chkSameAccession.IsChecked == false);
 
         private void btnUploadPicture_Click(object sender, RoutedEventArgs e)
         {
@@ -103,7 +110,6 @@ namespace prototypeHerbarium
             if (dialog.ShowDialog() == true)
             {
                 picHerbariumPlant.Source = new BitmapImage(new Uri(dialog.FileName));
-                //lblPictureFile.Text = dialog.FileName;
             }
         }
 
@@ -114,6 +120,7 @@ namespace prototypeHerbarium
                 camera.Start();
             else
                 camera.Continue();
+            webcamOpened = true;
 
             btnCapturePic.Visibility = Visibility.Visible;
             btnDiscardPic.Visibility = Visibility.Collapsed;
@@ -126,6 +133,10 @@ namespace prototypeHerbarium
             btnDiscardPic_Click(btnDiscardPic, null);
             camera.Stop();
         }
+
+        private void btnResolutionSetting_Click(object sender, RoutedEventArgs e) => camera.ResolutionSetting();
+
+        private void btnCameraSetting_Click(object sender, RoutedEventArgs e) => camera.AdvanceSetting();
 
         private void btnCapturePic_Click(object sender, RoutedEventArgs e)
         {
@@ -157,12 +168,11 @@ namespace prototypeHerbarium
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
             txfAccessionNumber.Clear();
-            txfReferenceNumber.Clear();
+            cbxReferenceNumber.SelectedIndex = -1;
             cbxCollector.SelectedIndex = -1;
             cbxValidator.SelectedIndex = -1;
             cbxLocality.SelectedIndex = -1;
             cbxTaxonName.SelectedIndex = -1;
-            //txfCommonName.Clear();
             dpkDateCollected.Clear();
             dpkDateDeposited.Clear();
             dpkDateVerified.Clear();
@@ -170,12 +180,11 @@ namespace prototypeHerbarium
             
             picHerbariumPlant.Source = null;
             txfAccessionNumber.ErrorMessage = false;
-            txfReferenceNumber.ErrorMessage = false;
+            cbxReferenceNumber.ErrorMessage = false;
             cbxCollector.ErrorMessage = false;
             cbxValidator.ErrorMessage = false;
             cbxLocality.ErrorMessage = false;
             cbxTaxonName.ErrorMessage = false;
-            //txfCommonName.ErrorMessage = false;
             dpkDateCollected.ErrorMessage = false;
             dpkDateDeposited.ErrorMessage = false;
             dpkDateVerified.ErrorMessage = false;
@@ -200,7 +209,10 @@ namespace prototypeHerbarium
                     }
                     else if (rbtExisting.IsChecked == true)
                     {
-                        addExistingDeposit();
+                        if (btnVerifiedRecord.IsChecked == true)
+                            addExistingVerifiedDeposit();
+                        else
+                            addExistingDeposit();
                     }
                 }
             }
@@ -282,16 +294,31 @@ namespace prototypeHerbarium
             connection.closeResult();
         }
 
+        private void getAccessionList(string species)
+        {
+            cbxReferenceNumber.Reset();
+
+            DatabaseConnection connection = new DatabaseConnection();
+            connection.setQuery("SELECT DISTINCT strReferenceAccession FROM viewHerbariumSheet WHERE strScientificName = @taxonName");
+            connection.addParameter("@taxonName", System.Data.SqlDbType.VarChar, species);
+
+            SqlDataReader sqlData = connection.executeResult();
+            while (sqlData.Read())
+            {
+                cbxReferenceNumber.AddItem(sqlData[0]);
+            }
+            connection.closeResult();
+        }
+
         private bool validateForm()
         {
             bool formOK = true;
             txfAccessionNumber.ErrorMessage = false;
-            txfReferenceNumber.ErrorMessage = false;
+            cbxReferenceNumber.ErrorMessage = false;
             cbxCollector.ErrorMessage = false;
             cbxValidator.ErrorMessage = false;
             cbxLocality.ErrorMessage = false;
             cbxTaxonName.ErrorMessage = false;
-            //txfCommonName.ErrorMessage = false;
             dpkDateCollected.ErrorMessage = false;
             dpkDateDeposited.ErrorMessage = false;
             dpkDateVerified.ErrorMessage = false;
@@ -300,11 +327,6 @@ namespace prototypeHerbarium
             if (txfAccessionNumber.RequiredField && txfAccessionNumber.TextContent == "")
             {
                 txfAccessionNumber.ErrorMessage = true;
-                formOK = false;
-            }
-            if (txfReferenceNumber.RequiredField && txfReferenceNumber.TextContent == "")
-            {
-                txfReferenceNumber.ErrorMessage = true;
                 formOK = false;
             }
             if (cbxCollector.RequiredField && cbxCollector.SelectedIndex == -1)
@@ -327,11 +349,6 @@ namespace prototypeHerbarium
                 cbxTaxonName.ErrorMessage = true;
                 formOK = false;
             }
-            //if (txfCommonName.RequiredField && txfCommonName.TextContent == "")
-            //{
-            //    txfCommonName.ErrorMessage = true;
-            //    formOK = false;
-            //}
             if (dpkDateCollected.RequiredField && dpkDateCollected.DateContent == "")
             {
                 dpkDateCollected.ErrorMessage = true;
@@ -347,11 +364,6 @@ namespace prototypeHerbarium
                 dpkDateVerified.ErrorMessage = true;
                 formOK = false;
             }
-            //if (lblPictureFile.Text == "[No Uploaded Photo]")
-            //{
-            //    lblErrorPicture.Visibility = Visibility.Visible;
-            //    formOK = false;
-            //}
 
             return formOK;
         }
@@ -359,22 +371,75 @@ namespace prototypeHerbarium
         private void addNewDeposit()
         {
             int status;
-            byte[] picture = getPictureToBinary(picHerbariumPlant);
-            DatabaseConnection connection = new DatabaseConnection();
+            bool pictureEmpty = false;
+            byte[] picture = null;
+            char plantType = 'X';
 
+            try { picture = getPictureToBinary(picHerbariumPlant); }
+            catch (Exception) { pictureEmpty = true; }
+
+            if (rbtVascular.IsChecked == true) plantType = 'V';
+            else if (rbtFlowering.IsChecked == true) plantType = 'F';
+            else if (rbtAlgae.IsChecked == true) plantType = 'A';
+            else if (rbtBryophyte.IsChecked == true) plantType = 'B';
+
+            DatabaseConnection connection = new DatabaseConnection();
             connection.setStoredProc("dbo.procInsertPlantDeposit");
-            connection.addSprocParameter("@herbariumSheet", System.Data.SqlDbType.VarBinary, picture);
+            if (!pictureEmpty) connection.addSprocParameter("@herbariumSheet", System.Data.SqlDbType.VarBinary, picture);
             connection.addSprocParameter("@locality", System.Data.SqlDbType.VarChar, cbxLocality.SelectedItem);
             connection.addSprocParameter("@collector", System.Data.SqlDbType.VarChar, cbxCollector.SelectedItem);
             connection.addSprocParameter("@staff", System.Data.SqlDbType.VarChar, StaticData.staffname);
             connection.addSprocParameter("@dateCollected", System.Data.SqlDbType.Date, dpkDateCollected.DateContent);
             connection.addSprocParameter("@description", System.Data.SqlDbType.VarChar, txaDescription.Text);
+            connection.addSprocParameter("@plantType", System.Data.SqlDbType.Char, plantType);
             status = connection.executeProcedure();
 
             switch (status)
             {
                 case 0:
-                    MessageBox.Show("Plant Deposit Received", "Record Saved", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("New Plant Deposit Received", "Record Saved", MessageBoxButton.OK, MessageBoxImage.Information);
+                    break;
+                case 1:
+                    MessageBox.Show("Transaction Failed, The system had run to an Error", "Record Saved", MessageBoxButton.OK, MessageBoxImage.Information);
+                    break;
+            }
+
+            btnClear_Click(btnClear, null);
+            
+        }
+
+        private void addExistingDeposit()
+        {
+            int status;
+            bool pictureEmpty = false;
+            byte[] picture = null;
+            char plantType = 'X';
+
+            try { picture = getPictureToBinary(picHerbariumPlant); }
+            catch (Exception) { pictureEmpty = true; }
+
+            if (rbtVascular.IsChecked == true) plantType = 'V';
+            else if (rbtFlowering.IsChecked == true) plantType = 'F';
+            else if (rbtAlgae.IsChecked == true) plantType = 'A';
+            else if (rbtBryophyte.IsChecked == true) plantType = 'B';
+
+            DatabaseConnection connection = new DatabaseConnection();
+            connection.setStoredProc("dbo.procInsertPlantDeposit");
+            if (!pictureEmpty) connection.addSprocParameter("@herbariumSheet", System.Data.SqlDbType.VarBinary, picture);
+            connection.addSprocParameter("@locality", System.Data.SqlDbType.VarChar, cbxLocality.SelectedItem);
+            connection.addSprocParameter("@collector", System.Data.SqlDbType.VarChar, cbxCollector.SelectedItem);
+            connection.addSprocParameter("@staff", System.Data.SqlDbType.VarChar, StaticData.staffname);
+            connection.addSprocParameter("@dateCollected", System.Data.SqlDbType.Date, dpkDateCollected.DateContent);
+            connection.addSprocParameter("@description", System.Data.SqlDbType.VarChar, txaDescription.Text);
+            connection.addSprocParameter("@plantType", System.Data.SqlDbType.Char, plantType);
+            connection.addSprocParameter("@accessionDigits", System.Data.SqlDbType.VarChar, txfAccessionNumber.TextContent);
+            connection.addSprocParameter("@dateDeposited", System.Data.SqlDbType.Date, dpkDateDeposited.DateContent);
+            status = connection.executeProcedure();
+
+            switch (status)
+            {
+                case 0:
+                    MessageBox.Show("Existing Plant Deposit Recorded", "Record Saved", MessageBoxButton.OK, MessageBoxImage.Information);
                     break;
                 case 1:
                     MessageBox.Show("Transaction Failed, The system had run to an Error", "Record Saved", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -384,16 +449,27 @@ namespace prototypeHerbarium
             btnClear_Click(btnClear, null);
         }
 
-        private void addExistingDeposit()
+        private void addExistingVerifiedDeposit()
         {
             int status;
-            byte[] picture = getPictureToBinary(picHerbariumPlant);
-            DatabaseConnection connection = new DatabaseConnection();
+            bool pictureEmpty = false;
+            byte[] picture = null;
+            char plantType = 'X';
 
+            try { picture = getPictureToBinary(picHerbariumPlant); }
+            catch (Exception) { pictureEmpty = true; }
+
+            if (rbtVascular.IsChecked == true) plantType = 'V';
+            else if (rbtFlowering.IsChecked == true) plantType = 'F';
+            else if (rbtAlgae.IsChecked == true) plantType = 'A';
+            else if (rbtBryophyte.IsChecked == true) plantType = 'B';
+
+            DatabaseConnection connection = new DatabaseConnection();
             connection.setStoredProc("dbo.procInsertVerifiedDeposit");
-            connection.addSprocParameter("@accessionNumber", System.Data.SqlDbType.VarChar, txfAccessionNumber.TextContent);
-            connection.addSprocParameter("@referenceNumber", System.Data.SqlDbType.VarChar, txfReferenceNumber.TextContent);
-            connection.addSprocParameter("@herbariumSheet", System.Data.SqlDbType.VarBinary, picture);
+            connection.addSprocParameter("@accessionDigits", System.Data.SqlDbType.VarChar, txfAccessionNumber.TextContent);
+            connection.addSprocParameter("@referenceNumber", System.Data.SqlDbType.VarChar, cbxReferenceNumber.SelectedItem);
+            connection.addSprocParameter("@sameAccession", System.Data.SqlDbType.Bit, (chkSameAccession.IsChecked == true));
+            if (!pictureEmpty) connection.addSprocParameter("@herbariumSheet", System.Data.SqlDbType.VarBinary, picture);
             connection.addSprocParameter("@locality", System.Data.SqlDbType.VarChar, cbxLocality.SelectedItem);
             connection.addSprocParameter("@taxonName", System.Data.SqlDbType.VarChar, cbxTaxonName.SelectedItem);
             connection.addSprocParameter("@collector", System.Data.SqlDbType.VarChar, cbxCollector.SelectedItem);
@@ -403,12 +479,13 @@ namespace prototypeHerbarium
             connection.addSprocParameter("@dateDeposited", System.Data.SqlDbType.Date, dpkDateDeposited.DateContent);
             connection.addSprocParameter("@dateVerified", System.Data.SqlDbType.Date, dpkDateVerified.DateContent);
             connection.addSprocParameter("@description", System.Data.SqlDbType.VarChar, txaDescription.Text);
+            connection.addSprocParameter("@plantType", System.Data.SqlDbType.Char, plantType);
             status = connection.executeProcedure();
 
             switch (status)
             {
                 case 0:
-                    MessageBox.Show("Plant Deposit Received", "Record Saved", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Plant Deposit Received and Verified", "Record Saved", MessageBoxButton.OK, MessageBoxImage.Information);
                     break;
                 case 1:
                     MessageBox.Show("Transaction Failed, The system had run to an Error", "Record Saved", MessageBoxButton.OK, MessageBoxImage.Information);

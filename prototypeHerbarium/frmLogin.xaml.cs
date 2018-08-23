@@ -25,7 +25,7 @@ namespace prototypeHerbarium
         string DefaultUsername = "admin";
         string DefaultPassword = "admin";
         string DefaultStaff = "Temporary Admin";
-        string DefaultRole = "SUPER-ADMINISTRATOR";
+        string DefaultRole = "ADMINISTRATOR";
         bool noRecords;
 
         public frmLogin()

@@ -63,5 +63,11 @@ namespace prototypeHerbarium
         {
             cbxComboBox.Items.Clear();
         }
+
+        public event EventHandler SelectionChange;
+        private void cbxComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            SelectionChange?.Invoke(this, EventArgs.Empty);
+        }
     }
 }

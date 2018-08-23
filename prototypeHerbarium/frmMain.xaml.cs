@@ -42,14 +42,14 @@ namespace prototypeHerbarium
 
             if (StaticData.role == "STUDENT ASSISTANT")
             {
-                btnMaintenance.Visibility = Visibility.Collapsed;
-                //btnPlantResubmit.Visibility = Visibility.Collapsed;
-                //btnPlantIdentification.Visibility = Visibility.Collapsed;
+                btnTaxonomicHierarchy.Visibility = Visibility.Collapsed;
+                btnFamilyBox.Visibility = Visibility.Collapsed;
+                btnCurator.Visibility = Visibility.Collapsed;
+                btnAccounts.Visibility = Visibility.Collapsed;
                 btnPlantVerification.Visibility = Visibility.Collapsed;
                 btnPlantClassification.Visibility = Visibility.Collapsed;
-                btnPlantLoaning.Visibility = Visibility.Collapsed;
-                //btnPlantTracking.Visibility = Visibility.Collapsed;
-                //btnAuditTrailing.Visibility = Visibility.Collapsed;
+                btnQuery.Visibility = Visibility.Collapsed;
+                btnReports.Visibility = Visibility.Collapsed;
             }
 
             btnHome_Click(btnHome, null);

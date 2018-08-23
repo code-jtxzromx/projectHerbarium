@@ -23,6 +23,10 @@ namespace prototypeHerbarium
     /// </summary>
     public partial class pageVerification : Page
     {
+        PlantDeposit plantDetails = new PlantDeposit();
+        string referenceAccession = "";
+        string scientificName = "";
+
         public pageVerification()
         {
             InitializeComponent();
@@ -35,9 +39,7 @@ namespace prototypeHerbarium
             // Database - Program Declaration
             DatabaseConnection connection = new DatabaseConnection();
             PlantDeposit plantDeposit = dgrVerifyingDeposit.SelectedValue as PlantDeposit;
-            PlantDeposit plantDetails = new PlantDeposit();
-            string referenceAccession = "";
-            string scientificName = "";
+
 
             // Query Command Setting
             connection.setQuery("SELECT strAccessionNumber, picHerbariumSheet, " +
@@ -55,9 +57,12 @@ namespace prototypeHerbarium
 
             while (sqlData.Read())
             {
-                byte[] tempBlob = (byte[])sqlData[1];
-                picHerbariumSheet.Source = getHerbariumSheet(tempBlob);
-
+                try {
+                    byte[] tempBlob = (byte[])sqlData[1];
+                    picHerbariumSheet.Source = getHerbariumSheet(tempBlob);
+                }
+                catch(Exception) { }
+                
                 lblAccessionNumber.Text = sqlData[0].ToString();
                 lblDateCollected.Text = sqlData[2].ToString();
                 lblDateDeposited.Text = sqlData[3].ToString();
@@ -75,26 +80,9 @@ namespace prototypeHerbarium
             connection.closeResult();
 
             getSpeciesList();
-            getAccessionNumbers(lblAccessionNumber.Text);
-            if(isDuplicateHerbarium(plantDetails, ref referenceAccession, ref scientificName))
-            {
-                pnlDuplicateMessage.Visibility = Visibility.Visible;
-                chkIsDuplicate.IsChecked = true;
-                chkIsDuplicate_CheckChanged(chkIsDuplicate, null);
-
-                cbxReferenceNumber.SelectedItem = referenceAccession;
-                cbxScientificName.SelectedItem = scientificName;
-            }
-            else
-            {
-                pnlDuplicateMessage.Visibility = Visibility.Collapsed;
-                chkIsDuplicate.IsChecked = false;
-                chkIsDuplicate_CheckChanged(chkIsDuplicate, null);
-            }
         }
 
-        private void chkIsDuplicate_CheckChanged(object sender, RoutedEventArgs e) 
-            => ctrlReference.Visibility = (chkIsDuplicate.IsChecked == true) ? Visibility.Visible : Visibility.Collapsed;
+        private void chkIsDuplicate_CheckChanged(object sender, RoutedEventArgs e) => ctrlReference.Visibility = (chkIsDuplicate.IsChecked == true) ? Visibility.Visible : Visibility.Collapsed;
 
         private void cbxScientificName_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -106,7 +94,7 @@ namespace prototypeHerbarium
             else
             {
                 connection.setQuery("SELECT strCommonName FROM viewTaxonSpecies WHERE strScientificName = @name");
-                connection.addParameter("@name", System.Data.SqlDbType.VarChar, cbxScientificName.SelectedItem.ToString());
+                connection.addParameter("@name", SqlDbType.VarChar, cbxScientificName.SelectedItem.ToString());
 
                 SqlDataReader sqlData = connection.executeResult();
                 while (sqlData.Read())
@@ -114,6 +102,22 @@ namespace prototypeHerbarium
                     txfCommonName.Text = sqlData[0].ToString();
                 }
                 connection.closeResult();
+
+                getAccessionNumbers(cbxScientificName.SelectedItem.ToString());
+
+                if (isDuplicateHerbarium(plantDetails, ref referenceAccession, ref scientificName))
+                {
+                    chkIsDuplicate.IsChecked = true;
+                    chkIsDuplicate_CheckChanged(chkIsDuplicate, null);
+
+                    cbxReferenceNumber.SelectedItem = referenceAccession;
+                    cbxScientificName.SelectedItem = scientificName;
+                }
+                else
+                {
+                    chkIsDuplicate.IsChecked = false;
+                    chkIsDuplicate_CheckChanged(chkIsDuplicate, null);
+                }
             }
         }
 
@@ -121,7 +125,7 @@ namespace prototypeHerbarium
         {
             DatabaseConnection connection = new DatabaseConnection();
             connection.setQuery("SELECT strScientificName FROM viewTaxonSpecies WHERE strCommonName = @name");
-            connection.addParameter("@name", System.Data.SqlDbType.VarChar, txfCommonName.Text);
+            connection.addParameter("@name", SqlDbType.VarChar, txfCommonName.Text);
 
             SqlDataReader sqlData = connection.executeResult();
             while (sqlData.Read())
@@ -131,7 +135,13 @@ namespace prototypeHerbarium
             connection.closeResult();
         }
 
-        private void btnReturn_Click(object sender, RoutedEventArgs e) => pnlPlantDeposit.Visibility = Visibility.Hidden;
+        private void btnReturn_Click(object sender, RoutedEventArgs e)
+        {
+            picHerbariumSheet.Source = null;
+            chkIsDuplicate.IsChecked = false;
+            cbxReferenceNumber.Items.Clear();
+            pnlPlantDeposit.Visibility = Visibility.Hidden;
+        }
 
         private void btnConfirm_Click(object sender, RoutedEventArgs e)
         {
@@ -146,9 +156,7 @@ namespace prototypeHerbarium
                 int status;
                 string refAccession = (chkIsDuplicate.IsChecked == false) 
                                        ? lblAccessionNumber.Text : cbxReferenceNumber.SelectedItem.ToString();
-
-                //MessageBox.Show(lblAccessionNumber.Text + "\n" + refAccession + "\n" + cbxScientificName.SelectedItem + "\n" + StaticData.staffname);
-
+                
                 DatabaseConnection connection = new DatabaseConnection();
                 connection.setStoredProc("dbo.procVerifyPlantDeposit");
                 connection.addSprocParameter("@accessionNo", SqlDbType.VarChar, lblAccessionNumber.Text);
@@ -243,13 +251,13 @@ namespace prototypeHerbarium
             connection.closeResult();
         }
 
-        private void getAccessionNumbers(string accessionNumber)
+        private void getAccessionNumbers(string taxonname)
         {
             cbxReferenceNumber.Items.Clear();
 
             DatabaseConnection connection = new DatabaseConnection();
-            connection.setQuery("SELECT strReferenceAccession FROM viewHerbariumSheet WHERE strReferenceAccession <> @accessionNo");
-            connection.addParameter("@accessionNo", SqlDbType.VarChar, accessionNumber);
+            connection.setQuery("SELECT DISTINCT strReferenceAccession FROM viewHerbariumSheet WHERE strScientificName = @taxonName");
+            connection.addParameter("@taxonName", SqlDbType.VarChar, taxonname);
 
             SqlDataReader sqlData = connection.executeResult();
             while (sqlData.Read())

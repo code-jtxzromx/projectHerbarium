@@ -4,79 +4,23 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:prototypeHerbarium"
+      xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="700" d:DesignWidth="800"
       Title="pageLoaning">
 
     <Grid>
         <DockPanel>
-            <!-- Add / Edit Form -->
-            <StackPanel x:Name="pnlAddLoan" Background="#5FEEEEEE" DockPanel.Dock="Top"
-                    Visibility="Collapsed" Margin="10">
-                <TextBlock FontSize="20" 
-                        FontFamily="SegoeUI" 
-                        FontWeight="DemiBold"
-                        Margin="40 20">Process New Loan</TextBlock>
-                <Grid Margin="40 10">
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-
-                    <Label Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0">Collector:</Label>
-                    <Label Grid.Column="4" Grid.ColumnSpan="4" Grid.Row="0">Taxon Name:</Label>
-                    <Label Grid.Column="8" Grid.ColumnSpan="4" Grid.Row="0">Available Specimens:</Label>
-                    <ComboBox x:Name="cbxCollector" Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="1" Height="25" Margin="3" VerticalContentAlignment="Center"/>
-                    <ComboBox x:Name="cbxTaxonName" SelectionChanged="cbxTaxonName_SelectionChanged" 
-                          Grid.Column="4" Grid.ColumnSpan="4" Grid.Row="1" Height="25" Margin="3" VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="txfNoSpecimens" Grid.Column="8" Grid.ColumnSpan="4" Grid.Row="1" Height="25" Margin="3" VerticalContentAlignment="Center" IsEnabled="False"/>
-                    <Label Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="2">Loan Date:</Label>
-                    <Label Grid.Column="4" Grid.ColumnSpan="4" Grid.Row="2">Duration:</Label>
-                    <Label Grid.Column="8" Grid.ColumnSpan="4" Grid.Row="2">Number of Copies:</Label>
-                    <DatePicker x:Name="dpkLoanDate" Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="3" Height="25" Margin="3" VerticalContentAlignment="Center" />
-                    <TextBox x:Name="txfDuration" Grid.Column="4" Grid.ColumnSpan="2" Grid.Row="3" Height="25" Margin="3" VerticalContentAlignment="Center" />
-                    <ComboBox x:Name="cbxDuration" Grid.Column="6" Grid.ColumnSpan="2" Grid.Row="3" Height="25" Margin="3" VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="txfNoCopies" TextChanged="txfNoCopies_TextChanged"
-                         Grid.Column="8" Grid.ColumnSpan="4" Grid.Row="3" Height="25" Margin="3" VerticalContentAlignment="Center" />
-                    <Label Grid.Column="0" Grid.ColumnSpan="8" Grid.Row="4">Purpose of Loan:</Label>
-                    <TextBox x:Name="txfPurpose" Grid.Column="0" Grid.ColumnSpan="8" Grid.Row="5" Height="25" Margin="3" VerticalContentAlignment="Center" />
-
-                </Grid>
-                <WrapPanel FlowDirection="RightToLeft" Margin="40 10 40 20">
-                    <Button x:Name="btnProcess" Click="btnProcess_Click" Margin="5" Padding="10 5" Content="PROCESS" />
-                    <Button x:Name="btnClear" Click="btnClear_Click" Margin="5" Padding="10 5" Content="CLEAR" />
-                </WrapPanel>
-            </StackPanel>
-            <Separator x:Name="sprAddLoan" Margin="10" DockPanel.Dock="Top" Visibility="Collapsed" />
-            <!-- View List -->
             <DockPanel>
                 <Grid DockPanel.Dock="Top" Margin="2" Height="35">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="100" />
+                        <ColumnDefinition Width="180" />
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="200" />
                     </Grid.ColumnDefinitions>
 
                     <Button x:Name="btnAddLoan" 
-                        Grid.Column="0" Margin="5" Content="New Loan" 
+                        Grid.Column="0" Margin="5" Content="New Loan Transaction" 
                         Click="btnAddLoan_Click" />
                     <WrapPanel Grid.Column="2" Margin="5">
                         <Label Content="Search: "/>
@@ -85,118 +29,265 @@
                 </Grid>
                 <DataGrid x:Name="dgrPlantLoans" DockPanel.Dock="Top" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Loan Number" Binding="{Binding LoanNumber}" Width="*"/>
-                        <DataGridTextColumn Header="Collector" Binding="{Binding Collector}" Width="2.5*"/>
-                        <DataGridTextColumn Header="Taxon Name" Binding="{Binding TaxonName}" Width="2.5*"/>
-                        <DataGridTextColumn Header="Duration" Binding="{Binding Duration}" Width="2*"/>
-                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="*"/>
+                        <DataGridTextColumn Header="Loan Number" Binding="{Binding LoanNumber}" Width="125" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Collector" Binding="{Binding Collector}" Width="2.5*" IsReadOnly="True">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style>
+                                    <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Duration" Binding="{Binding Duration}" Width="2*" IsReadOnly="True">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style>
+                                    <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="2*"/>
+                        <DataGridTemplateColumn x:Name="colActions" Header="Actions" Width="100">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <WrapPanel HorizontalAlignment="Center">
+                                        <Button x:Name="btnApprove"
+                                                Margin="1" Height="25" Width="25" 
+                                                Background="Red" BorderBrush="Red"
+                                                ToolTip="Edit">
+                                            <Rectangle Width="13" Height="11" Fill="White">
+                                                <Rectangle.OpacityMask>
+                                                    <ImageBrush ImageSource="{StaticResource glyphicon-ok-sign}"/>
+                                                </Rectangle.OpacityMask>
+                                            </Rectangle>
+                                        </Button>
+                                    </WrapPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
             </DockPanel>
         </DockPanel>
-        <Grid x:Name="pnlConfirmationForm" Visibility="Hidden">
+        <Grid x:Name="pnlLoanTransactionForm" Visibility="Hidden">
             <Grid.Background>
                 <SolidColorBrush Color="#7F555555"/>
             </Grid.Background>
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
-                <ColumnDefinition Width="450" />
+                <ColumnDefinition Width="750" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition />
-                <RowDefinition Height="350" />
+                <RowDefinition Height="570" />
                 <RowDefinition />
             </Grid.RowDefinitions>
 
-            <DockPanel Grid.Column="1" Grid.Row="1" Margin="30" Background="White">
-                
+            <DockPanel Grid.Column="1" Grid.Row="1" Margin="30 10" Background="#FFEEEEEE">
                 <Grid Margin="10 5" DockPanel.Dock="Top">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
 
-                    <Label FontWeight="DemiBold" Margin="0 5">Are you sure, do you want to Process this Loan Transaction?</Label>
+                    <Label FontWeight="DemiBold" Margin="0 5">Loan Transaction</Label>
                     <WrapPanel Margin="5" Grid.Column="1" FlowDirection="RightToLeft" VerticalAlignment="Center">
-                        <Button x:Name="btnReturn" Click="btnReturn_Click" 
-                            Padding="2" ToolTip="Close"
-                            Grid.Row="0" Grid.Column="2" Grid.RowSpan="2"
-                            Background="#55FFFFFF" BorderBrush="#00FFFFFF" Height="20" VerticalAlignment="Bottom">
+                        <Button x:Name="btnCancelTransactionA" Click="btnCancelTransactionA_Click"
+                                Padding="5" ToolTip="Close"
+                                Grid.Row="0" Grid.Column="2" Grid.RowSpan="2"
+                                Background="#55FFFFFF" BorderBrush="#00FFFFFF" Height="20" VerticalAlignment="Bottom">
                             <Image Source="{StaticResource glyphicon-remove}"/>
                         </Button>
                     </WrapPanel>
                 </Grid>
                 <WrapPanel Margin="15" DockPanel.Dock="Bottom" FlowDirection="RightToLeft">
-                    <Button x:Name="btnSave" Click="btnSave_Click" Margin="5" Padding="10 5">SAVE</Button>
+                    <Button x:Name="btnNext" Click="btnNext_Click" Margin="5" Padding="10 5">NEXT</Button>
+                    <Button x:Name="btnClear" Click="btnClear_Click" Margin="5" Padding="10 5">CLEAR</Button>
                 </WrapPanel>
-                <ScrollViewer Margin="10 5" ScrollViewer.VerticalScrollBarVisibility="Auto">
-                    <StackPanel Margin="0 0 5 0">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="2*" />
-                            </Grid.ColumnDefinitions>
+                <StackPanel Margin="10 0">
+                    <Grid Margin="10 5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
 
-                            <Label Grid.Column="0" Content="Collector:" />
-                            <TextBlock x:Name="lblCollector" Grid.Column="1" 
-                                       Margin="5" TextWrapping="Wrap" Text="" />
-                        </Grid>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="2*" />
-                            </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="5">
+                            Borrower's Name: <Span Foreground="Red">*</Span>
+                        </TextBlock>
+                        <TextBlock Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2" Margin="5">
+                            Loan Date: <Span Foreground="Red">*</Span>
+                        </TextBlock>
+                        <TextBlock Grid.Column="4" Grid.Row="0" Grid.ColumnSpan="2" Margin="5">
+                            Duration: <Span Foreground="Red">*</Span>
+                        </TextBlock>
+                        <ComboBox x:Name="cbxCollector" 
+                                  Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Height="25" Margin="3" VerticalContentAlignment="Center"/>
+                        <DatePicker x:Name="dpkLoanDate" 
+                                    Grid.Column="2" Grid.Row="1"  Grid.ColumnSpan="2" Height="25" Margin="3" VerticalContentAlignment="Center" />
+                        <TextBox x:Name="txfDuration" 
+                                 Grid.Column="4" Grid.Row="1" Height="25" Margin="3" VerticalContentAlignment="Center" />
+                        <ComboBox x:Name="cbxDuration" 
+                                  Grid.Column="5" Grid.Row="1" Height="25" Margin="3" VerticalContentAlignment="Center"/>
+                        <TextBlock x:Name="msgCollector" Visibility="Collapsed"
+                                   Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
+                        <TextBlock x:Name="msgLoanDate" Visibility="Collapsed"
+                                   Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="2" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
+                        <TextBlock x:Name="msgDuration" Visibility="Collapsed"
+                                   Grid.Column="4" Grid.Row="2" Grid.ColumnSpan="2" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
 
-                            <Label Grid.Column="0" Content="Taxon Name:" />
-                            <TextBlock x:Name="lblTaxonName" Grid.Column="1" 
-                                   Margin="5" TextWrapping="Wrap" Text="" />
-                        </Grid>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="2*" />
-                            </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="3" Margin="5">
+                            Purpose of Loan: <Span Foreground="Red">*</Span>
+                        </TextBlock>
+                        <TextBlock x:Name="lblOtherPurpose" Visibility="Collapsed" Grid.Column="3" Grid.Row="3" Grid.ColumnSpan="3" Margin="5">
+                            Other Purpose: <Span Foreground="Red">*</Span>
+                        </TextBlock>
+                        <WrapPanel Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="3" Margin="5">
+                            <RadioButton x:Name="rbtResearch" Margin="10 5"
+                                         GroupName="Purpose"
+                                         Content="Research"
+                                         Checked="rbtPurpose_CheckChanged"/>
+                            <RadioButton x:Name="rbtAcademic" Margin="10 5"
+                                         GroupName="Purpose"
+                                         Content="Academic"
+                                         Checked="rbtPurpose_CheckChanged"/>
+                            <RadioButton x:Name="rbtOther" Margin="10 5"
+                                         GroupName="Purpose"
+                                         Content="Others"
+                                         Checked="rbtPurpose_CheckChanged"/>
+                        </WrapPanel>
+                        <TextBox x:Name="txfOtherPurpose" Visibility="Collapsed"
+                                 Grid.Column="3" Grid.Row="4" Grid.ColumnSpan="3" Height="25" Margin="3" VerticalContentAlignment="Center" />
+                        <TextBlock x:Name="msgPurpose" Visibility="Collapsed"
+                                   Grid.Column="3" Grid.Row="5" Grid.ColumnSpan="3" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
+                    </Grid>
+                    <Grid Margin="10 30 10 0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
 
-                            <Label Grid.Column="0" Content="Loan Date:" />
-                            <TextBlock x:Name="lblLoanDate" Grid.Column="1" 
-                                       Margin="5" TextWrapping="Wrap" Text="" />
-                        </Grid>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="2*" />
-                            </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="5">
+                            Select Taxon Families: 
+                        </TextBlock>
+                        <TextBlock Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Margin="5">
+                            Select Taxon Genera: 
+                        </TextBlock>
+                        <DataGrid x:Name="dgrTaxonFamilies" Grid.Column="0" Grid.Row="1" Margin="5" Height="210" 
+                                  BorderBrush="Gray" BorderThickness="1"
+                                  AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0">
+                            <DataGrid.Columns>
+                                <DataGridCheckBoxColumn Binding="{Binding IsChecked}" Width="40"/>
+                                <DataGridTextColumn Header="Taxon Family" Binding="{Binding FamilyName}" Width="*" IsReadOnly="True" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <DataGrid x:Name="dgrTaxonGenera" Grid.Column="1" Grid.Row="1" Margin="5" Height="210"
+                                  BorderBrush="Gray" BorderThickness="1"
+                                  AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0">
+                            <DataGrid.Columns>
+                                <DataGridCheckBoxColumn Binding="{Binding IsChecked}" Width="40"/>
+                                <DataGridTextColumn Header="Taxon Genus" Binding="{Binding GenusName}" Width="*" IsReadOnly="True"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <WrapPanel Grid.Column="0" Grid.Row="2" Margin="5" FlowDirection="RightToLeft">
+                            <Button x:Name="btnLoadGenus" Click="btnLoadGenus_Click" Content="Loan Genus" Width="90" Padding="5" />
+                        </WrapPanel>
+                    </Grid>
+                </StackPanel>
+            </DockPanel>
+        </Grid>
+        <Grid x:Name="pnlPlantLoaningForm" Visibility="Hidden">
+            <Grid.Background>
+                <SolidColorBrush Color="#7F555555"/>
+            </Grid.Background>
 
-                            <Label Grid.Column="0" Content="Duration:" />
-                            <WrapPanel Grid.Column="1" Margin="5">
-                                <TextBlock x:Name="lblDuration" Text="" />
-                                <TextBlock x:Name="lblDurationType" Margin="5 0" Text="" />
-                            </WrapPanel>
-                        </Grid>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="2*" />
-                            </Grid.ColumnDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="750" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="570" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
 
-                            <Label Grid.Column="0" Content="Number of Copies:" />
-                            <TextBlock x:Name="lblCopies" Grid.Column="1" 
-                                       Margin="5" TextWrapping="Wrap" Text="" />
-                        </Grid>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="2*" />
-                            </Grid.ColumnDefinitions>
+            <DockPanel Grid.Column="1" Grid.Row="1" Margin="30 10" Background="#FFEEEEEE">
+                <Grid Margin="10 5" DockPanel.Dock="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
 
-                            <Label Grid.Column="0" Content="Purpose of Loan:" />
-                            <TextBlock x:Name="lblPurpose" Grid.Column="1" 
-                                       Margin="5" TextWrapping="Wrap" Text="" />
-                        </Grid> 
-                    </StackPanel>
-                </ScrollViewer>
+                    <Label FontWeight="DemiBold" Margin="0 5">Loan Transaction</Label>
+                    <WrapPanel Margin="5" Grid.Column="1" FlowDirection="RightToLeft" VerticalAlignment="Center">
+                        <Button x:Name="btnCancelTransactionB" Click="btnCancelTransactionB_Click"
+                                Padding="5" ToolTip="Close"
+                                Grid.Row="0" Grid.Column="2" Grid.RowSpan="2"
+                                Background="#55FFFFFF" BorderBrush="#00FFFFFF" Height="20" VerticalAlignment="Bottom">
+                            <Image Source="{StaticResource glyphicon-remove}"/>
+                        </Button>
+                    </WrapPanel>
+                </Grid>
+                <WrapPanel Margin="15" DockPanel.Dock="Bottom" FlowDirection="RightToLeft">
+                    <Button x:Name="btnSave" Click="btnSave_Click" Margin="5" Padding="10 5">SAVE TRANSACTION</Button>
+                    <Button x:Name="btnBack" Click="btnBack_Click" Margin="5" Padding="10 5">BACK</Button>
+                </WrapPanel>
+                <StackPanel Margin="10 0">
+                    <Grid Margin="5 10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        
+                        <TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="5">
+                            Collector:
+                        </TextBlock>
+                        <TextBlock Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="5">
+                            Duration:
+                        </TextBlock>
+                        <TextBlock Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Margin="5">
+                            Purpose of Loan:
+                        </TextBlock>
+                        <TextBlock x:Name="lblCollector" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Margin="5" />
+                        <TextBlock x:Name="lblDuration" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" Margin="5" />
+                        <TextBlock x:Name="lblPurpose" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" Margin="5" />
+                    </Grid>
+                    <DataGrid x:Name="dgrTaxonSpecies" Grid.Column="0" Grid.Row="1" Margin="10" Height="300" 
+                                  BorderBrush="Gray" BorderThickness="1"
+                                  AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0">
+                        <DataGrid.Columns>
+                            <DataGridCheckBoxColumn Binding="{Binding IsChecked}" Width="40" />
+                            <DataGridTextColumn Header="Taxon Species" Binding="{Binding TaxonName}" Width="3*" IsReadOnly="True" />
+                            <DataGridTextColumn Header="Specimens" Binding="{Binding Specimens}" Width="*" IsReadOnly="True" />
+                            <metro:DataGridNumericUpDownColumn Header="Copies" Binding="{Binding Copies}" Minimum="0" Width="*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <TextBlock Foreground="Red" FontWeight="DemiBold" Margin="15 0">
+                        * All Species that are checked will only be processed for this transaction
+                    </TextBlock>
+                </StackPanel>
             </DockPanel>
         </Grid>
     </Grid>

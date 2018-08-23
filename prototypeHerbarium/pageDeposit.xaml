@@ -57,6 +57,13 @@
 
             <ScrollViewer  Grid.Column="1" Margin="20 10" VerticalScrollBarVisibility="Auto">
                 <StackPanel>
+                    <metro:ToggleSwitch x:Name="btnVerifiedRecord"
+                                            OnLabel="Verified Deposit" OffLabel="Unverified Deposit" 
+                                            Checked="btnVerifiedRecord_ToggleChange" Unchecked="btnVerifiedRecord_ToggleChange"
+                                            Margin="5" FontSize="12" Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}" />
+
+                    <local:ctrlComboBox x:Name="cbxTaxonName" Label="Scientific Name:" SelectionChange="cbxTaxonName_SelectionChange" />
+
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition />
@@ -67,12 +74,11 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
 
-                        <metro:ToggleSwitch x:Name="btnDuplicateRecord" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"
-                                            OnLabel="Duplicate" OffLabel="Original" 
-                                            Checked="btnDuplicateRecord_ToggleChange" Unchecked="btnDuplicateRecord_ToggleChange"
-                                            Margin="5" FontSize="12" Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}" />
-                        <local:ctrlTextField x:Name="txfAccessionNumber" Grid.Column="0" Grid.Row="1" Label="Original Accession No:" />
-                        <local:ctrlTextField x:Name="txfReferenceNumber" Grid.Column="1" Grid.Row="1" Label="Verified Accession No:" />
+                        <local:ctrlTextField x:Name="txfAccessionNumber" Grid.Column="0" Grid.Row="0" Label="Original Accession No:" />
+                        <local:ctrlComboBox x:Name="cbxReferenceNumber" Grid.Column="1" Grid.Row="0" Label="Verified Accession No:" />
+                        <CheckBox x:Name="chkSameAccession" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="10 5 10 10" 
+                                  Checked="chkSameAccession_CheckedChanged" Unchecked="chkSameAccession_CheckedChanged"
+                                  Content="Reference Number is same as Accession Number" />
                     </Grid>
 
                     <Grid>
@@ -85,18 +91,6 @@
                         <local:ctrlComboBox x:Name="cbxValidator" Grid.Column="1" Label="Validator's Name:" />
                     </Grid>
 
-                    <local:ctrlComboBox x:Name="cbxLocality" Label="Location:" />
-
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-
-                        <local:ctrlComboBox x:Name="cbxTaxonName" Grid.Column="0" Grid.ColumnSpan="2" Label="Scientific Name:" />
-                        <!--<local:ctrlTextField x:Name="txfCommonName" Grid.Column="1" Label="Common Plant Name:" />-->
-                    </Grid>
-
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
@@ -104,6 +98,7 @@
                         </Grid.ColumnDefinitions>
 
                         <local:ctrlDateField x:Name="dpkDateCollected" Grid.Column="0" Label="Date Collected:" />
+                        <local:ctrlDateField x:Name="dpkDateDeposited" Grid.Column="1" Label="Date Deposited:" />
                     </Grid>
 
                     <Grid>
@@ -112,9 +107,10 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
 
-                        <local:ctrlDateField x:Name="dpkDateDeposited" Grid.Column="0" Label="Date Deposited:" />
-                        <local:ctrlDateField x:Name="dpkDateVerified" Grid.Column="1" Label="Date Verified:" />
+                        <local:ctrlDateField x:Name="dpkDateVerified" Grid.Column="0" Label="Date Verified:" />
                     </Grid>
+
+                    <local:ctrlComboBox x:Name="cbxLocality" Label="Location:" />
 
                     <StackPanel VerticalAlignment="Center">
                         <TextBlock Margin="5">
@@ -124,6 +120,7 @@
                             <RadioButton x:Name="rbtVascular" 
                                  GroupName="PlantType"
                                  Content="Vascular"
+                                 IsChecked="True"
                                  Margin="10 5" />
                             <RadioButton x:Name="rbtFlowering" 
                                  GroupName="PlantType"
@@ -132,6 +129,10 @@
                             <RadioButton x:Name="rbtAlgae" 
                                  GroupName="PlantType"
                                  Content="Algae"
+                                 Margin="10 5" />
+                            <RadioButton x:Name="rbtBryophyte" 
+                                 GroupName="PlantType"
+                                 Content="Bryophytes"
                                  Margin="10 5" />
                         </WrapPanel>
                     </StackPanel>
@@ -170,13 +171,24 @@
                     <Label FontWeight="DemiBold" Margin="5">Capture Herbarium Sheet Picture</Label>
                     <WrapPanel Margin="5" Grid.Column="1" FlowDirection="RightToLeft" VerticalAlignment="Center">
                         <Button x:Name="btnReturn" Click="btnReturn_Click"
-                                Padding="2" ToolTip="Close" Height="20" VerticalAlignment="Bottom"
+                                Padding="5" ToolTip="Close" Height="20" VerticalAlignment="Bottom"
                                 Background="#55FFFFFF" BorderBrush="#00FFFFFF" >
                             <Image Source="{StaticResource glyphicon-remove}"/>
                         </Button>
+                        <Button x:Name="btnResolutionSetting" Click="btnResolutionSetting_Click"
+                                Padding="5" ToolTip="Resolution Settings" Height="20" VerticalAlignment="Bottom"
+                                Background="#55FFFFFF" BorderBrush="#00FFFFFF" >
+                            <Image Source="{StaticResource glyphicon-camera}"/>
+                        </Button>
+                        <Button x:Name="btnCameraSetting" Click="btnCameraSetting_Click"
+                                Padding="5" ToolTip="Hardware Settings" Height="20" VerticalAlignment="Bottom"
+                                Background="#55FFFFFF" BorderBrush="#00FFFFFF" >
+                            <Image Source="{StaticResource glyphicon-cogwheel}"/>
+                        </Button>
+
                     </WrapPanel>
                 </Grid>
-                <Border BorderBrush="Gray" BorderThickness="1" Margin="45 5" VerticalAlignment="Center">
+                <Border BorderBrush="Gray" BorderThickness="1" Margin="49 5" VerticalAlignment="Center">
                     <Grid>
                         <Image x:Name="picHerbariumSheet" Visibility="Collapsed" Height="400" Width="300" Stretch="UniformToFill" />
                         <Image x:Name="picCamera" Visibility="Visible" Height="400" Width="300" Stretch="UniformToFill" />
@@ -184,11 +196,11 @@
                 </Border>
                 <WrapPanel HorizontalAlignment="Center">
                     <Button x:Name="btnCapturePic" Click="btnCapturePic_Click"
-                            Width="90" Margin="10" Padding="5" Content="Capture Photo" />
+                            Width="120" Margin="5" Padding="5" Content="Capture Photo" />
                     <Button x:Name="btnDiscardPic" Click="btnDiscardPic_Click"
-                            Width="90" Margin="10" Padding="5" Content="Discard Photo" />
+                            Width="120" Margin="5" Padding="5" Content="Discard Photo" />
                     <Button x:Name="btnSavePic" Click="btnSavePic_Click"
-                            Width="90" Margin="10" Padding="5" Content="Save Photo" />
+                            Width="120" Margin="5" Padding="5" Content="Save Photo" />
                 </WrapPanel>
             </StackPanel>
         </Grid>

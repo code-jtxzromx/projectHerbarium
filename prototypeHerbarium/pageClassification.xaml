@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:prototypeHerbarium"
+      xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="pageClassification">
@@ -43,7 +44,7 @@
                 </DataGrid.Columns>
             </DataGrid>
         </DockPanel>
-        <Grid x:Name="pnlPlantDeposit" Visibility="Hidden">
+        <Grid x:Name="pnlPlantDeposit" Visibility="Visible">
             <Grid.Background>
                 <SolidColorBrush Color="#7F555555"/>
             </Grid.Background>
@@ -72,7 +73,7 @@
                     <Label FontWeight="DemiBold" Margin="0 5">Do you want to Store this Herbarium Sheet to its Box?</Label>
                     <WrapPanel Margin="5" Grid.Column="1" FlowDirection="RightToLeft" VerticalAlignment="Center">
                         <Button x:Name="btnReturn" Click="btnReturn_Click"
-                            Padding="2" ToolTip="Close"
+                            Padding="5" ToolTip="Close"
                             Grid.Row="0" Grid.Column="2" Grid.RowSpan="2"
                             Background="#55FFFFFF" BorderBrush="#00FFFFFF" Height="20" VerticalAlignment="Bottom">
                             <Image Source="{StaticResource glyphicon-remove}"/>
@@ -95,6 +96,17 @@
                                 <TextBlock x:Name="lblBox" Text="" />
                                 <TextBlock x:Name="lblFamilyName" Text="" />
                             </WrapPanel>
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Loan Availability:" Margin="0 2" />
+                            <metro:ToggleSwitch x:Name="btnLoanAvailable" Grid.Column="1"
+                                                OnLabel="Available" OffLabel="Not Available" 
+                                                Margin="5" FontSize="12" Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}" />
                         </Grid>
                         <Grid>
                             <Grid.ColumnDefinitions>

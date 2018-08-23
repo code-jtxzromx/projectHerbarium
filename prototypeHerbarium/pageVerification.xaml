@@ -71,7 +71,7 @@
                     <Label FontWeight="DemiBold" Margin="0 5">Do you want to Verify this Plant Deposit?</Label>
                     <WrapPanel Margin="5" Grid.Column="1" FlowDirection="RightToLeft" VerticalAlignment="Center">
                         <Button x:Name="btnReturn" Click="btnReturn_Click" 
-                            Padding="2" ToolTip="Close"
+                            Padding="5" ToolTip="Close"
                             Grid.Row="0" Grid.Column="2" Grid.RowSpan="2"
                             Background="#55FFFFFF" BorderBrush="#00FFFFFF" Height="20" VerticalAlignment="Bottom">
                             <Image Source="{StaticResource glyphicon-remove}"/>
@@ -82,13 +82,18 @@
                     <Button x:Name="btnConfirm" Click="btnConfirm_Click" Margin="5" Padding="10 5">VERIFIED</Button>
                     <Button x:Name="btnReject" Click="btnReject_Click" Margin="5" Padding="10 5">NOT VERIFIED</Button>
                 </WrapPanel>
-                <WrapPanel x:Name="pnlDuplicateMessage" Margin="15 5" DockPanel.Dock="Bottom" Visibility="Collapsed">
-                    <TextBlock Foreground="Red" FontWeight="DemiBold">
-                        * Our System detected this Herbarium Sheet as a Duplicate
-                    </TextBlock>
-                </WrapPanel>
                 <ScrollViewer Margin="5 0 0 5" ScrollViewer.VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="0 0 5 0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Scientific Name:" VerticalContentAlignment="Center"/>
+                            <ComboBox x:Name="cbxScientificName" SelectionChanged="cbxScientificName_SelectionChanged" 
+                                      Grid.Column="1" Margin="5"/>
+                        </Grid>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -116,16 +121,6 @@
 
                             <Label Grid.Column="0" Content="Reference Accession:" VerticalContentAlignment="Center"/>
                             <ComboBox x:Name="cbxReferenceNumber" Grid.Column="1" Margin="5" />
-                        </Grid>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="2*" />
-                            </Grid.ColumnDefinitions>
-
-                            <Label Grid.Column="0" Content="Scientific Name:" VerticalContentAlignment="Center"/>
-                            <ComboBox x:Name="cbxScientificName" SelectionChanged="cbxScientificName_SelectionChanged" 
-                                      Grid.Column="1" Margin="5"/>
                         </Grid>
                         <Grid>
                             <Grid.ColumnDefinitions>
