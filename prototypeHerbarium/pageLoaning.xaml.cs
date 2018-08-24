@@ -134,15 +134,68 @@ namespace prototypeHerbarium
                                                             MessageBoxImage.Question);
                 if (response == MessageBoxResult.Yes)
                 {
-                    if(StaticData.role == "STUDENT ASSISTANT")
-                    {
+                    int status;
+                    string loanStatus = (StaticData.role == "STUDENT ASSISTANT") ? "Requesting" : "Approved";
+                    string loanNumber = "";
+                    DatabaseConnection connection = new DatabaseConnection();
 
+                    connection.setStoredProc("dbo.procProcessLoan");
+                    connection.addSprocParameter("@collectorName", SqlDbType.VarChar, lblCollector.Text);
+                    connection.addSprocParameter("@startDate", SqlDbType.Date, loanDate);
+                    connection.addSprocParameter("@endDate", SqlDbType.Date, returnDate);
+                    connection.addSprocParameter("@purpose", SqlDbType.VarChar, lblPurpose.Text);
+                    connection.addSprocParameter("@status", SqlDbType.VarChar, loanStatus);
+                    status = connection.executeProcedure();
+                    
+                    if (status == 0)
+                    {
+                        connection.setQuery("SELECT strLoanNumber " +
+                                            "FROM viewPlantLoans " +
+                                            "WHERE strCollector = @collector AND dateLoan = @startdate AND dateReturning = @enddate");
+                        connection.addParameter("@collector", SqlDbType.VarChar, lblCollector.Text);
+                        connection.addParameter("@startdate", SqlDbType.Date, loanDate);
+                        connection.addParameter("@enddate", SqlDbType.Date, returnDate);
+
+                        SqlDataReader sqlData = connection.executeResult();
+                        while (sqlData.Read())
+                        {
+                            loanNumber = sqlData[0].ToString();
+                        }
+                        connection.closeResult();
+
+                        foreach (ListSpecies list in dgrTaxonSpecies.Items)
+                        {
+                            if (list.IsChecked)
+                            {
+                                connection.setStoredProc("dbo.procLoanPlants");
+                                connection.addSprocParameter("@loanNumber", SqlDbType.VarChar, loanNumber);
+                                connection.addSprocParameter("@taxonName", SqlDbType.VarChar, list.TaxonName);
+                                connection.addSprocParameter("@copies", SqlDbType.Int, list.Copies);
+                                status = connection.executeProcedure();
+
+                                if (status == 1)
+                                    break;
+                            }
+                        }
+
+                        switch (status)
+                        {
+                            case 0:
+                                MessageBox.Show("Plant Deposit Transaction Processed Successfully");
+                                break;
+                            case 1:
+                                MessageBox.Show("Plant Deposit Transaction Processed with Some Error Records");
+                                break;
+                        }
                     }
                     else
                     {
-
+                        MessageBox.Show("The System had run to an Error");
                     }
                 }
+
+                pnlPlantLoaningForm.Visibility = Visibility.Hidden;
+                getLoanTable();
             }
         }
 
@@ -337,10 +390,11 @@ namespace prototypeHerbarium
 
         private bool validateLoanSpecies()
         {
-            bool formOK = false;
+            bool formOK = true;
 
             foreach(ListSpecies species in dgrTaxonSpecies.Items)
             {
+                MessageBox.Show(species.IsChecked + "\n" + species.TaxonName);
                 if (species.IsChecked && species.Specimens < species.Copies)
                 {
                     MessageBox.Show("The Number of Copies you Request should not be more than the actual Available Specimens",

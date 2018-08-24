@@ -74,7 +74,8 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
 
-                        <local:ctrlTextField x:Name="txfAccessionNumber" Grid.Column="0" Grid.Row="0" Label="Original Accession No:" />
+                        <local:ctrlTextField x:Name="txfAccessionNumber" Grid.Column="0" Grid.Row="0" Label="Original Accession No:" MaxLength="5"
+                                             PreviewTextInput="txfAccessionNumber_PreviewTextInput"/>
                         <local:ctrlComboBox x:Name="cbxReferenceNumber" Grid.Column="1" Grid.Row="0" Label="Verified Accession No:" />
                         <CheckBox x:Name="chkSameAccession" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="10 5 10 10" 
                                   Checked="chkSameAccession_CheckedChanged" Unchecked="chkSameAccession_CheckedChanged"

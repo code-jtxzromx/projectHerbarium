@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Win32;
+using System.Text.RegularExpressions;
 
 namespace prototypeHerbarium
 {
@@ -88,6 +89,12 @@ namespace prototypeHerbarium
             chkSameAccession_CheckedChanged(chkSameAccession, null);
         }
 
+        private void txfAccessionNumber_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
         private void cbxTaxonName_SelectionChange(object sender, EventArgs e)
         {
             try
@@ -97,7 +104,11 @@ namespace prototypeHerbarium
             catch (Exception) { }
         }
 
-        private void chkSameAccession_CheckedChanged(object sender, RoutedEventArgs e) => cbxReferenceNumber.IsEnabled = (chkSameAccession.IsChecked == false);
+        private void chkSameAccession_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+            cbxReferenceNumber.IsEnabled = (chkSameAccession.IsChecked == false);
+            cbxReferenceNumber.RequiredField = (chkSameAccession.IsChecked == false);
+        }
 
         private void btnUploadPicture_Click(object sender, RoutedEventArgs e)
         {
@@ -327,6 +338,11 @@ namespace prototypeHerbarium
             if (txfAccessionNumber.RequiredField && txfAccessionNumber.TextContent == "")
             {
                 txfAccessionNumber.ErrorMessage = true;
+                formOK = false;
+            }
+            if (cbxReferenceNumber.RequiredField && cbxReferenceNumber.SelectedIndex == -1)
+            {
+                cbxReferenceNumber.ErrorMessage = true;
                 formOK = false;
             }
             if (cbxCollector.RequiredField && cbxCollector.SelectedIndex == -1)

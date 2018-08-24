@@ -42,7 +42,7 @@
                 </DataGrid.Columns>
             </DataGrid>
         </DockPanel>
-        <Grid x:Name="pnlPlantDeposit" Visibility="Collapsed">
+        <Grid x:Name="pnlPlantDeposit" Visibility="Hidden">
             <Grid.Background>
                 <SolidColorBrush Color="#7F555555"/>
             </Grid.Background>

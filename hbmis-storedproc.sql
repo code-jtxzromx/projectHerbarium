@@ -1162,13 +1162,14 @@ IF OBJECT_ID('procInsertPlantDeposit', 'P') IS NOT NULL
 	DROP PROCEDURE procInsertPlantDeposit
 GO
 CREATE PROCEDURE procInsertPlantDeposit
-	@herbariumSheet		VARBINARY(MAX),
+	@herbariumSheet		VARBINARY(MAX) = NULL,
 	@locality			VARCHAR(255),
 	@collector			VARCHAR(255),
 	@staff				VARCHAR(255),
 	@dateCollected		DATE,
 	@description		VARCHAR(MAX),
-	@accessionNumber	VARCHAR(50) = NULL,
+	@plantType			CHAR,
+	@accessionDigits	VARCHAR(5) = NULL,
 	@dateDeposited		VARCHAR(50) = NULL
 AS
 BEGIN
@@ -1178,6 +1179,7 @@ BEGIN
 	BEGIN TRANSACTION
 	
 	BEGIN TRY
+		DECLARE @accessionNumber VARCHAR(50);
 		DECLARE @identifier INT;
 		DECLARE @localityID INT;
 		DECLARE @collectorID INT;
@@ -1188,15 +1190,20 @@ BEGIN
 		SET @collectorID = (SELECT intCollectorID FROM viewCollector WHERE strFullName = @collector);
 		SET @staffID = (SELECT intStaffID FROM viewHerbariumStaff WHERE strFullName = @staff);
 
-		IF @accessionNumber IS NULL
+		IF @accessionDigits IS NULL
 		BEGIN
 			SET @yearCode = YEAR(GETDATE()) % 100;
-			SET @identifier = (SELECT TOP 1 CAST(SUBSTRING(strAccessionNumber, 6, 5) AS INT) FROM tblPlantDeposit ORDER BY strAccessionNumber DESC);
+			SET @identifier = (SELECT TOP 1 CAST(SUBSTRING(strAccessionNumber, 8, 5) AS INT) FROM tblPlantDeposit ORDER BY strAccessionNumber DESC);
 
 			IF @identifier IS NULL
-				SET @accessionNumber = 'PUPH-00001-' + FORMAT(@yearCode, '0#');
+				SET @accessionNumber = 'PUPH-' + @plantType + '-00001-' + FORMAT(@yearCode, '0#');
 			ELSE
-				SET @accessionNumber = 'PUPH-' + FORMAT(@identifier + 1, '0000#') + '-' + FORMAT(@yearCode, '0#');
+				SET @accessionNumber = 'PUPH-' + @plantType + '-' + FORMAT(@identifier + 1, '0000#') + '-' + FORMAT(@yearCode, '0#');
+		END
+		ELSE
+		BEGIN
+			SET @yearCode = YEAR(@dateDeposited) % 100;
+			SET @accessionNumber = 'PUPH-' + @plantType + '-' + @accessionDigits + '-' + FORMAT(@yearCode, '0#');
 		END
 
 		IF @dateDeposited IS NULL
@@ -1218,48 +1225,6 @@ BEGIN
 	RETURN @Result
 END
 GO
-
--- Re-Submit Plant Deposit
--- Conflicted Code
-IF OBJECT_ID('procResubmitPlantDeposit', 'P') IS NOT NULL
-	DROP PROCEDURE procResubmitPlantDeposit
-GO
-
---CREATE PROCEDURE procResubmitPlantDeposit
---	@plantDepositNo	VARCHAR(10),
---	@herbariumSheet	VARBINARY(MAX),
---	@staff			VARCHAR(255),
---	@description	VARCHAR(MAX)
---AS
---BEGIN
---	DECLARE @Result INT = 0
-
---	BEGIN TRANSACTION
-	
---	BEGIN TRY
---		DECLARE @staffID INT;
-
---		SET @staffID = (SELECT intStaffID FROM viewHerbariumStaff WHERE strFullName = @staff)
-
---		UPDATE tblPlantDeposit
---		SET picHerbariumSheet = @herbariumSheet,
---			intStaffID = @staffID,
---			dateDeposited = GETDATE(),
---			strDescription = @description,
---			strStatus = 'For Deposit'
---		WHERE strDepositNumber = @plantDepositNo;
---	END TRY
---	BEGIN CATCH
---		ROLLBACK TRANSACTION
---		SET @Result = 1
---	END CATCH
-
---	IF XACT_STATE() = 1
---		COMMIT TRANSACTION
-
---	RETURN @Result
---END
---GO
 
 -- Verify Plant Deposit
 IF OBJECT_ID('procVerifyPlantDeposit', 'P') IS NOT NULL
@@ -1316,9 +1281,10 @@ IF OBJECT_ID('procInsertVerifiedDeposit', 'P') IS NOT NULL
 	DROP PROCEDURE procInsertVerifiedDeposit
 GO
 CREATE PROCEDURE procInsertVerifiedDeposit
-	@accessionNumber	VARCHAR(50),
-	@referenceNumber	VARCHAR(50),
-	@herbariumSheet		VARBINARY(MAX),
+	@accessionDigits	VARCHAR(50),
+	@referenceNumber	VARCHAR(50) = NULL,
+	@sameAccession		BIT,
+	@herbariumSheet		VARBINARY(MAX) = NULL,
 	@locality			VARCHAR(255),
 	@taxonName			VARCHAR(MAX),
 	@collector			VARCHAR(255),
@@ -1327,7 +1293,8 @@ CREATE PROCEDURE procInsertVerifiedDeposit
 	@dateCollected		DATE,
 	@dateDeposited		DATE,
 	@dateVerified		DATE,
-	@description		VARCHAR(MAX)
+	@description		VARCHAR(MAX),
+	@plantType			CHAR
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -1336,9 +1303,17 @@ BEGIN
 	BEGIN TRANSACTION
 
 	BEGIN TRY
-		EXECUTE @Result = procInsertPlantDeposit @herbariumSheet, @locality, @collector, @staff, @dateCollected, @description, @accessionNumber, @dateDeposited
+		EXECUTE @Result = procInsertPlantDeposit @herbariumSheet, @locality, @collector, @staff, @dateCollected, @description, @plantType, @accessionDigits, @dateDeposited
 		IF @Result = 0
+		BEGIN
+			DECLARE @accessionNumber VARCHAR(50);
+			SET @accessionNumber = (SELECT strAccessionNumber FROM tblPlantDeposit WHERE SUBSTRING(strAccessionNumber, 8, 5) = @accessionDigits)
+
+			IF @sameAccession = 1
+				SET @referenceNumber = @accessionNumber
+
 			EXECUTE @Result = procVerifyPlantDeposit @accessionNumber, @referenceNumber, @taxonName, @validator, @dateVerified
+		END
 	END TRY
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
@@ -1358,7 +1333,8 @@ IF OBJECT_ID('procStoreHerbariumSheet', 'P') IS NOT NULL
 GO
 CREATE PROCEDURE procStoreHerbariumSheet
 	@accessionNumber	VARCHAR(50),
-	@boxNumber			VARCHAR(MAX)
+	@boxNumber			VARCHAR(MAX),
+	@loanAvailable		BIT
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -1378,7 +1354,7 @@ BEGIN
 		UPDATE tblPlantDeposit SET strStatus = 'Stored' WHERE intPlantDepositID = @depositID;
 
 		INSERT INTO tblStoredHerbarium (intHerbariumSheetID, intBoxID, boolLoanAvailable)
-		VALUES (@sheetID, @boxID, 0);
+		VALUES (@sheetID, @boxID, @loanAvailable);
 	END TRY
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
@@ -1393,71 +1369,122 @@ END
 GO
 
 -- Process Loan
--- Conflicted Code
 IF OBJECT_ID('procProcessLoan', 'P') IS NOT NULL
 	DROP PROCEDURE procProcessLoan
 GO
---CREATE PROCEDURE procProcessLoan
---	@collectorName	VARCHAR(255),
---	@taxonName		VARCHAR(255),
---	@startDate		DATE,
---	@duration		INT,
---	@durationMode	VARCHAR(10),
---	@copies			INT,
---	@purpose		VARCHAR(255)
---AS
---BEGIN
---	DECLARE @Result INT = 0
+CREATE PROCEDURE procProcessLoan
+	@collectorName	VARCHAR(255),
+	@startDate		DATE,
+	@endDate		DATE,
+	@purpose		VARCHAR(255),
+	@status			VARCHAR(50)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	DECLARE @Result INT = 0
 
---	BEGIN TRANSACTION
+	BEGIN TRANSACTION
 
---	BEGIN TRY
---		DECLARE @collectorID INT;
---		DECLARE @specieID INT;
---		DECLARE @returningDate DATE;
---		DECLARE @identifier INT;
---		DECLARE @loanNumber VARCHAR(10);
-
---		SET @collectorID = (SELECT intCollectorID FROM viewCollector WHERE strFullName = @collectorName);
---		SET @specieID = (SELECT intSpeciesID FROM viewTaxonSpecies WHERE strScientificName = @taxonName);
+	BEGIN TRY
+		DECLARE @collectorID INT;
+		SET @collectorID = (SELECT intCollectorID FROM viewCollector WHERE strFullName = @collectorName);
 	
---		SET @returningDate = (SELECT CASE
---								  WHEN @durationMode = 'Day/s' THEN CAST(DATEADD(DD, @duration, @startDate) AS DATE)
---								  WHEN @durationMode = 'Month/s' THEN CAST(DATEADD(MM, @duration, @startDate) AS DATE)
---							  END);
+		INSERT INTO tblPlantLoanTransaction(intCollectorID, dateLoan, dateReturning, dateProcessed, strPurpose, strStatus)
+		VALUES (@collectorID, @startDate, @endDate, GETDATE(), @purpose, @status)
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @Result = 1
+	END CATCH
 
---		SET @identifier = (SELECT TOP 1 CAST(SUBSTRING(strLoanNumber, 4, 6) AS INT) FROM tblPlantLoan ORDER BY strLoanNumber DESC);
+	IF XACT_STATE() = 1
+		COMMIT TRANSACTION
 
---		IF @identifier IS NULL
---			SET @loanNumber = 'HL-000001';
---		ELSE
---			SET @loanNumber = 'HL-' + FORMAT(@identifier + 1, '00000#');
+	RETURN @Result
+END
+GO
 
---		INSERT INTO tblPlantLoan(strLoanNumber, intCollectorID, intSpeciesID, dateLoan, dateReturning, dateProcessed, intCopies, strPurpose, strStatus)
---		VALUES (@loanNumber, @collectorID, @specieID, @startDate, @returningDate, GETDATE(), @copies, @purpose, 'Pending')
---	END TRY
---	BEGIN CATCH
---		ROLLBACK TRANSACTION
---		SET @Result = 1
---	END CATCH
+-- Process Loaning Plants
+IF OBJECT_ID('procLoanPlants', 'P') IS NOT NULL
+	DROP PROCEDURE procLoanPlants
+GO
+CREATE PROCEDURE procLoanPlants
+	@loanNumber		VARCHAR(50),
+	@taxonName		VARCHAR(100),
+	@copies			INT
+AS
+BEGIN
+	SET NOCOUNT ON
+	DECLARE @Result INT = 0
 
---	IF XACT_STATE() = 1
---		COMMIT TRANSACTION
+	BEGIN TRANSACTION
+		
+	BEGIN TRY
+		DECLARE @loanID INT
+		DECLARE @speciesID INT
+		DECLARE @sheetID INT
+		DECLARE @status VARCHAR(50);
 
---	RETURN @Result
---END
---GO
+		SET @loanID = (SELECT intLoanID FROM viewPlantLoans WHERE strLoanNumber = @loanNumber)
+		SET @status = (SELECT strStatus FROM viewPlantLoans WHERE strLoanNumber = @loanNumber)
+		SET @speciesID = (SELECT intSpeciesID FROM viewTaxonSpecies WHERE strScientificName = @taxonName)
+
+		INSERT INTO tblLoaningSpecies(intLoanID, intSpeciesID, intCopies)
+		VALUES (@loanID, @speciesID, @copies)
+
+		IF @status = 'Approved'
+		BEGIN
+			DECLARE myCursor CURSOR FOR
+				SELECT TOP (@copies) intHerbariumSheetID
+				FROM tblStoredHerbarium
+				WHERE boolLoanAvailable = 1
+				ORDER BY intStoredSheetID ASC;
+
+			OPEN myCursor
+			FETCH NEXT FROM myCursor INTO @sheetID
+
+			WHILE @@FETCH_STATUS = 0
+			BEGIN
+				INSERT INTO tblLoaningPlants(intLoanID, intHerbariumSheetID)
+				VALUES (@loanID, @sheetID)
+
+				UPDATE tblPlantDeposit
+				SET strStatus = 'Loaned'
+				WHERE intPlantDepositID = (SELECT intPlantDepositID
+										   FROM tblHerbariumSheet
+										   WHERE intHerbariumSheetID = @sheetID)
+
+				UPDATE tblStoredHerbarium
+				SET boolLoanAvailable = 0
+				WHERE intHerbariumSheetID = @sheetID
+
+				FETCH NEXT FROM myCursor INTO @sheetID
+			END
+
+			CLOSE myCursor
+			DEALLOCATE myCursor
+		END
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @Result = 1
+	END CATCH
+
+	IF XACT_STATE() = 1
+		COMMIT TRANSACTION
+END
+GO
 
 -------------- SAMPLE DATA INITIALIZATION --------------
 
 --EXECUTE procInsertLocality 'Philippines', 'Luzon', 'National Capital Region', 'Metro Manila', 'Manila', 'Santa Mesa', 'Polytechnic University of the Philippines - Sta. Mesa (Main) Campus', 'PUP Main Campus, Sta. Mesa, Manila', '', '14°35''52.44" N', '121°0''38.88" E'
---EXECUTE procInsertLocality 'Luzon', 'National Capital Region', 'Metro Manila', 'Manila', 'Sampaloc', 'University of Sto. Tomas - Espana', 'UST Espana, Sampaloc, Manila'
---EXECUTE procInsertLocality 'Luzon', 'National Capital Region', 'Metro Manila', 'Quezon City', 'Diliman', 'University of the Philippines - Diliman Campus', 'UP Diliman, Diliman, Quezon City'
+--EXECUTE procInsertLocality 'Philippines', 'Luzon', 'National Capital Region', 'Metro Manila', 'Manila', 'Sampaloc', 'University of Sto. Tomas - Espana', 'UST Espana, Sampaloc, Manila', '', '', ''
+--EXECUTE procInsertLocality 'Philippines', 'Luzon', 'National Capital Region', 'Metro Manila', 'Quezon City', 'Diliman', 'University of the Philippines - Diliman Campus', 'UP Diliman, Diliman, Quezon City', '', '', ''
 
 --EXECUTE procInsertCollector 'Jake', 'M', 'Magpantay', 'M', '', 'Quezon City', '09991357924', 'jakemagpantay@yahoo.com', 'College of Engineering'
---EXECUTE procInsertCollector 'Anna', 'B', 'Balingit', 'B', '', '09051234567', 'annabalingit@gmail.com', 'College of Science', 'BSCHEM 4-1'
---EXECUTE procInsertCollector 'Rhisiel', 'V', 'Valle', 'V', '', '09361234567', 'rvalle1233@hotmail.com', 'College of Arts and Letters', 'AB-PHILO 4-1' 
---EXECUTE procInsertCollector 'Maica', 'C', 'Opena', 'O', '', '09219876543', 'opena_maica@ymail.com', 'College of Accounting and Finance', 'BSBAMM 4-1'
+--EXECUTE procInsertCollector 'Anna', 'B', 'Balingit', 'B', '', 'Manila', '09051234567', 'annabalingit@gmail.com', 'College of Science'
+--EXECUTE procInsertCollector 'Rhisiel', 'V', 'Valle', 'V', '', 'Manila', '09361234567', 'rvalle1233@hotmail.com', 'College of Arts and Letters'
+--EXECUTE procInsertCollector 'Maica', 'C', 'Opena', 'O', '', 'Muntilupa City', '09219876543', 'opena_maica@ymail.com', 'College of Accounting and Finance'
 
 --EXECUTE procInsertValidator 'Paolo', 'J', 'Labrador', 'J', '', '09881234567', 'paololabrador@gmail.com', 'National Herbarium Center'
 --EXECUTE procInsertValidator 'Marie Annthonite', 'N', 'Buena', 'N', '', '09111234567', 'tonetbuena@yahoo.com', 'University of Santo Tomas'
@@ -1466,25 +1493,21 @@ GO
 --EXECUTE procInsertHerbariumStaff 'Jerome', 'B', 'Casingal', 'B', '', '09161234567', 'jetcasingal@hotmail.com', 'ADMINISTRATOR', 'College of Computer and Infomation Sciences'
 --EXECUTE procInsertHerbariumStaff 'Althea Nicole', 'M', 'Cruz', 'M', '', '09181237654', 'theapanda@yahoo.com', 'STUDENT ASSISTANT', 'College of Computer and Infomation Sciences'
 --EXECUTE procInsertHerbariumStaff 'Nino Danielle', 'C', 'Escueta', 'C', '', '09989991700', 'ndescueta@ymail.com', 'CURATOR', 'College of Computer and Information Sciences'
+--EXECUTE procInsertHerbariumStaff 'Christine Joy', 'V', 'Leynes', 'V', '', '09991234567', 'tineleynes@gmail.com', 'STUDENT ASSISTANT', 'College of Computer and Information Sciences'
 --EXECUTE procInsertHerbariumStaff 'Armin','S', 'Coronado', 'S', '', '09123456789', 'armin_coronado@pup.edu.ph', 'ADMINISTRATOR', 'College of Science'
---EXECUTE procInsertHerbariumStaff 'Ma. Eleanor', 'C', 'Salvador', '', '09178482910', 'maria_salvador@pup.edu.ph', 'ADMINISTRATOR', 'College of Science'
+--EXECUTE procInsertHerbariumStaff 'Ma. Eleanor', 'C', 'Salvador', 'C', '', '09178482910', 'maria_salvador@pup.edu.ph', 'ADMINISTRATOR', 'College of Science'
 
---EXECUTE procInsertAccount 'Jerome Casingal ', 'jetcasingal', 'jetcasingal'
---EXECUTE procInsertAccount 'Nino Danielle Escueta ', 'ndescueta', 'ndescueta'
---EXECUTE procInsertAccount 'Althea Nicole Cruz ', 'theacruz', 'theacruz'
+--EXECUTE procInsertAccount 'Jerome Casingal', 'jetcasingal', 'jetcasingal'
+--EXECUTE procInsertAccount 'Nino Danielle Escueta', 'ndescueta', 'ndescueta'
+--EXECUTE procInsertAccount 'Althea Nicole Cruz', 'theacruz', 'theacruz'
+--EXECUTE procInsertAccount 'Christine Joy Leynes', 'tineleynes', 'tineleynes'
 
 --EXECUTE procInsertPhylum 'Eukaryota', 'Plantae', 'Magnoliophyta'
-
 --EXECUTE procInsertClass 'Magnoliophyta', 'Magnoliopsida'
-
 --EXECUTE procInsertOrder 'Magnoliopsida', 'Lamiales'
-
 --EXECUTE procInsertFamily 'Lamiales', 'Lamiaceae'
-
 --EXECUTE procInsertGenus 'Lamiaceae', 'Vitex'
-
 --EXECUTE procInsertSpecies 'Vitex', 'negundo', 'Chinese chastetree', 'Vitex Negundo L.', 'Carl Linneaus', 'Lagundi; Nirgundi;', '1'
-
 --EXECUTE procInsertFamilyBox 'Lamiaceae', '20', 1, 1, 1
 
 --SELECT * FROM tblFamily
@@ -1493,23 +1516,23 @@ GO
 --SELECT * FROM tblLocality
 --SELECT * FROM tblPerson
 --SELECT * FROM tblCollector
-SELECT * FROM tblValidator
-SELECT * FROM tblHerbariumStaff
+--SELECT * FROM tblValidator
+--SELECT * FROM tblHerbariumStaff
 
-SELECT * FROM viewTaxonPhylum
-SELECT * FROM viewTaxonClass
-SELECT * FROM viewTaxonOrder
-SELECT * FROM viewTaxonFamily
-SELECT * FROM viewTaxonGenus
-SELECT strSpeciesNo, strGenusName, strSpeciesName, strCommonName, strScientificName, strSpeciesAuthor, strSpeciesAlternateName, boolSpeciesIdentified FROM viewTaxonSpecies
+--SELECT * FROM viewTaxonPhylum
+--SELECT * FROM viewTaxonClass
+--SELECT * FROM viewTaxonOrder
+--SELECT * FROM viewTaxonFamily
+--SELECT * FROM viewTaxonGenus
+--SELECT strSpeciesNo, strGenusName, strSpeciesName, strCommonName, strScientificName, strSpeciesAuthor, strSpeciesAlternateName, boolSpeciesIdentified FROM viewTaxonSpecies
 
-SELECT FB.strBoxNumber, FB.strFamilyName, FB.intBoxLimit, FB.intRackNo, FB.intRackRow, FB.intRackColumn, COUNT(HI.intStoredSheetID) 
-FROM viewFamilyBox FB LEFT JOIN viewHerbariumInventory HI ON FB.strBoxNumber = HI.strBoxNumber
-GROUP BY FB.strBoxNumber, FB.strFamilyName, FB.intBoxLimit, FB.intRackNo, FB.intRackRow, FB.intRackColumn
+--SELECT FB.strBoxNumber, FB.strFamilyName, FB.intBoxLimit, FB.intRackNo, FB.intRackRow, FB.intRackColumn, COUNT(HI.intStoredSheetID) 
+--FROM viewFamilyBox FB LEFT JOIN viewHerbariumInventory HI ON FB.strBoxNumber = HI.strBoxNumber
+--GROUP BY FB.strBoxNumber, FB.strFamilyName, FB.intBoxLimit, FB.intRackNo, FB.intRackRow, FB.intRackColumn
 
-SELECT intLocalityID, strCountry, strIsland, strRegion, strProvince, strCity, strArea, strSpecificLocation, strShortLocation, strFullLocality, strLatitude, strLongtitude
-FROM viewLocality
+--SELECT intLocalityID, strCountry, strIsland, strRegion, strProvince, strCity, strArea, strSpecificLocation, strShortLocation, strFullLocality, strLatitude, strLongtitude
+--FROM viewLocality
 
-SELECT intCollectorID, strFirstname, strMiddlename, strLastname, strMiddleInitial, strNameSuffix, strHomeAddress, strContactNumber, strEmailAddress, strFullName, strAffiliation 
-FROM viewCollector
-SELECT * FROM viewAccounts
+--SELECT intCollectorID, strFirstname, strMiddlename, strLastname, strMiddleInitial, strNameSuffix, strHomeAddress, strContactNumber, strEmailAddress, strFullName, strAffiliation 
+--FROM viewCollector
+--SELECT * FROM viewAccounts

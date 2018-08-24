@@ -633,7 +633,8 @@ CREATE VIEW viewPlantLoans
 AS
 (
 	SELECT PL.intLoanID, CONCAT('HB-', FORMAT(PL.intLoanID, '00000#')) as strLoanNumber, Co.strFullName AS strCollector, 
-		PL.dateLoan, PL.dateReturning, CONCAT(PL.dateLoan, ' - ', PL.dateReturning) as strDuration, PL.dateProcessed, PL.strPurpose, PL.strStatus
+		PL.dateLoan, PL.dateReturning, CONCAT(CONVERT(VARCHAR, PL.dateLoan, 107), ' - ', CONVERT(VARCHAR, PL.dateReturning, 107)) as strDuration, 
+		PL.dateProcessed, PL.strPurpose, PL.strStatus
 	FROM tblPlantLoanTransaction PL
 		INNER JOIN viewCollector Co ON PL.intCollectorID = Co.intCollectorID
 )

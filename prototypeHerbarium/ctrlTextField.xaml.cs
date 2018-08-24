@@ -43,6 +43,12 @@ namespace prototypeHerbarium
             set { txfTextField.Text = value; }
         }
 
+        public int MaxLength
+        {
+            get { return txfTextField.MaxLength; }
+            set { txfTextField.MaxLength = value; }
+        }
+
         public bool ErrorMessage
         {
             set { lblErrorMessage.Visibility = (value) ? Visibility.Visible : Visibility.Collapsed; }

@@ -70,6 +70,7 @@ namespace prototypeHerbarium
                 lblDescription.Text = sqlData[12].ToString();
                 lblAvail.Text = (bool)sqlData[13] ? "Available" : "Not Available";
                 lblStatus.Text = sqlData[14].ToString();
+                btnAvail.Visibility = (sqlData[14].ToString() == "Loaned") ? Visibility.Hidden : Visibility.Visible;
 
                 pnlPlantDeposit.Visibility = Visibility.Visible;
             }
