@@ -193,7 +193,7 @@
                                   BorderBrush="Gray" BorderThickness="1"
                                   AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0">
                             <DataGrid.Columns>
-                                <DataGridCheckBoxColumn Binding="{Binding IsChecked}" Width="40"/>
+                                <DataGridCheckBoxColumn Binding="{Binding IsChecked, Mode=TwoWay}" Width="40" />
                                 <DataGridTextColumn Header="Taxon Family" Binding="{Binding FamilyName}" Width="*" IsReadOnly="True" />
                             </DataGrid.Columns>
                         </DataGrid>
@@ -201,7 +201,7 @@
                                   BorderBrush="Gray" BorderThickness="1"
                                   AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0">
                             <DataGrid.Columns>
-                                <DataGridCheckBoxColumn Binding="{Binding IsChecked}" Width="40"/>
+                                <DataGridCheckBoxColumn Binding="{Binding IsChecked, Mode=TwoWay}" Width="40" />
                                 <DataGridTextColumn Header="Taxon Genus" Binding="{Binding GenusName}" Width="*" IsReadOnly="True"/>
                             </DataGrid.Columns>
                         </DataGrid>

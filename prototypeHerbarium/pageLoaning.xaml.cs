@@ -57,7 +57,7 @@ namespace prototypeHerbarium
             }
             getGenusList(selectedFamilies);
         }
-
+        
         private void btnCancelTransactionA_Click(object sender, RoutedEventArgs e)
         {
             MessageBoxResult response = MessageBox.Show("Do you want to Cancel this Transaction",
@@ -100,22 +100,27 @@ namespace prototypeHerbarium
 
         private void btnNext_Click(object sender, RoutedEventArgs e)
         {
-            if (validateForm())
+            if (validateLoanGenus())
             {
-                List<ListGenus> selectedGenus = new List<ListGenus>();
-                foreach (ListGenus genus in dgrTaxonGenera.Items)
+                if (validateForm())
                 {
-                    if (genus.IsChecked)
+                    List<ListGenus> selectedGenus = new List<ListGenus>();
+                    foreach (ListGenus genus in dgrTaxonGenera.Items)
                     {
-                        selectedGenus.Add(genus);
+                        if (genus.IsChecked)
+                        {
+                            selectedGenus.Add(genus);
+                        }
                     }
+                    loadSpeciesForm();
+                    getSpeciesList(selectedGenus);
+
+                    pnlLoanTransactionForm.Visibility = Visibility.Hidden;
+                    pnlPlantLoaningForm.Visibility = Visibility.Visible;
                 }
-                loadSpeciesForm();
-                getSpeciesList(selectedGenus);
-                
-                pnlLoanTransactionForm.Visibility = Visibility.Hidden;
-                pnlPlantLoaningForm.Visibility = Visibility.Visible;
             }
+            else
+                MessageBox.Show("No selected Genus!", "Empty Selection", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private void btnBack_Click(object sender, RoutedEventArgs e)
@@ -220,7 +225,7 @@ namespace prototypeHerbarium
             dgrTaxonFamilies.Items.Clear();
 
             DatabaseConnection connection = new DatabaseConnection();
-            connection.setQuery("SELECT strFamilyName FROM viewTaxonFamily");
+            connection.setQuery("SELECT strFamilyName FROM viewTaxonFamily ORDER BY strFamilyName ASC");
 
             SqlDataReader sqlData = connection.executeResult();
             while (sqlData.Read())
@@ -242,7 +247,7 @@ namespace prototypeHerbarium
             foreach (ListFamily family in families)
             {
                 DatabaseConnection connection = new DatabaseConnection();
-                connection.setQuery("SELECT strGenusName FROM viewTaxonGenus WHERE strFamilyName = @familyName");
+                connection.setQuery("SELECT strGenusName FROM viewTaxonGenus WHERE strFamilyName = @familyName ORDER BY strGenusName ASC");
                 connection.addParameter("@familyName", SqlDbType.VarChar, family.FamilyName);
 
                 SqlDataReader sqlData = connection.executeResult();
@@ -272,17 +277,21 @@ namespace prototypeHerbarium
                                         "LEFT JOIN tblLoaningSpecies LS ON TS.intSpeciesID = LS.intSpeciesID " +
                                         "LEFT JOIN tblPlantLoanTransaction LT ON LT.intLoanID = LS.intLoanID AND LT.strStatus IN('Approved', 'Requesting') " +
                                     "WHERE TS.strGenusName = @genusname " +
-                                    "GROUP BY TS.strScientificName");
+                                    "GROUP BY TS.strScientificName " +
+                                    "ORDER BY TS.strScientificName ASC");
                 connection.addParameter("@genusName", SqlDbType.VarChar, genus.GenusName);
 
                 SqlDataReader sqlData = connection.executeResult();
                 while (sqlData.Read())
                 {
-                    species.Add(new ListSpecies()
+                    if (Convert.ToInt32(sqlData[1]) > 0)
                     {
-                        TaxonName = sqlData[0].ToString(),
-                        Specimens = Convert.ToInt32(sqlData[1])
-                    });
+                        species.Add(new ListSpecies()
+                        {
+                            TaxonName = sqlData[0].ToString(),
+                            Specimens = Convert.ToInt32(sqlData[1])
+                        });
+                    }
                 }
                 connection.closeResult();
             }
@@ -370,10 +379,10 @@ namespace prototypeHerbarium
             loanDate = Convert.ToDateTime(dpkLoanDate.Text);
             switch (cbxDuration.SelectedIndex)
             {
-                case 1:
+                case 0:
                     returnDate = loanDate.AddDays(Convert.ToDouble(txfDuration.Text));
                     break;
-                case 2:
+                case 1:
                     returnDate = loanDate.AddMonths(Convert.ToInt32(txfDuration.Text));
                     break;
             }
@@ -388,20 +397,41 @@ namespace prototypeHerbarium
             lblDuration.Text = loanDate.ToShortDateString() + " - " + returnDate.ToShortDateString();
         }
 
+        private bool validateLoanGenus()
+        {
+            bool formOK = false;
+
+            foreach (ListGenus list in dgrTaxonGenera.Items)
+                if (list.IsChecked) formOK = true;
+
+            return formOK;
+        }
+
         private bool validateLoanSpecies()
         {
-            bool formOK = true;
+            bool formOK = false;
+            bool exceedError = false;
+            bool noCheckError = true;
 
             foreach(ListSpecies species in dgrTaxonSpecies.Items)
             {
-                MessageBox.Show(species.IsChecked + "\n" + species.TaxonName);
-                if (species.IsChecked && species.Specimens < species.Copies)
+                if (species.IsChecked)
                 {
-                    MessageBox.Show("The Number of Copies you Request should not be more than the actual Available Specimens",
-                                    "Required Copies exceeded available Specimens", MessageBoxButton.OK, MessageBoxImage.Error);
-                    formOK = false;
+                    noCheckError = false;
+                    formOK = true;
+
+                    if (species.Specimens < species.Copies)
+                    {
+                        exceedError = true;
+                        formOK = false;
+                    }
                 }
             }
+            if (exceedError)
+                MessageBox.Show("The Number of Copies you Request should not be more than the actual Available Specimens",
+                                "Required Copies exceeded available Specimens", MessageBoxButton.OK, MessageBoxImage.Error);
+            if (noCheckError)
+                MessageBox.Show("No selected Species!", "Selection Empty", MessageBoxButton.OK, MessageBoxImage.Error);
 
             return formOK;
         }
@@ -434,6 +464,7 @@ public class ListGenus
 
 public class ListSpecies
 {
+    public string FamilyName { get; set; }
     public string TaxonName { get; set; }
     public int Specimens { get; set; }
     public int Copies { get; set; }

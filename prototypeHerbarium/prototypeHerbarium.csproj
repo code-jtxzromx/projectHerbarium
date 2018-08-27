@@ -2089,5 +2089,8 @@
     <Resource Include="Resources\__MACOSX\glyphicons_free\glyphicons\png\._glyphicons-98-vector-path-line.png" />
     <Resource Include="Resources\__MACOSX\glyphicons_free\glyphicons\png\._glyphicons-99-vector-path-curve.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\background.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

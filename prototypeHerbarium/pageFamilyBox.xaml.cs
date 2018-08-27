@@ -50,6 +50,7 @@ namespace prototypeHerbarium
             txfRack.Clear();
             txfRackRow.Clear();
             txfRackColumn.Clear();
+            btnSave.Content = "Save";
 
             msgFamily.Visibility = Visibility.Collapsed;
             msgBoxLimit.Visibility = Visibility.Collapsed;
@@ -83,6 +84,7 @@ namespace prototypeHerbarium
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
+            btnSave.Content = "Clear";
             FamilyBox SelectedBox = dgrBoxTable.SelectedValue as FamilyBox;
 
             var result = from box in HerbariumBoxes
@@ -125,7 +127,8 @@ namespace prototypeHerbarium
             // Query Command Setting
             connection.setQuery("SELECT FB.strBoxNumber, FB.strFamilyName, FB.intBoxLimit, FB.intRackNo, FB.intRackRow, FB.intRackColumn, COUNT(HI.intStoredSheetID)  " +
                                 "FROM viewFamilyBox FB LEFT JOIN viewHerbariumInventory HI ON FB.strBoxNumber = HI.strBoxNumber " +
-                                "GROUP BY FB.strBoxNumber, FB.strFamilyName, FB.intBoxLimit, FB.intRackNo, FB.intRackRow, FB.intRackColumn");
+                                "GROUP BY FB.strBoxNumber, FB.strFamilyName, FB.intBoxLimit, FB.intRackNo, FB.intRackRow, FB.intRackColumn " +
+                                "ORDER BY FB.strBoxNumber");
 
             // Query Execution
             SqlDataReader sqlData = connection.executeResult();
@@ -159,7 +162,7 @@ namespace prototypeHerbarium
             cbxFamily.Items.Clear();
 
             // Query Command Setting
-            connection.setQuery("SELECT strFamilyName FROM tblFamily");
+            connection.setQuery("SELECT strFamilyName FROM tblFamily ORDER BY strFamilyName");
 
             // Query Execution
             SqlDataReader sqlData = connection.executeResult();

@@ -48,6 +48,7 @@ namespace prototypeHerbarium
 
             btnVerifiedRecord.Visibility = isNew ? Visibility.Collapsed : Visibility.Visible;
             chkSameAccession.Visibility = isNew ? Visibility.Collapsed : Visibility.Visible;
+
             txfAccessionNumber.Visibility = isNew ? Visibility.Collapsed : Visibility.Visible;
             cbxReferenceNumber.Visibility = isNew ? Visibility.Collapsed : Visibility.Visible;
             cbxValidator.Visibility = isNew ? Visibility.Collapsed : Visibility.Visible;
@@ -65,8 +66,11 @@ namespace prototypeHerbarium
             defValidator.Width = isNew ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
             defDateCollected.Width = isNew ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
 
-            btnVerifiedRecord.IsChecked = false;
-            btnVerifiedRecord_ToggleChange(btnVerifiedRecord, null);
+            if (btnVerifiedRecord.IsVisible)
+            {
+                btnVerifiedRecord.IsChecked = false;
+                btnVerifiedRecord_ToggleChange(btnVerifiedRecord, null);
+            }
         }
 
         private void btnVerifiedRecord_ToggleChange(object sender, RoutedEventArgs e)
@@ -234,7 +238,7 @@ namespace prototypeHerbarium
             cbxCollector.Reset();
 
             DatabaseConnection connection = new DatabaseConnection();
-            connection.setQuery("SELECT strFullName FROM viewCollector");
+            connection.setQuery("SELECT strFullName FROM viewCollector ORDER BY strFullName");
 
             SqlDataReader sqlData = connection.executeResult();
             while (sqlData.Read())
@@ -249,7 +253,7 @@ namespace prototypeHerbarium
             cbxValidator.Reset();
 
             DatabaseConnection connection = new DatabaseConnection();
-            connection.setQuery("SELECT strFullName FROM viewValidator");
+            connection.setQuery("SELECT strFullName FROM viewValidator ORDER BY strFullName");
 
             SqlDataReader sqlData = connection.executeResult();
             while (sqlData.Read())
@@ -280,7 +284,7 @@ namespace prototypeHerbarium
             cbxLocality.Reset();
 
             DatabaseConnection connection = new DatabaseConnection();
-            connection.setQuery("SELECT strShortLocation FROM tblLocality");
+            connection.setQuery("SELECT strShortLocation FROM tblLocality ORDER BY strShortLocation");
 
             SqlDataReader sqlData = connection.executeResult();
             while (sqlData.Read())
@@ -295,7 +299,7 @@ namespace prototypeHerbarium
             cbxTaxonName.Reset();
 
             DatabaseConnection connection = new DatabaseConnection();
-            connection.setQuery("SELECT strScientificName FROM viewTaxonSpecies");
+            connection.setQuery("SELECT strScientificName FROM viewTaxonSpecies ORDER BY strScientificName");
 
             SqlDataReader sqlData = connection.executeResult();
             while (sqlData.Read())
@@ -310,7 +314,7 @@ namespace prototypeHerbarium
             cbxReferenceNumber.Reset();
 
             DatabaseConnection connection = new DatabaseConnection();
-            connection.setQuery("SELECT DISTINCT strReferenceAccession FROM viewHerbariumSheet WHERE strScientificName = @taxonName");
+            connection.setQuery("SELECT DISTINCT strReferenceAccession FROM viewHerbariumSheet WHERE strScientificName = @taxonName ORDER BY strReferenceAccession");
             connection.addParameter("@taxonName", System.Data.SqlDbType.VarChar, species);
 
             SqlDataReader sqlData = connection.executeResult();

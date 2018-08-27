@@ -11,14 +11,14 @@
         WindowStartupLocation="CenterScreen"
         MinHeight="400" MinWidth="400">
     <Grid>
-        <!--<Grid.Background>
+        <Grid.Background>
             <ImageBrush ImageSource="{StaticResource background}"/>
-        </Grid.Background>-->
+        </Grid.Background>
         <DockPanel>
             <DockPanel.Background>
                 <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
-                    <GradientStop Color="#DF66CC66" Offset="3"/>
-                    <GradientStop Color="#EF005500" Offset="0"/>
+                    <GradientStop Color="#CF66CC66" Offset="3"/>
+                    <GradientStop Color="#DF005500" Offset="0"/>
                 </LinearGradientBrush>
             </DockPanel.Background>
 

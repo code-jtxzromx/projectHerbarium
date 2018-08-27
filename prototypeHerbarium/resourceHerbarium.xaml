@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     
     <!-- System Images Used in the Application -->
-    <!--<BitmapImage x:Key="background"                 UriSource="" />-->
+    <BitmapImage x:Key="background"                 UriSource="Resources/background.png" />
     <BitmapImage x:Key="logo"                       UriSource="Resources/herbarium_banner_white.png" />
     <BitmapImage x:Key="favicon"                    UriSource="Resources/favicon_white.png" />
     <BitmapImage x:Key="favicon-colored"            UriSource="Resources/favicon.png" />

@@ -53,6 +53,7 @@ namespace prototypeHerbarium
             txfScientificName.Clear();
             txfAuthor.Clear();
             txfSynonyms.Clear();
+            btnSave.Content = "Save";
 
             msgGenusName.Visibility = Visibility.Collapsed;
             msgSpeciesName.Visibility = Visibility.Collapsed;
@@ -89,6 +90,7 @@ namespace prototypeHerbarium
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
+            btnSave.Content = "Update";
             TaxonSpecies SelectedSpecie = dgrSpeciesTable.SelectedValue as TaxonSpecies;
 
             var result = from specie in TaxonomicSpecies
@@ -146,7 +148,8 @@ namespace prototypeHerbarium
 
             connection.setQuery("SELECT strSpeciesNo, strGenusName, strSpeciesName, strCommonName, strScientificName, " +
                                     "strSpeciesAuthor, strSpeciesAlternateName, boolSpeciesIdentified " +
-                                "FROM viewTaxonSpecies");
+                                "FROM viewTaxonSpecies " +
+                                "ORDER BY strScientificName");
             SqlDataReader sqlData = connection.executeResult();
              
             while (sqlData.Read())
@@ -177,7 +180,7 @@ namespace prototypeHerbarium
             cbxGenusName.Items.Clear();
 
             // Query Command Setting
-            connection.setQuery("SELECT strGenusName FROM tblGenus");
+            connection.setQuery("SELECT strGenusName FROM tblGenus ORDER BY strGenusName");
             
             // Query Execution
             SqlDataReader sqlData = connection.executeResult();

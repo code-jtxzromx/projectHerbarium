@@ -53,6 +53,7 @@ namespace prototypeHerbarium
             txfContactNumber.Clear();
             txfEmailAddress.Clear();
             txfInstitution.Clear();
+            btnSave.Content = "Save";
 
             msgFirstname.Visibility = Visibility.Collapsed;
             msgLastname.Visibility = Visibility.Collapsed;
@@ -87,6 +88,7 @@ namespace prototypeHerbarium
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
+            btnSave.Content = "Update";
             Validator SelectedValidator = dgrValidatorTable.SelectedValue as Validator;
 
             var result = from validator in ExternalValidators
@@ -131,7 +133,9 @@ namespace prototypeHerbarium
             // Query Command Setting
             connection.setQuery("SELECT intValidatorID, strFirstname, strMiddlename, strLastname, strMiddleInitial, strNameSuffix, " +
                                         "strContactNumber, strEmailAddress, strFullName, strInstitution " +
-                                "FROM viewValidator WHERE strValidatorType = 'External'");
+                                "FROM viewValidator " +
+                                "WHERE strValidatorType = 'External' " +
+                                "ORDER BY strLastname, strFirstname");
 
             // Query Execution
             SqlDataReader sqlData = connection.executeResult();

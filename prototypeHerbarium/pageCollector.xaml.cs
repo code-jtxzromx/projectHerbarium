@@ -54,6 +54,7 @@ namespace prototypeHerbarium
             txfContactNumber.Clear();
             txfEmailAddress.Clear();
             txfAffiliation.Clear();
+            btnSave.Content = "Save";
 
             msgFirstname.Visibility = Visibility.Collapsed;
             msgLastname.Visibility = Visibility.Collapsed;
@@ -88,6 +89,7 @@ namespace prototypeHerbarium
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
+            btnSave.Content = "Update";
             Collector SelectedCollector = dgrCollectorTable.SelectedValue as Collector;
 
             var result = from collector in CollectorsList
@@ -133,7 +135,8 @@ namespace prototypeHerbarium
             // Query Command Setting
             connection.setQuery("SELECT intCollectorID, strFirstname, strMiddlename, strLastname, strMiddleInitial, strNameSuffix, " +
                                     "strHomeAddress, strContactNumber, strEmailAddress, strFullName, strAffiliation  " +
-                                "FROM viewCollector");
+                                "FROM viewCollector " +
+                                "ORDER BY strLastname, strFirstname");
 
             // Query Execution
             SqlDataReader sqlData = connection.executeResult();

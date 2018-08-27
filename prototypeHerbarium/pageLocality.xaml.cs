@@ -57,7 +57,8 @@ namespace prototypeHerbarium
             txfFullLocality.Clear();
             txfLatitude.Clear();
             txfLongtitude.Clear();
-            
+            btnSave.Content = "Save";
+
             msgIsland.Visibility = Visibility.Collapsed;
             msgRegion.Visibility = Visibility.Collapsed;
             msgProvince.Visibility = Visibility.Collapsed;
@@ -104,6 +105,7 @@ namespace prototypeHerbarium
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
+            btnSave.Content = "Update";
             Locality SelectedLocality = dgrLocalityTable.SelectedValue as Locality;
 
             var result = from locality in Origins
@@ -266,7 +268,8 @@ namespace prototypeHerbarium
             // Query Command Setting
             connection.setQuery("SELECT intLocalityID, strCountry, strIsland, strRegion, strProvince, strCity, strArea, " +
                                     "strSpecificLocation, strShortLocation, strFullLocality, strLatitude, strLongtitude " +
-                                "FROM viewLocality");
+                                "FROM viewLocality " +
+                                "ORDER BY strFullLocality");
 
             // Query Execution
             SqlDataReader sqlData = connection.executeResult();

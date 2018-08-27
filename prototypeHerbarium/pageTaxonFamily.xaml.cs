@@ -47,6 +47,7 @@ namespace prototypeHerbarium
             txfFamilyID.Clear();
             cbxOrderName.SelectedIndex = -1;
             txfFamilyName.Clear();
+            btnSave.Content = "Save";
 
             msgOrderName.Visibility = Visibility.Collapsed;
             msgFamilyName.Visibility = Visibility.Collapsed;
@@ -78,6 +79,7 @@ namespace prototypeHerbarium
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
+            btnSave.Content = "Update";
             TaxonFamily selectedFamily = dgrFamilyTable.SelectedValue as TaxonFamily;
 
             var result = from family in TaxonomicFamilies
@@ -113,7 +115,9 @@ namespace prototypeHerbarium
 
             btnClear_Click(btnClear, null);
 
-            connection.setQuery("SELECT strFamilyNo, strOrderName, strFamilyName FROM viewTaxonFamily");
+            connection.setQuery("SELECT strFamilyNo, strOrderName, strFamilyName " +
+                                "FROM viewTaxonFamily " +
+                                "ORDER BY strOrderName, strFamilyName");
             SqlDataReader sqlData = connection.executeResult();
 
             while (sqlData.Read())
@@ -139,7 +143,7 @@ namespace prototypeHerbarium
             cbxOrderName.Items.Clear();
 
             // Query Command Setting
-            connection.setQuery("SELECT strOrderName FROM tblOrder");
+            connection.setQuery("SELECT strOrderName FROM tblOrder ORDER BY strOrderName");
 
             // Query Execution
             SqlDataReader sqlData = connection.executeResult();

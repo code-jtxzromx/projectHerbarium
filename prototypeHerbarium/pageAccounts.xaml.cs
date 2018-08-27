@@ -47,6 +47,7 @@ namespace prototypeHerbarium
             cbxStaff.SelectedIndex = -1;
             txfUsername.Clear();
             txfPassword.Clear();
+            btnSave.Content = "Save";
 
             msgStaff.Visibility = Visibility.Collapsed;
             msgUsername.Visibility = Visibility.Collapsed;
@@ -78,6 +79,7 @@ namespace prototypeHerbarium
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
+            btnSave.Content = "Update";
             Account SelectedAccount = dgrAccountTable.SelectedValue as Account;
 
             var result = from account in accessAccounts
@@ -142,7 +144,9 @@ namespace prototypeHerbarium
             btnClear_Click(btnClear, null);
 
             // Query Command Setting
-            connection.setQuery("SELECT intAccountID, strFullName, strUsername, strPassword, strRole FROM viewAccounts");
+            connection.setQuery("SELECT intAccountID, strFullName, strUsername, strPassword, strRole " +
+                                "FROM viewAccounts " +
+                                "ORDER BY strFullName, strUsername, strPassword");
 
             // Query Execution
             SqlDataReader sqlData = connection.executeResult();
@@ -173,7 +177,7 @@ namespace prototypeHerbarium
             cbxStaff.Items.Clear();
 
             // Query Command Setting
-            connection.setQuery("SELECT strFullName FROM viewHerbariumStaff");
+            connection.setQuery("SELECT strFullName FROM viewHerbariumStaff ORDER BY strFullName");
 
             // Query Execution
             SqlDataReader sqlData = connection.executeResult();

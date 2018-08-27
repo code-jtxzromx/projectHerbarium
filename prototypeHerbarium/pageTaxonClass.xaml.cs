@@ -47,6 +47,7 @@ namespace prototypeHerbarium
             txfClassID.Clear();
             cbxPhylumName.SelectedIndex = -1;
             txfClassName.Clear();
+            btnSave.Content = "Save";
 
             msgPhylumName.Visibility = Visibility.Collapsed;
             msgClassName.Visibility = Visibility.Collapsed;
@@ -54,6 +55,7 @@ namespace prototypeHerbarium
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
+            btnSave.Content = "Update";
             TaxonClass selectedClass = dgrClassTable.SelectedValue as TaxonClass;
 
             var result = from sclass in TaxonomicClasses
@@ -113,7 +115,9 @@ namespace prototypeHerbarium
 
             btnClear_Click(btnClear, null);
 
-            connection.setQuery("SELECT strClassNo, strPhylumName, strClassName FROM viewTaxonClass");
+            connection.setQuery("SELECT strClassNo, strPhylumName, strClassName " +
+                                "FROM viewTaxonClass " +
+                                "ORDER BY strPhylumName, strClassName");
             SqlDataReader sqlData = connection.executeResult();
 
             while (sqlData.Read())
@@ -139,7 +143,7 @@ namespace prototypeHerbarium
             cbxPhylumName.Items.Clear();
 
             // Query Command Setting
-            connection.setQuery("SELECT strPhylumName FROM tblPhylum");
+            connection.setQuery("SELECT strPhylumName FROM tblPhylum ORDER BY strPhylumName");
 
             // Query Execution
             SqlDataReader sqlData = connection.executeResult();

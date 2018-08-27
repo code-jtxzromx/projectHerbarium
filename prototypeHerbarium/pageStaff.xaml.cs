@@ -76,6 +76,7 @@ namespace prototypeHerbarium
             txfEmailAddress.Clear();
             cbxDepartment.SelectedIndex = -1;
             lblNote.Visibility = Visibility.Collapsed;
+            btnSave.Content = "Save";
 
             msgRole.Visibility = Visibility.Collapsed;
             msgFirstname.Visibility = Visibility.Collapsed;
@@ -111,6 +112,7 @@ namespace prototypeHerbarium
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
+            btnSave.Content = "Update";
             Staff SelectedStaff = dgrStaffTable.SelectedValue as Staff;
 
             var result = from staff in HerbariumStaff
@@ -195,7 +197,8 @@ namespace prototypeHerbarium
             // Query Command Setting
             connection.setQuery("SELECT intStaffID, strFirstname, strMiddlename, strLastname, strMiddleInitial, strNameSuffix, " +
                                         "strContactNumber, strEmailAddress, strFullName, strRole, strCollegeDepartment " +
-                                "FROM viewHerbariumStaff");
+                                "FROM viewHerbariumStaff " +
+                                "ORDER BY strLastname, strFirstname");
             
             // Query Execution
             SqlDataReader sqlData = connection.executeResult();

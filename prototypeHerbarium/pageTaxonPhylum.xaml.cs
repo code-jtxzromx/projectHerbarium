@@ -49,7 +49,8 @@ namespace prototypeHerbarium
             txfPhylumName.Clear();
             chkIsKingdomPlant.IsChecked = true;
             chkIsKingdomPlant_CheckChanged(chkIsKingdomPlant, null);
-            
+            btnSave.Content = "Save";
+
             msgDomainName.Visibility = Visibility.Collapsed;
             msgKingdomName.Visibility = Visibility.Collapsed;
             msgPhylumName.Visibility = Visibility.Collapsed;
@@ -57,8 +58,9 @@ namespace prototypeHerbarium
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
+            btnSave.Content = "Update";
             TaxonPhylum selectedFamily = dgrPhylumTable.SelectedValue as TaxonPhylum;
-            
+
             var result = from phylum in TaxonomicPhyla
                          where phylum.PhylumID == selectedFamily.PhylumID
                          select phylum;
@@ -145,7 +147,9 @@ namespace prototypeHerbarium
 
             btnClear_Click(btnClear, null);
 
-            connection.setQuery("SELECT strPhylumNo, strDomainName, strKingdomName, strPhylumName FROM viewTaxonPhylum");
+            connection.setQuery("SELECT strPhylumNo, strDomainName, strKingdomName, strPhylumName " +
+                                "FROM viewTaxonPhylum " +
+                                "ORDER BY strDomainName, strKingdomName, strPhylumName");
             SqlDataReader sqlData = connection.executeResult();
 
             while (sqlData.Read())

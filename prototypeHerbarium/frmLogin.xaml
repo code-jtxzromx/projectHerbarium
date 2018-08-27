@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:prototypeHerbarium"
         mc:Ignorable="d"
         
-        Title="Herbarium Management - Login" Height="450" Width="800" 
+        Title="Herbarium Management Information System - Login" Height="450" Width="800" 
         Icon="{StaticResource favicon}" MinHeight="385" MinWidth="360"
         WindowStartupLocation="CenterScreen">
     <Window.Resources>
@@ -29,14 +29,14 @@
         </Style>
     </Window.Resources>
     <Grid>
-        <!--<Grid.Background>
+        <Grid.Background>
             <ImageBrush ImageSource="{StaticResource background}"/>
-        </Grid.Background>-->
+        </Grid.Background>
         <Grid>
             <Grid.Background>
                 <LinearGradientBrush EndPoint="0,1.5" StartPoint="1.5,0">
-                    <GradientStop Color="#DF55CC55" Offset="0"/>
-                    <GradientStop Color="#EF005500" Offset="1"/>
+                    <GradientStop Color="#BF55CC55" Offset="0"/>
+                    <GradientStop Color="#CF005500" Offset="1"/>
                 </LinearGradientBrush>
             </Grid.Background>
             <Grid.ColumnDefinitions>

@@ -47,6 +47,7 @@ namespace prototypeHerbarium
             txfOrderID.Clear();
             cbxClassName.SelectedIndex = -1;
             txfOrderName.Clear();
+            btnSave.Content = "Save";
 
             msgClassName.Visibility = Visibility.Collapsed;
             msgOrderName.Visibility = Visibility.Collapsed;
@@ -54,6 +55,7 @@ namespace prototypeHerbarium
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
+            btnSave.Content = "Update";
             TaxonOrder selectedOrder = dgrOrderTable.SelectedValue as TaxonOrder;
 
             var result = from order in TaxonomicOrders
@@ -113,7 +115,9 @@ namespace prototypeHerbarium
 
             btnClear_Click(btnClear, null);
 
-            connection.setQuery("SELECT strOrderNo, strClassName, strOrderName FROM viewTaxonOrder");
+            connection.setQuery("SELECT strOrderNo, strClassName, strOrderName " +
+                                "FROM viewTaxonOrder " +
+                                "ORDER BY strClassName, strOrderName");
             SqlDataReader sqlData = connection.executeResult();
 
             while (sqlData.Read())
@@ -139,7 +143,7 @@ namespace prototypeHerbarium
             cbxClassName.Items.Clear();
 
             // Query Command Setting
-            connection.setQuery("SELECT strClassName FROM tblClass");
+            connection.setQuery("SELECT strClassName FROM tblClass ORDER BY strClassName");
 
             // Query Execution
             SqlDataReader sqlData = connection.executeResult();
