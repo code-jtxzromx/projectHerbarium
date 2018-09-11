@@ -440,9 +440,7 @@ CREATE PROCEDURE procInsertSpecies
 	@genusName		VARCHAR(50),
 	@speciesName	VARCHAR(50),
 	@commonName		VARCHAR(100),
-	@scientificName	VARCHAR(100),
-	@author			VARCHAR(100),
-	@alternateName	VARCHAR(MAX),
+	@author			VARCHAR(100) = NULL,
 	@isVerified		BIT
 AS
 BEGIN
@@ -453,6 +451,9 @@ BEGIN
 	
 	BEGIN TRY
 		DECLARE @genusID INT;
+		DECLARE @speciesID INT;
+		DECLARE @authorID INT;
+
 		SET @genusID = (SELECT intGenusID
 						FROM tblGenus
 						WHERE strGenusName = @genusName);
@@ -461,9 +462,17 @@ BEGIN
 					   FROM		tblSpecies
 					   WHERE	intGenusID = @genusID AND strSpeciesName = @speciesName)
 		BEGIN
-			INSERT INTO tblSpecies (intGenusID, strSpeciesName, strCommonName, strScientificName, 
-				strSpeciesAuthor, strSpeciesAlternateName, boolSpeciesIdentified)
-			VALUES (@genusID, @speciesName, @commonName, @scientificName, @author, @alternateName, @isVerified)
+			INSERT INTO tblSpecies (intGenusID, strSpeciesName, strCommonName)
+			VALUES (@genusID, @speciesName, @commonName)
+
+			IF @isVerified = 1
+			BEGIN
+				SET @speciesID = (SELECT intSpeciesID FROM tblSpecies WHERE strSpeciesName = @speciesName);
+				SET @authorID = (SELECT intAuthorID FROM tblAuthor WHERE strAuthorsName = @author)
+
+				INSERT INTO tblSpeciesAuthor (intSpeciesID, intAuthorID)
+				VALUES (@speciesID, @authorID)
+			END
 		END
 		ELSE
 		BEGIN
@@ -491,9 +500,8 @@ CREATE PROCEDURE procUpdateSpecies
 	@genusName		VARCHAR(50),
 	@speciesName	VARCHAR(50),
 	@commonName		VARCHAR(100),
-	@scientificName	VARCHAR(100),
-	@author			VARCHAR(100),
-	@alternateName	VARCHAR(MAX)
+	@author			VARCHAR(100) = NULL,
+	@isVerified		BIT
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -504,6 +512,7 @@ BEGIN
 	BEGIN TRY
 		DECLARE @speciesID INT
 		DECLARE @genusID INT
+		DECLARE @authorID INT
 
 		SET @speciesID = (SELECT intSpeciesID
 						  FROM viewTaxonSpecies
@@ -515,11 +524,176 @@ BEGIN
 		UPDATE tblSpecies
 		SET intGenusID = @genusID,
 			strSpeciesName = @speciesName,
-			strCommonName = @commonName,
-			strScientificName = @scientificName,
-			strSpeciesAuthor = @author,
-			strSpeciesAlternateName = @alternateName
+			strCommonName = @commonName
 		WHERE intSpeciesID = @speciesID
+
+		IF @isVerified = 1
+		BEGIN
+			SET @authorID = (SELECT intAuthorID
+							 FROM tblAuthor
+							 WHERE strAuthorsName = @author)
+
+			UPDATE tblSpeciesAuthor
+			SET intAuthorID = @authorID
+			WHERE intSpeciesID = @speciesID
+		END
+
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @Result = 1
+	END CATCH
+
+	IF XACT_STATE() = 1
+		COMMIT TRANSACTION
+
+	RETURN @Result
+END
+GO
+
+-- Insert Species Author
+IF OBJECT_ID('procInsertSpeciesAuthor', 'P') IS NOT NULL
+	DROP PROCEDURE procInsertSpeciesAuthor
+GO
+CREATE PROCEDURE procInsertSpeciesAuthor
+	@author			VARCHAR(255),
+	@speciesSuffix	VARCHAR(50)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	DECLARE @Result INT = 0
+
+	BEGIN TRANSACTION
+
+	BEGIN TRY
+		IF NOT EXISTS (SELECT *
+					   FROM tblAuthor
+					   WHERE strAuthorsName = @author AND strSpeciesSuffix = @speciesSuffix)
+		BEGIN
+			INSERT INTO tblAuthor(strAuthorsName, strSpeciesSuffix)
+			VALUES (@author, @speciesSuffix)
+		END
+		ELSE
+		BEGIN
+			SET @Result = 2
+		END
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @Result = 1
+	END CATCH
+
+	IF XACT_STATE() = 1
+		COMMIT TRANSACTION
+
+	RETURN @Result
+END
+GO
+
+-- Update Species Author
+IF OBJECT_ID('procUpdateSpeciesAuthor', 'P') IS NOT NULL
+	DROP PROCEDURE procUpdateSpeciesAuthor
+GO
+CREATE PROCEDURE procUpdateSpeciesAuthor
+	@authorID		INT,
+	@author			VARCHAR(255),
+	@speciesSuffix	VARCHAR(50)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	DECLARE @Result INT = 0
+
+	BEGIN TRANSACTION
+
+	BEGIN TRY
+		UPDATE tblAuthor
+		SET strAuthorsName = @author,
+			strSpeciesSuffix = @speciesSuffix
+		WHERE intAuthorID = @authorID
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @Result = 1
+	END CATCH
+
+	IF XACT_STATE() = 1
+		COMMIT TRANSACTION
+
+	RETURN @Result
+END
+GO
+
+-- Insert Species Alternate Name
+IF OBJECT_ID('procInsertSpeciesAlternate', 'P') IS NOT NULL
+	DROP PROCEDURE procInsertSpeciesAlternate
+GO
+CREATE PROCEDURE procInsertSpeciesAlternate
+	@taxonName		VARCHAR(255),
+	@language		VARCHAR(255),
+	@alternateName	VARCHAR(255)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	DECLARE @Result INT = 0
+
+	BEGIN TRANSACTION
+
+	BEGIN TRY
+		DECLARE @speciesID INT
+		
+		SET @speciesID = (SELECT intSpeciesID FROM viewTaxonSpecies WHERE strScientificName = @taxonName)
+
+		IF NOT EXISTS (SELECT *
+					   FROM tblSpeciesAlternateName
+					   WHERE intSpeciesID = @speciesID AND strLanguage = @language AND strAlternateName = @alternateName)
+		BEGIN
+			INSERT INTO tblSpeciesAlternateName (intSpeciesID, strLanguage, strAlternateName)
+			VALUES (@speciesID, @language, @alternateName)
+		END
+		ELSE
+		BEGIN
+			SET @Result = 2
+		END
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @Result = 1
+	END CATCH
+
+	IF XACT_STATE() = 1
+		COMMIT TRANSACTION
+
+	RETURN @Result
+
+END
+GO
+
+-- Update Species Alternate Name
+IF OBJECT_ID('procUpdateSpeciesAlternate', 'P') IS NOT NULL
+	DROP PROCEDURE procUpdateSpeciesAlternate
+GO
+CREATE PROCEDURE procUpdateSpeciesAlternate
+	@altNameID		INT,
+	@taxonName		VARCHAR(255),
+	@language		VARCHAR(255),
+	@alternateName	VARCHAR(255)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	DECLARE @Result INT = 0
+
+	BEGIN TRANSACTION
+
+	BEGIN TRY
+		DECLARE @speciesID INT
+
+		SET @speciesID = (SELECT intSpeciesID FROM viewTaxonSpecies WHERE strScientificName = @taxonName)
+
+		UPDATE tblSpeciesAlternateName
+		SET intSpeciesID = @speciesID,
+			strLanguage = @language,
+			strAlternateName = @alternateName
+		WHERE intAltNameID = @altNameID
 	END TRY
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
@@ -836,6 +1010,102 @@ BEGIN
 			strEmailAddress = @email,
 			strAffiliation = @affiliation
 		WHERE intCollectorID = @collectorID
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @Result = 1
+	END CATCH
+
+	IF XACT_STATE() = 1
+		COMMIT TRANSACTION
+
+	RETURN @Result
+END
+GO
+
+-- Insert Borrower
+IF OBJECT_ID('procInsertBorrower', 'P') IS NOT NULL
+	DROP PROCEDURE procInsertBorrower
+GO
+CREATE PROCEDURE procInsertBorrower
+	@firstname		VARCHAR(50),
+	@middlename		VARCHAR(50) = NULL,
+	@lastname		VARCHAR(50),
+	@middleinitial	VARCHAR(3) = NULL,
+	@namesuffix		VARCHAR(5) = NULL,
+	@address		VARCHAR(MAX),
+	@contactno		VARCHAR(15),
+	@email			VARCHAR(255),
+	@affiliation	VARCHAR(100)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	DECLARE @Result INT = 0
+
+	BEGIN TRANSACTION
+	
+	BEGIN TRY
+		IF NOT EXISTS (SELECT intBorrowerID
+					   FROM tblBorrower
+					   WHERE strFirstname = @firstname AND strMiddlename = @middlename AND strLastname = @lastname
+							AND strMiddleInitial = @middleinitial AND strNameSuffix = @namesuffix AND strHomeAddress = @address
+							AND strContactNumber = @contactno AND strEmailAddress = @email AND strAffiliation = @affiliation)
+		BEGIN
+			INSERT INTO tblBorrower(strFirstname, strMiddlename, strLastname, strMiddleInitial, strNameSuffix, strHomeAddress, 
+										strContactNumber, strEmailAddress, strAffiliation)
+			VALUES (@firstname, @middlename, @lastname, @middleinitial, @namesuffix, @address, @contactno, @email, @affiliation);
+		END
+		ELSE
+		BEGIN
+			SET @Result = 2
+		END
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @Result = 1
+	END CATCH
+
+	IF XACT_STATE() = 1
+		COMMIT TRANSACTION
+
+	RETURN @Result
+END
+GO
+
+-- Update Borrower
+IF OBJECT_ID('procUpdateBorrower', 'P') IS NOT NULL
+	DROP PROCEDURE procUpdateBorrower
+GO
+CREATE PROCEDURE procUpdateBorrower
+	@borrowerID		INT,
+	@firstname		VARCHAR(50),
+	@middlename		VARCHAR(50) = NULL,
+	@lastname		VARCHAR(50),
+	@middleinitial	VARCHAR(3) = NULL,
+	@namesuffix		VARCHAR(5) = NULL,
+	@address		VARCHAR(MAX),
+	@contactno		VARCHAR(15),
+	@email			VARCHAR(255),
+	@affiliation	VARCHAR(100)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	DECLARE @Result INT = 0
+
+	BEGIN TRANSACTION
+	
+	BEGIN TRY
+		UPDATE tblBorrower
+		SET strFirstname = @firstname,
+			strMiddlename = @middlename,
+			strLastname = @lastname,
+			strMiddleInitial = @middleinitial,
+			strNameSuffix = @namesuffix,
+			strHomeAddress = @address,
+			strContactNumber = @contactno,
+			strEmailAddress = @email,
+			strAffiliation = @affiliation
+		WHERE intBorrowerID = @borrowerID
 	END TRY
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
@@ -1193,7 +1463,7 @@ BEGIN
 		IF @accessionDigits IS NULL
 		BEGIN
 			SET @yearCode = YEAR(GETDATE()) % 100;
-			SET @identifier = (SELECT TOP 1 CAST(SUBSTRING(strAccessionNumber, 8, 5) AS INT) FROM tblPlantDeposit ORDER BY strAccessionNumber DESC);
+			SET @identifier = (SELECT TOP 1 CAST(SUBSTRING(strAccessionNumber, 8, 5) AS INT) FROM tblPlantDeposit ORDER BY CAST(SUBSTRING(strAccessionNumber, 8, 5) AS INT) DESC);
 
 			IF @identifier IS NULL
 				SET @accessionNumber = 'PUPH-' + @plantType + '-00001-' + FORMAT(@yearCode, '0#');
@@ -1477,45 +1747,50 @@ GO
 
 -------------- SAMPLE DATA INITIALIZATION --------------
 
---EXECUTE procInsertLocality 'Philippines', 'Luzon', 'National Capital Region', 'Metro Manila', 'Manila', 'Santa Mesa', 'Polytechnic University of the Philippines - Sta. Mesa (Main) Campus', 'PUP Main Campus, Sta. Mesa, Manila', '', '14°35''52.44" N', '121°0''38.88" E'
---EXECUTE procInsertLocality 'Philippines', 'Luzon', 'National Capital Region', 'Metro Manila', 'Manila', 'Sampaloc', 'University of Sto. Tomas - Espana', 'UST Espana, Sampaloc, Manila', '', '', ''
---EXECUTE procInsertLocality 'Philippines', 'Luzon', 'National Capital Region', 'Metro Manila', 'Quezon City', 'Diliman', 'University of the Philippines - Diliman Campus', 'UP Diliman, Diliman, Quezon City', '', '', ''
+EXECUTE procInsertLocality 'Philippines', 'Luzon', 'National Capital Region', 'Metro Manila', 'Manila', 'Santa Mesa', 'Polytechnic University of the Philippines - Sta. Mesa (Main) Campus', 'PUP Main Campus, Sta. Mesa, Manila', '', '14°35''52.44" N', '121°0''38.88" E'
+EXECUTE procInsertLocality 'Philippines', 'Luzon', 'National Capital Region', 'Metro Manila', 'Manila', 'Sampaloc', 'University of Sto. Tomas - Espana', 'UST Espana, Sampaloc, Manila', '', '', ''
+EXECUTE procInsertLocality 'Philippines', 'Luzon', 'National Capital Region', 'Metro Manila', 'Quezon City', 'Diliman', 'University of the Philippines - Diliman Campus', 'UP Diliman, Diliman, Quezon City', '', '', ''
 
---EXECUTE procInsertCollector 'Jake', 'M', 'Magpantay', 'M', '', 'Quezon City', '09991357924', 'jakemagpantay@yahoo.com', 'College of Engineering'
---EXECUTE procInsertCollector 'Anna', 'B', 'Balingit', 'B', '', 'Manila', '09051234567', 'annabalingit@gmail.com', 'College of Science'
---EXECUTE procInsertCollector 'Rhisiel', 'V', 'Valle', 'V', '', 'Manila', '09361234567', 'rvalle1233@hotmail.com', 'College of Arts and Letters'
---EXECUTE procInsertCollector 'Maica', 'C', 'Opena', 'O', '', 'Muntilupa City', '09219876543', 'opena_maica@ymail.com', 'College of Accounting and Finance'
+EXECUTE procInsertCollector 'Jake', 'M', 'Magpantay', 'M', '', 'Quezon City', '09991357924', 'jakemagpantay@yahoo.com', 'College of Engineering'
+EXECUTE procInsertCollector 'Anna', 'B', 'Balingit', 'B', '', 'Manila', '09051234567', 'annabalingit@gmail.com', 'College of Science'
+EXECUTE procInsertCollector 'Rhisiel', 'V', 'Valle', 'V', '', 'Manila', '09361234567', 'rvalle1233@hotmail.com', 'College of Arts and Letters'
+EXECUTE procInsertCollector 'Maica', 'C', 'Opena', 'O', '', 'Muntilupa City', '09219876543', 'opena_maica@ymail.com', 'College of Accounting and Finance'
 
---EXECUTE procInsertValidator 'Paolo', 'J', 'Labrador', 'J', '', '09881234567', 'paololabrador@gmail.com', 'National Herbarium Center'
---EXECUTE procInsertValidator 'Marie Annthonite', 'N', 'Buena', 'N', '', '09111234567', 'tonetbuena@yahoo.com', 'University of Santo Tomas'
---EXECUTE procInsertValidator 'Michael John', 'D', 'Ducut', 'D', '', '09991234567', 'mjducut@outlook.com', 'University of the Philippines - Los Banos'
+EXECUTE procInsertBorrower 'David Adrienne', 'J', 'Fernando', 'J', '', 'Manila', '09997654321', 'vidfernando@yandex.com', 'College of Business Administration'
+EXECUTE procInsertBorrower 'Guiller', 'G', 'Pascual', 'G', '', 'Manila', '09001234567', 'sensei_guiller@gmail.com', 'College of Compute and Information Sciences'
 
---EXECUTE procInsertHerbariumStaff 'Jerome', 'B', 'Casingal', 'B', '', '09161234567', 'jetcasingal@hotmail.com', 'ADMINISTRATOR', 'College of Computer and Infomation Sciences'
---EXECUTE procInsertHerbariumStaff 'Althea Nicole', 'M', 'Cruz', 'M', '', '09181237654', 'theapanda@yahoo.com', 'STUDENT ASSISTANT', 'College of Computer and Infomation Sciences'
---EXECUTE procInsertHerbariumStaff 'Nino Danielle', 'C', 'Escueta', 'C', '', '09989991700', 'ndescueta@ymail.com', 'CURATOR', 'College of Computer and Information Sciences'
---EXECUTE procInsertHerbariumStaff 'Christine Joy', 'V', 'Leynes', 'V', '', '09991234567', 'tineleynes@gmail.com', 'STUDENT ASSISTANT', 'College of Computer and Information Sciences'
---EXECUTE procInsertHerbariumStaff 'Armin','S', 'Coronado', 'S', '', '09123456789', 'armin_coronado@pup.edu.ph', 'ADMINISTRATOR', 'College of Science'
---EXECUTE procInsertHerbariumStaff 'Ma. Eleanor', 'C', 'Salvador', 'C', '', '09178482910', 'maria_salvador@pup.edu.ph', 'ADMINISTRATOR', 'College of Science'
+EXECUTE procInsertValidator 'Paolo', 'J', 'Labrador', 'J', '', '09881234567', 'paololabrador@gmail.com', 'National Herbarium Center'
+EXECUTE procInsertValidator 'Marie Annthonite', 'N', 'Buena', 'N', '', '09111234567', 'tonetbuena@yahoo.com', 'University of Santo Tomas'
+EXECUTE procInsertValidator 'Michael John', 'D', 'Ducut', 'D', '', '09991234567', 'mjducut@outlook.com', 'University of the Philippines - Los Banos'
 
---EXECUTE procInsertAccount 'Jerome Casingal', 'jetcasingal', 'jetcasingal'
---EXECUTE procInsertAccount 'Nino Danielle Escueta', 'ndescueta', 'ndescueta'
---EXECUTE procInsertAccount 'Althea Nicole Cruz', 'theacruz', 'theacruz'
---EXECUTE procInsertAccount 'Christine Joy Leynes', 'tineleynes', 'tineleynes'
+EXECUTE procInsertHerbariumStaff 'Jerome', 'B', 'Casingal', 'B', '', '09161234567', 'jetcasingal@hotmail.com', 'ADMINISTRATOR', 'College of Computer and Infomation Sciences'
+EXECUTE procInsertHerbariumStaff 'Althea Nicole', 'M', 'Cruz', 'M', '', '09181237654', 'theapanda@yahoo.com', 'STUDENT ASSISTANT', 'College of Computer and Infomation Sciences'
+EXECUTE procInsertHerbariumStaff 'Nino Danielle', 'C', 'Escueta', 'C', '', '09989991700', 'ndescueta@ymail.com', 'CURATOR', 'College of Computer and Information Sciences'
+EXECUTE procInsertHerbariumStaff 'Christine Joy', 'V', 'Leynes', 'V', '', '09991234567', 'tineleynes@gmail.com', 'STUDENT ASSISTANT', 'College of Computer and Information Sciences'
+EXECUTE procInsertHerbariumStaff 'Armin','S', 'Coronado', 'S', '', '09123456789', 'armin_coronado@pup.edu.ph', 'ADMINISTRATOR', 'College of Science'
+EXECUTE procInsertHerbariumStaff 'Ma. Eleanor', 'C', 'Salvador', 'C', '', '09178482910', 'maria_salvador@pup.edu.ph', 'ADMINISTRATOR', 'College of Science'
 
---EXECUTE procInsertPhylum 'Eukaryota', 'Plantae', 'Magnoliophyta'
---EXECUTE procInsertClass 'Magnoliophyta', 'Magnoliopsida'
---EXECUTE procInsertOrder 'Magnoliopsida', 'Lamiales'
---EXECUTE procInsertFamily 'Lamiales', 'Lamiaceae'
---EXECUTE procInsertGenus 'Lamiaceae', 'Vitex'
---EXECUTE procInsertSpecies 'Vitex', 'negundo', 'Chinese chastetree', 'Vitex Negundo L.', 'Carl Linneaus', 'Lagundi; Nirgundi;', '1'
---EXECUTE procInsertFamilyBox 'Lamiaceae', '20', 1, 1, 1
+EXECUTE procInsertAccount 'Jerome Casingal', 'jetcasingal', 'jetcasingal'
+EXECUTE procInsertAccount 'Nino Danielle Escueta', 'ndescueta', 'ndescueta'
+EXECUTE procInsertAccount 'Althea Nicole Cruz', 'theacruz', 'theacruz'
+EXECUTE procInsertAccount 'Christine Joy Leynes', 'tineleynes', 'tineleynes'
 
---SELECT * FROM tblFamily
---SELECT * FROM tblGenus
---SELECT * FROM tblSpecie
+EXECUTE procInsertSpeciesAuthor 'Carl Linneaus', 'L.'
+
+EXECUTE procInsertPhylum 'Eukaryota', 'Plantae', 'Magnoliophyta'
+EXECUTE procInsertClass 'Magnoliophyta', 'Magnoliopsida'
+EXECUTE procInsertOrder 'Magnoliopsida', 'Lamiales'
+EXECUTE procInsertFamily 'Lamiales', 'Lamiaceae'
+EXECUTE procInsertGenus 'Lamiaceae', 'Vitex'
+EXECUTE procInsertSpecies 'Vitex', 'negundo', 'Chinese chastetree', 'Carl Linneaus', 1
+
+EXECUTE procInsertSpeciesAlternate 'Vitex negundo L.', 'Filipino', 'Lagundi'
+EXECUTE procInsertFamilyBox 'Lamiaceae', 20, 1, 1, 1
+
 --SELECT * FROM tblLocality
 --SELECT * FROM tblPerson
 --SELECT * FROM tblCollector
+--SELECT * FROM tblBorrower
 --SELECT * FROM tblValidator
 --SELECT * FROM tblHerbariumStaff
 
@@ -1524,7 +1799,11 @@ GO
 --SELECT * FROM viewTaxonOrder
 --SELECT * FROM viewTaxonFamily
 --SELECT * FROM viewTaxonGenus
---SELECT strSpeciesNo, strGenusName, strSpeciesName, strCommonName, strScientificName, strSpeciesAuthor, strSpeciesAlternateName, boolSpeciesIdentified FROM viewTaxonSpecies
+--SELECT * FROM viewTaxonSpecies
+
+--SELECT * FROM tblAuthor
+--SELECT * FROM tblSpeciesAuthor
+--SELECT * FROM tblSpeciesAlternateName
 
 --SELECT FB.strBoxNumber, FB.strFamilyName, FB.intBoxLimit, FB.intRackNo, FB.intRackRow, FB.intRackColumn, COUNT(HI.intStoredSheetID) 
 --FROM viewFamilyBox FB LEFT JOIN viewHerbariumInventory HI ON FB.strBoxNumber = HI.strBoxNumber
@@ -1536,3 +1815,4 @@ GO
 --SELECT intCollectorID, strFirstname, strMiddlename, strLastname, strMiddleInitial, strNameSuffix, strHomeAddress, strContactNumber, strEmailAddress, strFullName, strAffiliation 
 --FROM viewCollector
 --SELECT * FROM viewAccounts
+

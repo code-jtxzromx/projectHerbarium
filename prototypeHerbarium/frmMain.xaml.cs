@@ -161,11 +161,25 @@ namespace prototypeHerbarium
             lblPageName.Text = page.Title.ToUpper();
         }
 
+        private void btnSpeciesAuthor_Click(object sender, RoutedEventArgs e)
+        {
+            pageSpeciesAuthor page = new pageSpeciesAuthor();
+            pnlPageLoader.Content = page;
+            lblPageName.Text = page.Title.ToUpper();
+        }
+
+        private void btnSpeciesAlternate_Click(object sender, RoutedEventArgs e)
+        {
+            pageSpeciesAlternate page = new pageSpeciesAlternate();
+            pnlPageLoader.Content = page;
+            lblPageName.Text = page.Title.ToUpper();
+        }
+
         private void btnFamilyBox_Click(object sender, RoutedEventArgs e)
         {
             pageFamilyBox page = new pageFamilyBox();
             pnlPageLoader.Content = page;
-            lblPageName.Text = "FAMILY BOXES";
+            lblPageName.Text = "HERBARIUM BOXES";
         }
 
         // Event:           Click
@@ -176,7 +190,14 @@ namespace prototypeHerbarium
         {
             pageCollector page = new pageCollector();
             pnlPageLoader.Content = page;
-            lblPageName.Text = "COLLECTOR";
+            lblPageName.Text = "PLANT COLLECTOR";
+        }
+
+        private void btnBorrower_Click(object sender, RoutedEventArgs e)
+        {
+            pageBorrower page = new pageBorrower();
+            pnlPageLoader.Content = page;
+            lblPageName.Text = "PLANT BORROWER";
         }
 
         // Event:           Click
@@ -187,7 +208,7 @@ namespace prototypeHerbarium
         {
             pageLocality page = new pageLocality();
             pnlPageLoader.Content = page;
-            lblPageName.Text = "LOCALITY";
+            lblPageName.Text = "PLANT LOCALITY";
         }
 
         // Event:           Click
@@ -205,7 +226,7 @@ namespace prototypeHerbarium
         {
             pageStaff page = new pageStaff();
             pnlPageLoader.Content = page;
-            lblPageName.Text = "STAFF MANAGEMENT";
+            lblPageName.Text = "HERBARIUM STAFF";
         }
 
         private void btnAccounts_Click(object sender, RoutedEventArgs e)

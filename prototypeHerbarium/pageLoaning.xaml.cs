@@ -41,6 +41,41 @@ namespace prototypeHerbarium
 
         private void btnAddLoan_Click(object sender, RoutedEventArgs e) => pnlLoanTransactionForm.Visibility = Visibility.Visible;
 
+        private void btnView_Click(object sender, RoutedEventArgs e)
+        {
+            PlantLoans loans = dgrPlantLoans.SelectedItem as PlantLoans;
+            MessageBox.Show(loans.LoanNumber.ToString());
+
+            List<ListSpecies> lists = new List<ListSpecies>();
+
+            DatabaseConnection connection = new DatabaseConnection();
+            connection.setQuery("SELECT strFamilyName, strScientificName, intCopies " +
+                                "FROM viewLoanedSpecies " +
+                                "WHERE strLoanNumber = @loanNumber " +
+                                "ORDER BY strFamilyName, strScientificName ASC");
+            connection.addParameter("@loanNumber", SqlDbType.VarChar, loans.LoanNumber);
+
+            SqlDataReader sqlData = connection.executeResult();
+            while (sqlData.Read())
+            {
+                lists.Add(new ListSpecies()
+                {
+                    FamilyName = sqlData[0].ToString(),
+                    TaxonName = sqlData[1].ToString(),
+                    Copies = Convert.ToInt32(sqlData[2])
+                });
+            }
+            connection.closeResult();
+
+            lblViewCollector.Text = loans.Collector;
+            lblViewDuration.Text = loans.Duration;
+            lblViewPurpose.Text = loans.Purpose;
+            lblViewStatus.Text = loans.Status;
+            dgrLoanedSpecies.ItemsSource = lists;
+
+            pnlViewLoaningForm.Visibility = Visibility.Visible;
+        }
+
         private void rbtPurpose_CheckChanged(object sender, RoutedEventArgs e)
         {
             lblOtherPurpose.Visibility = (rbtOther.IsChecked == true) ? Visibility.Visible : Visibility.Collapsed;
@@ -65,7 +100,17 @@ namespace prototypeHerbarium
                                                         MessageBoxButton.YesNo,
                                                         MessageBoxImage.Question);
             if (response == MessageBoxResult.Yes)
+            {
                 pnlLoanTransactionForm.Visibility = Visibility.Hidden;
+                cbxCollector.SelectedIndex = -1;
+                dpkLoanDate.Text = "";
+                txfDuration.Text = "";
+                cbxDuration.SelectedIndex = -1;
+                rbtResearch.IsChecked = true;
+
+                dgrTaxonFamilies.ItemsSource = null;
+                dgrTaxonGenera.ItemsSource = null;
+            }
         }
 
         private void btnCancelTransactionB_Click(object sender, RoutedEventArgs e)
@@ -75,7 +120,35 @@ namespace prototypeHerbarium
                                                         MessageBoxButton.YesNo,
                                                         MessageBoxImage.Question);
             if (response == MessageBoxResult.Yes)
+            {
                 pnlPlantLoaningForm.Visibility = Visibility.Hidden;
+                cbxCollector.SelectedIndex = -1;
+                dpkLoanDate.Text = "";
+                txfDuration.Text = "";
+                cbxDuration.SelectedIndex = -1;
+                rbtResearch.IsChecked = true;
+
+                dgrTaxonFamilies.ItemsSource = null;
+                dgrTaxonGenera.ItemsSource = null;
+
+                lblCollector.Text = "";
+                lblDuration.Text = "";
+                lblPurpose.Text = "";
+
+                dgrTaxonSpecies.ItemsSource = null;
+            }
+        }
+
+        private void btnCloseForm_Click(object sender, RoutedEventArgs e)
+        {
+            pnlViewLoaningForm.Visibility = Visibility.Hidden;
+
+            lblViewCollector.Text = "";
+            lblViewDuration.Text = "";
+            lblViewPurpose.Text = "";
+            lblViewStatus.Text = "";
+
+            dgrLoanedSpecies.ItemsSource = null;
         }
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
@@ -209,7 +282,7 @@ namespace prototypeHerbarium
             cbxCollector.Items.Clear();
 
             DatabaseConnection connection = new DatabaseConnection();
-            connection.setQuery("SELECT strFullName FROM viewCollector");
+            connection.setQuery("SELECT strFullName FROM viewCollector ORDER BY strFullName ASC");
 
             SqlDataReader sqlData = connection.executeResult();
             while (sqlData.Read())
@@ -271,25 +344,22 @@ namespace prototypeHerbarium
             foreach (ListGenus genus in genera)
             {
                 DatabaseConnection connection = new DatabaseConnection();
-                connection.setQuery("SELECT TS.strScientificName, COUNT(HI.intStoredSheetID) - ISNULL(SUM(LS.intCopies), 0) " +
-                                    "FROM viewTaxonSpecies TS " +
-                                        "LEFT JOIN viewHerbariumInventory HI ON TS.strScientificName = HI.strScientificName AND HI.boolLoanAvailable = 1 " +
-                                        "LEFT JOIN tblLoaningSpecies LS ON TS.intSpeciesID = LS.intSpeciesID " +
-                                        "LEFT JOIN tblPlantLoanTransaction LT ON LT.intLoanID = LS.intLoanID AND LT.strStatus IN('Approved', 'Requesting') " +
-                                    "WHERE TS.strGenusName = @genusname " +
-                                    "GROUP BY TS.strScientificName " +
-                                    "ORDER BY TS.strScientificName ASC");
+                connection.setQuery("SELECT SI.strFamilyName, SI.strScientificName, SI.intSpeciesCount -  ISNULL(SL.intBorrowedCount, 0) " +
+                                    "FROM viewSpeciesInventory SI " +
+                                        "LEFT JOIN viewSpeciesLoanCount SL ON SI.strScientificName = SL.strScientificName " +
+                                    "WHERE SI.strGenusName = @genusname");
                 connection.addParameter("@genusName", SqlDbType.VarChar, genus.GenusName);
 
                 SqlDataReader sqlData = connection.executeResult();
                 while (sqlData.Read())
                 {
-                    if (Convert.ToInt32(sqlData[1]) > 0)
+                    if (Convert.ToInt32(sqlData[2]) > 0)
                     {
                         species.Add(new ListSpecies()
                         {
-                            TaxonName = sqlData[0].ToString(),
-                            Specimens = Convert.ToInt32(sqlData[1])
+                            FamilyName = sqlData[0].ToString(),
+                            TaxonName = sqlData[1].ToString(),
+                            Specimens = Convert.ToInt32(sqlData[2])
                         });
                     }
                 }

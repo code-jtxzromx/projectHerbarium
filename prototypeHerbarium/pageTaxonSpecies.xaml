@@ -23,13 +23,9 @@
                     <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
                     <ColumnDefinition />
                     <ColumnDefinition />
                     <ColumnDefinition />
@@ -44,7 +40,7 @@
                           Grid.Column="1" Grid.Row="1" Margin="10 3" VerticalContentAlignment="Center">
                     Known Species
                 </CheckBox>
-
+                
                 <TextBlock Grid.Column="0" Grid.Row="2" Margin="5">
                     Genus Name: <Span Foreground="Red">*</Span>
                 </TextBlock>
@@ -52,43 +48,29 @@
                     Species Name: <Span Foreground="Red">*</Span>
                 </TextBlock>
                 <TextBlock Grid.Column="2" Grid.Row="2" Margin="5">
-                    Scientific Name: <Span Foreground="Red">*</Span>
+                    Common Name: <Span Foreground="Red">*</Span>
                 </TextBlock>
+                <TextBlock Grid.Column="3" Grid.Row="2" Margin="5">
+                    Species' Author: <Span Foreground="Red">*</Span>
+                </TextBlock>
+                
                 <ComboBox x:Name="cbxGenusName" 
                           Grid.Column="0" Grid.Row="3" Height="25" Margin="3" VerticalContentAlignment="Center"/>
                 <TextBox x:Name="txfSpeciesName" 
                          Grid.Column="1" Grid.Row="3" Height="25" Margin="3" VerticalContentAlignment="Center"/>
-                <TextBox x:Name="txfScientificName" 
+                <TextBox x:Name="txfCommonName" 
                          Grid.Column="2" Grid.Row="3" Height="25" Margin="3" VerticalContentAlignment="Center"/>
+                <ComboBox x:Name="cbxAuthor" 
+                         Grid.Column="3" Grid.Row="3" Height="25" Margin="3" VerticalContentAlignment="Center"/>
                 
                 <TextBlock x:Name="msgGenusName" Visibility="Collapsed"
                            Grid.Column="0" Grid.Row="4" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
                 <TextBlock x:Name="msgSpeciesName" Visibility="Collapsed"
                            Grid.Column="1" Grid.Row="4" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
-                <TextBlock x:Name="msgScientificName" Visibility="Collapsed"
-                           Grid.Column="2" Grid.Row="4" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
-
-                <TextBlock Grid.Column="0" Grid.Row="5" Margin="5">
-                    Common Name: <Span Foreground="Red">*</Span>
-                </TextBlock>
-                <TextBlock Grid.Column="1" Grid.Row="5" Margin="5">
-                    Species' Author: <Span Foreground="Red">*</Span>
-                </TextBlock>
-                <TextBox x:Name="txfCommonName" 
-                         Grid.Column="0" Grid.Row="6" Height="25" Margin="3" VerticalContentAlignment="Center"/>
-                <TextBox x:Name="txfAuthor" 
-                         Grid.Column="1" Grid.Row="6" Height="25" Margin="3" VerticalContentAlignment="Center"/>
                 <TextBlock x:Name="msgCommonName" Visibility="Collapsed"
-                           Grid.Column="0" Grid.Row="7" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
+                           Grid.Column="2" Grid.Row="4" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
                 <TextBlock x:Name="msgAuthor" Visibility="Collapsed"
-                           Grid.Column="1" Grid.Row="7" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
-
-                <TextBlock Grid.Column="0" Grid.Row="8" Margin="5" Grid.ColumnSpan="3">
-                    Alternate Names: <TabItem/> <Span Foreground="Red">Each Synonym must be separated by Semicolon ( ; )</Span>
-                </TextBlock>
-                <TextBox x:Name="txfSynonyms" 
-                         Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="3" Height="30" TextWrapping="WrapWithOverflow" 
-                         Margin="3" VerticalContentAlignment="Center"/>
+                           Grid.Column="3" Grid.Row="4" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
 
             </Grid>
             <Grid Margin="40 10">
@@ -127,8 +109,7 @@
             <DataGrid x:Name="dgrSpeciesTable" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0" GridLinesVisibility="Horizontal">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Species ID" Binding="{Binding SpecieID}" Width="160"/>
-                    <DataGridTextColumn Header="Genus Name" Binding="{Binding GenusName}" Width="2*"/>
-                    <DataGridTextColumn Header="Species Name" Binding="{Binding SpeciesName}" Width="2*"/>
+                    <DataGridTextColumn Header="Scientific Name" Binding="{Binding ScientificName}" Width="3*"/>
                     <DataGridTextColumn Header="Common Name" Binding="{Binding CommonName}" Width="3*"/>
                     <DataGridTextColumn Header="Status" Binding="{Binding IdentifiedStatus}" Width="2*"/>
                     <DataGridTemplateColumn Header="Actions" Width="100">

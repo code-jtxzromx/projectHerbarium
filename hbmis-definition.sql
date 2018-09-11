@@ -103,18 +103,42 @@ CREATE TABLE tblSpecies
 	intSpeciesID INT IDENTITY(1, 1) NOT NULL,
 	intGenusID INT NOT NULL,
 	strSpeciesName VARCHAR(50) NOT NULL,
-	boolSpeciesIdentified BIT NOT NULL,
 	strCommonName VARCHAR(50) NOT NULL,
-	strScientificName VARCHAR(100) NOT NULL,
-	strSpeciesAuthor VARCHAR(100),
-	strSpeciesAlternateName VARCHAR(MAX)
 	CONSTRAINT pk_tblSpecies PRIMARY KEY(intSpeciesID),
 	CONSTRAINT fk_tblSpecies_tblGenus FOREIGN KEY(intGenusID)
 		REFERENCES tblGenus(intGenusID)
 )
 GO
 
--- Taxonomic Hierarchy : Species > Alternate Name
+-- Author
+IF OBJECT_ID('tblSAuthor', 'U') IS NOT NULL
+	DROP TABLE tblAuthor
+GO
+CREATE TABLE tblAuthor
+(
+	intAuthorID INT IDENTITY(1, 1) NOT NULL,
+	strAuthorsName VARCHAR(255) NOT NULL,
+	strSpeciesSuffix VARCHAR(50) NOT NULL,
+	CONSTRAINT pk_tblAuthor PRIMARY KEY(intAuthorID)
+)
+
+-- Species Author
+IF OBJECT_ID('tblSpeciesAuthor', 'U') IS NOT NULL
+	DROP TABLE tblSpeciesAuthor
+GO
+CREATE TABLE tblSpeciesAuthor
+(
+	intSpeciesID INT NOT NULL,
+	intAuthorID INT NOT NULL,
+	CONSTRAINT pk_tblSpeciesAuthor PRIMARY KEY(intSpeciesID),
+	CONSTRAINT fk_tblSpeciesAuthor_tblSpecies FOREIGN KEY(intSpeciesID)
+		REFERENCES tblSpecies(intSpeciesID),
+	CONSTRAINT fk_tblSpeciesAuthor_tblAuthor FOREIGN KEY(intAuthorID)
+		REFERENCES tblAuthor(intAuthorID)
+)
+GO
+
+-- Species Alternate Name
 IF OBJECT_ID('tblSpeciesAlternateName', 'U') IS NOT NULL
 	DROP TABLE tblSpeciesAlternateName 
 GO
@@ -122,7 +146,8 @@ CREATE TABLE tblSpeciesAlternateName
 (
 	intAltNameID INT IDENTITY(1, 1) NOT NULL,
 	intSpeciesID INT NOT NULL,
-	strAlternateName VARCHAR(50) NOT NULL,
+	strLanguage VARCHAR(255) NOT NULL,
+	strAlternateName VARCHAR(255) NOT NULL,
 	CONSTRAINT pk_tblSpeciesAlternateName PRIMARY KEY(intAltNameID),
 	CONSTRAINT fk_tblSpeciesAlternateName_tblSpecies FOREIGN KEY(intSpeciesID)
 		REFERENCES tblSpecies(intSpeciesID)
@@ -190,8 +215,28 @@ CREATE TABLE tblCollector
 )
 GO
 
+-- Collector
+IF OBJECT_ID('tblBorrower', 'U') IS NOT NULL
+	DROP TABLE tblBorrower
+GO
+CREATE TABLE tblBorrower 
+(
+	intBorrowerID INT IDENTITY(1000, 1) NOT NULL,
+	strFirstname VARCHAR(50) NOT NULL,
+	strMiddlename VARCHAR(50),
+	strLastname VARCHAR(50) NOT NULL,
+	strMiddleInitial VARCHAR(3),
+	strNameSuffix VARCHAR(5),
+	strHomeAddress VARCHAR(MAX) NOT NULL,
+	strContactNumber VARCHAR(15) NOT NULL,
+	strEmailAddress VARCHAR(255) NOT NULL,
+	strAffiliation VARCHAR(100) NOT NULL,
+	CONSTRAINT pk_tblBorrower PRIMARY KEY(intBorrowerID)
+)
+GO
+
 -- Validator
-IF OBJECT_ID('tblValidator', 'U') IS NOT NULL
+IF OBJECT_ID('tblValidator', 'U') IS NOT NULL       
 	DROP TABLE tblValidator
 GO
 CREATE TABLE tblValidator
@@ -464,11 +509,11 @@ AS
 )
 GO
 
--- Species View
-IF OBJECT_ID('viewTaxonSpecies', 'V') IS NOT NULL
-	DROP VIEW viewTaxonSpecies
+-- Species Hierarchy View
+IF OBJECT_ID('viewSpeciesHierarchy', 'V') IS NOT NULL
+	DROP VIEW viewSpeciesHierarchy
 GO
-CREATE VIEW viewTaxonSpecies
+CREATE VIEW viewSpeciesHierarchy
 AS
 (
 	SELECT	TS.intSpeciesID,
@@ -479,13 +524,55 @@ AS
 				   'G', FORMAT(TG.intGenusID, '0#'), 
 				   'S', FORMAT(TS.intSpeciesID, '0#')) strSpeciesNo,
 			TP.strDomainName, TP.strKingdomName, TP.strPhylumName, TC.strClassName, TD.strOrderName, TF.strFamilyName, TG.strGenusName, 
-			TS.strSpeciesName, TS.strCommonName, TS.strScientificName, TS.strSpeciesAuthor, TS.strSpeciesAlternateName, TS.boolSpeciesIdentified
+			TS.strSpeciesName, TS.strCommonName
 	FROM tblSpecies TS
 		INNER JOIN tblGenus TG ON TS.intGenusID = TG.intGenusID
 		INNER JOIN tblFamily TF ON TG.intFamilyID = TF.intFamilyID
 		INNER JOIN tblOrder TD ON TF.intOrderID = TD.intOrderID
 		INNER JOIN tblClass TC ON TD.intClassID = TC.intClassID
 		INNER JOIN tblPhylum TP ON TC.intPhylumID = TP.intPhylumID
+)
+GO
+
+-- Species Author
+IF OBJECT_ID('viewSpeciesAuthor', 'V') IS NOT NULL
+	DROP VIEW viewSpeciesAuthor
+GO
+CREATE VIEW viewSpeciesAuthor
+AS
+(
+	SELECT Au.intAuthorID, Au.strAuthorsName, Au.strSpeciesSuffix
+	FROM tblAuthor Au
+)
+GO
+
+-- Full Species View
+IF OBJECT_ID('viewTaxonSpecies', 'V') IS NOT NULL
+	DROP VIEW viewTaxonSpecies
+GO
+CREATE VIEW viewTaxonSpecies
+AS
+(
+	SELECT Sp.intSpeciesID, Sp.strSpeciesNo, Sp.strDomainName, Sp.strKingdomName, Sp.strPhylumName, Sp.strClassName, Sp.strOrderName, Sp.strFamilyName, 
+			Sp.strGenusName, Sp.strSpeciesName, Sp.strCommonName, Au.strAuthorsName, 
+			RTRIM(CONCAT(Sp.strGenusName, ' ', Sp.strSpeciesName, ' ', ISNULL(Au.strSpeciesSuffix, ''))) strScientificName,
+			CAST((CASE WHEN Au.strSpeciesSuffix IS NULL THEN 0 ELSE 1 END) AS BIT) boolSpeciesIdentified
+	FROM viewSpeciesHierarchy Sp 
+		LEFT JOIN tblSpeciesAuthor SA ON SA.intSpeciesID = Sp.intSpeciesID
+		INNER JOIN tblAuthor Au ON SA.intAuthorID = Au.intAuthorID
+)
+GO
+
+-- Species Alternate Name
+IF OBJECT_ID('viewSpeciesAlternate', 'V') IS NOT NULL
+	DROP VIEW viewSpeciesAlternate
+GO
+CREATE VIEW viewSpeciesAlternate
+AS
+(
+	SELECT SAN.intAltNameID, TS.strScientificName, SAN.strLanguage, SAN.strAlternateName
+	FROM tblSpeciesAlternateName SAN
+		INNER JOIN viewTaxonSpecies TS ON SAN.intSpeciesID = TS.intSpeciesID 
 )
 GO
 
@@ -528,6 +615,19 @@ AS
 	SELECT Co.intCollectorID, Co.strFirstname, Co.strMiddlename, Co.strLastname, Co.strMiddleInitial, Co.strNameSuffix, Co.strHomeAddress, Co.strContactNumber,
 		Co.strEmailAddress, RTRIM(LTRIM(CONCAT(Co.strFirstname, ' ', Co.strLastname, ' ', Co.strNameSuffix))) strFullName, Co.strAffiliation
 	FROM tblCollector Co
+)
+GO
+
+-- Borrower VIew
+IF OBJECT_ID('viewBorrower', 'V') IS NOT NULL
+	DROP VIEW viewBorrower
+GO
+CREATE VIEW viewBorrower
+AS
+(
+	SELECT Bo.intBorrowerID, Bo.strFirstname, Bo.strMiddlename, Bo.strLastname, Bo.strMiddleInitial, Bo.strNameSuffix, Bo.strHomeAddress, Bo.strContactNumber,
+		Bo.strEmailAddress, RTRIM(LTRIM(CONCAT(Bo.strFirstname, ' ', Bo.strLastname, ' ', Bo.strNameSuffix))) strFullName, Bo.strAffiliation
+	FROM tblBorrower Bo
 )
 GO
 
@@ -637,6 +737,46 @@ AS
 		PL.dateProcessed, PL.strPurpose, PL.strStatus
 	FROM tblPlantLoanTransaction PL
 		INNER JOIN viewCollector Co ON PL.intCollectorID = Co.intCollectorID
+)
+GO
+
+IF OBJECT_ID('viewSpeciesInventory', 'V') IS NOT NULL
+	DROP VIEW viewSpeciesInventory
+GO
+CREATE VIEW viewSpeciesInventory
+AS
+(
+	SELECT TS.strFamilyName, TS.strGenusName, TS.strScientificName, COUNT(HI.intStoredSheetID) AS intSpeciesCount
+	FROM viewTaxonSpecies TS 
+		LEFT JOIN viewHerbariumInventory HI ON TS.strScientificName = HI.strScientificName AND HI.boolLoanAvailable = 1
+	GROUP BY TS.strFamilyName, TS.strGenusName, TS.strScientificName 
+)
+GO
+
+IF OBJECT_ID('viewSpeciesLoanCount', 'V') IS NOT NULL
+	DROP VIEW viewSpeciesLoanCount
+GO
+CREATE VIEW viewSpeciesLoanCount
+AS
+(
+	SELECT TS.strScientificName, SUM(LS.intCopies) AS intBorrowedCount
+	FROM viewTaxonSpecies TS  
+		JOIN tblLoaningSpecies LS ON TS.intSpeciesID = LS.intSpeciesID 
+		JOIN tblPlantLoanTransaction LT ON LT.intLoanID = LS.intLoanID AND LT.strStatus = 'Requesting'
+	GROUP BY TS.strFamilyName, TS.strScientificName 
+)
+GO
+
+IF OBJECT_ID('viewLoanedSpecies', 'V') IS NOT NULL
+	DROP VIEW viewLoanedSpecies
+GO
+CREATE VIEW viewLoanedSpecies
+AS
+(
+	SELECT LS.intSpeciesLoanID, PL.strLoanNumber, TS.strFamilyName, TS.strScientificName, LS.intCopies 
+	FROM tblLoaningSpecies LS
+		JOIN viewPlantLoans PL ON LS.intLoanID = PL.intLoanID
+		JOIN viewTaxonSpecies TS ON LS.intSpeciesID = TS.intSpeciesID
 )
 GO
 

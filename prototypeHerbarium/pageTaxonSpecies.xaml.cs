@@ -50,15 +50,12 @@ namespace prototypeHerbarium
             cbxGenusName.SelectedIndex = -1;
             txfSpeciesName.Clear();
             txfCommonName.Clear();
-            txfScientificName.Clear();
-            txfAuthor.Clear();
-            txfSynonyms.Clear();
+            cbxAuthor.SelectedIndex = -1;
             btnSave.Content = "Save";
 
             msgGenusName.Visibility = Visibility.Collapsed;
             msgSpeciesName.Visibility = Visibility.Collapsed;
             msgCommonName.Visibility = Visibility.Collapsed;
-            msgScientificName.Visibility = Visibility.Collapsed;
             msgAuthor.Visibility = Visibility.Collapsed;
         }
 
@@ -107,10 +104,8 @@ namespace prototypeHerbarium
                 txfSpecieID.Text = data.SpecieID;
                 cbxGenusName.SelectedItem = data.GenusName;
                 txfSpeciesName.Text = data.SpeciesName;
-                txfScientificName.Text = data.ScientificName;
                 txfCommonName.Text = data.CommonName;
-                txfAuthor.Text = data.SpeciesAuthor;
-                txfSynonyms.Text = data.AlternateNames;
+                cbxAuthor.SelectedItem = data.SpeciesAuthor;
             }
         }
         
@@ -147,7 +142,7 @@ namespace prototypeHerbarium
             btnClear_Click(btnClear, null);
 
             connection.setQuery("SELECT strSpeciesNo, strGenusName, strSpeciesName, strCommonName, strScientificName, " +
-                                    "strSpeciesAuthor, strSpeciesAlternateName, boolSpeciesIdentified " +
+                                    "strAuthorsName, boolSpeciesIdentified " +
                                 "FROM viewTaxonSpecies " +
                                 "ORDER BY strScientificName");
             SqlDataReader sqlData = connection.executeResult();
@@ -162,8 +157,7 @@ namespace prototypeHerbarium
                     CommonName = sqlData[3].ToString(),
                     ScientificName = sqlData[4].ToString(),
                     SpeciesAuthor = sqlData[5].ToString(),
-                    AlternateNames = sqlData[6].ToString(),
-                    IdentifiedStatus = (Convert.ToBoolean(sqlData[7].ToString())) ? "Known" : "Undetermined"
+                    IdentifiedStatus = (Convert.ToBoolean(sqlData[6].ToString())) ? "Known" : "Undetermined"
                 });
             }
             connection.closeResult();
@@ -215,12 +209,7 @@ namespace prototypeHerbarium
                 msgCommonName.Visibility = Visibility.Visible;
                 formOK = false;
             }
-            if (txfScientificName.Text == "")
-            {
-                msgScientificName.Visibility = Visibility.Visible;
-                formOK = false;
-            }
-            if (txfAuthor.Text == "")
+            if (cbxAuthor.SelectedIndex == -1)
             {
                 msgAuthor.Visibility = Visibility.Visible;
                 formOK = false;
@@ -238,9 +227,7 @@ namespace prototypeHerbarium
             connection.addSprocParameter("@genusName", SqlDbType.VarChar, cbxGenusName.SelectedItem.ToString());
             connection.addSprocParameter("@speciesName", SqlDbType.VarChar, txfSpeciesName.Text);
             connection.addSprocParameter("@commonName", SqlDbType.VarChar, txfCommonName.Text);
-            connection.addSprocParameter("@scientificName", SqlDbType.VarChar, txfScientificName.Text);
-            connection.addSprocParameter("@author", SqlDbType.VarChar, txfAuthor.Text);
-            connection.addSprocParameter("@alternateName", SqlDbType.VarChar, txfSynonyms.Text);
+            connection.addSprocParameter("@author", SqlDbType.VarChar, cbxAuthor.SelectedItem.ToString());
             connection.addSprocParameter("@isVerified", SqlDbType.Bit, (chkIsUndeterminedSpecies.IsChecked == true));
             status = connection.executeProcedure();
 
@@ -269,9 +256,7 @@ namespace prototypeHerbarium
             connection.addSprocParameter("@genusName", SqlDbType.VarChar, cbxGenusName.SelectedItem.ToString());
             connection.addSprocParameter("@speciesName", SqlDbType.VarChar, txfSpeciesName.Text);
             connection.addSprocParameter("@commonName", SqlDbType.VarChar, txfCommonName.Text);
-            connection.addSprocParameter("@scientificName", SqlDbType.VarChar, txfScientificName.Text);
-            connection.addSprocParameter("@author", SqlDbType.VarChar, txfAuthor.Text);
-            connection.addSprocParameter("@alternateName", SqlDbType.VarChar, txfSynonyms.Text);
+            connection.addSprocParameter("@author", SqlDbType.VarChar, cbxAuthor.SelectedItem.ToString());
             status = connection.executeProcedure();
 
             switch (status)
@@ -296,6 +281,5 @@ public class TaxonSpecies
     public string CommonName { get; set; }
     public string ScientificName { get; set; }
     public string SpeciesAuthor { get; set; }
-    public string AlternateNames { get; set; }
     public string IdentifiedStatus { get; set; }
 }

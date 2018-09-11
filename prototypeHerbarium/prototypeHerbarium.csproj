@@ -126,6 +126,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="pageBorrower.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="pageClassification.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -178,6 +182,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="pageSpeciesAlternate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pageSpeciesAuthor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="pageStaff.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -226,6 +238,9 @@
     <Compile Include="pageAuditTrailing.xaml.cs">
       <DependentUpon>pageAuditTrailing.xaml</DependentUpon>
     </Compile>
+    <Compile Include="pageBorrower.xaml.cs">
+      <DependentUpon>pageBorrower.xaml</DependentUpon>
+    </Compile>
     <Compile Include="pageClassification.xaml.cs">
       <DependentUpon>pageClassification.xaml</DependentUpon>
     </Compile>
@@ -264,6 +279,12 @@
     </Compile>
     <Compile Include="pageResubmit.xaml.cs">
       <DependentUpon>pageResubmit.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="pageSpeciesAlternate.xaml.cs">
+      <DependentUpon>pageSpeciesAlternate.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="pageSpeciesAuthor.xaml.cs">
+      <DependentUpon>pageSpeciesAuthor.xaml</DependentUpon>
     </Compile>
     <Compile Include="pageStaff.xaml.cs">
       <DependentUpon>pageStaff.xaml</DependentUpon>

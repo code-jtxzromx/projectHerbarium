@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\App.xaml
-30621163119
+33-131105063
 
-40-1425554780
+431635505422
 22-1148597915
-ctrlComboBox.xaml;ctrlDateField.xaml;ctrlTextField.xaml;frmLogin.xaml;frmMain.xaml;pageAccounts.xaml;pageAuditTrailing.xaml;pageClassification.xaml;pageCollector.xaml;pageDeposit.xaml;pageFamilyBox.xaml;pageHerbariumInventory.xaml;pageHerbariumTracking.xaml;pageHomepage.xaml;pageIdentification.xaml;pageLoaning.xaml;pageLocality.xaml;pageQueries.xaml;pageReports.xaml;pageResubmit.xaml;pageStaff.xaml;pageTaxonClass.xaml;pageTaxonFamily.xaml;pageTaxonGenus.xaml;pageTaxonOrder.xaml;pageTaxonPhylum.xaml;pageTaxonSpecies.xaml;pageValidator.xaml;pageVerification.xaml;resourceHerbarium.xaml;
+ctrlComboBox.xaml;ctrlDateField.xaml;ctrlTextField.xaml;frmLogin.xaml;frmMain.xaml;pageAccounts.xaml;pageAuditTrailing.xaml;pageBorrower.xaml;pageClassification.xaml;pageCollector.xaml;pageDeposit.xaml;pageFamilyBox.xaml;pageHerbariumInventory.xaml;pageHerbariumTracking.xaml;pageHomepage.xaml;pageIdentification.xaml;pageLoaning.xaml;pageLocality.xaml;pageQueries.xaml;pageReports.xaml;pageResubmit.xaml;pageSpeciesAlternate.xaml;pageSpeciesAuthor.xaml;pageStaff.xaml;pageTaxonClass.xaml;pageTaxonFamily.xaml;pageTaxonGenus.xaml;pageTaxonOrder.xaml;pageTaxonPhylum.xaml;pageTaxonSpecies.xaml;pageValidator.xaml;pageVerification.xaml;resourceHerbarium.xaml;
 
-True
+False
 

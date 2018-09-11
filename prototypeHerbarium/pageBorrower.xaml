@@ -1,0 +1,168 @@
+﻿<Page x:Class="prototypeHerbarium.pageBorrower"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:prototypeHerbarium"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="pageBorrower">
+
+    <DockPanel>
+        <!-- Add / Edit Form -->
+        <StackPanel x:Name="pnlAddCollector" Background="#5FEEEEEE" DockPanel.Dock="Top"
+                    Visibility="Visible" Margin="10">
+            <TextBlock FontSize="20" 
+                       FontFamily="SegoeUI" 
+                       FontWeight="DemiBold"
+                       Margin="45 20">Add Collector</TextBlock>
+            <Grid Margin="40 5">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Grid.Row="0" Margin="5">
+                    Collector ID:
+                </TextBlock>
+                <TextBox x:Name="txfCollectorID" Background="LightGray" BorderBrush="Gray"
+                         Grid.Column="0" Grid.Row="1" Height="25" Margin="3" VerticalContentAlignment="Center" IsEnabled="False"/>
+
+                <TextBlock Grid.Column="0" Grid.Row="2" Margin="5">
+                    First Name: <Span Foreground="Red">*</Span>
+                </TextBlock>
+                <TextBlock Grid.Column="1" Grid.Row="2" Margin="5">
+                    Middle Name:
+                </TextBlock>
+                <TextBlock Grid.Column="2" Grid.Row="2" Margin="5">
+                    Last Name: <Span Foreground="Red">*</Span>
+                </TextBlock>
+                <TextBox x:Name="txfFirstname" 
+                         Grid.Column="0" Grid.Row="3" Height="25" Margin="3" VerticalContentAlignment="Center"/>
+                <TextBox x:Name="txfMiddlename" 
+                         Grid.Column="1" Grid.Row="3" Height="25" Margin="3" VerticalContentAlignment="Center"/>
+                <TextBox x:Name="txfLastname" 
+                         Grid.Column="2" Grid.Row="3" Height="25" Margin="3" VerticalContentAlignment="Center"/>
+                <TextBlock x:Name="msgFirstname" Visibility="Collapsed"
+                           Grid.Column="0" Grid.Row="4" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
+                <TextBlock x:Name="msgLastname" Visibility="Collapsed"
+                           Grid.Column="2" Grid.Row="4" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
+
+                <TextBlock Grid.Column="0" Grid.Row="5" Margin="5">
+                    Middle Initial:
+                </TextBlock>
+                <TextBlock Grid.Column="1" Grid.Row="5" Margin="5">
+                    Name Suffix:
+                </TextBlock>
+                <TextBox x:Name="txfMiddleInitial" 
+                         Grid.Column="0" Grid.Row="6" Height="25" Margin="3" VerticalContentAlignment="Center"/>
+                <TextBox x:Name="txfNameSuffix" 
+                         Grid.Column="1" Grid.Row="6" Height="25" Margin="3" VerticalContentAlignment="Center"/>
+
+                <TextBlock Grid.Column="0" Grid.Row="8" Margin="5" Grid.ColumnSpan="3">
+                    Home Address: <Span Foreground="Red">*</Span>
+                </TextBlock>
+                <TextBox x:Name="txfHomeAddress" 
+                         Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="3" Height="25" Margin="3" VerticalContentAlignment="Center"/>
+                <TextBlock x:Name="msgHomeAddress" Visibility="Collapsed"
+                           Grid.Column="0" Grid.Row="10" Grid.ColumnSpan="3" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
+
+                <TextBlock Grid.Column="0" Grid.Row="11" Margin="5">
+                    Contact Number: <Span Foreground="Red">*</Span>
+                </TextBlock>
+                <TextBlock Grid.Column="1" Grid.Row="11" Margin="5">
+                    E-mail Address: <Span Foreground="Red">*</Span>
+                </TextBlock>
+                <TextBlock Grid.Column="2" Grid.Row="11" Margin="5">
+                    Affiliation: <Span Foreground="Red">*</Span>
+                </TextBlock>
+                <TextBox x:Name="txfContactNumber" 
+                         Grid.Column="0" Grid.Row="12" Height="25" Margin="3" VerticalContentAlignment="Center"/>
+                <TextBox x:Name="txfEmailAddress" 
+                         Grid.Column="1" Grid.Row="12" Height="25" Margin="3" VerticalContentAlignment="Center"/>
+                <TextBox x:Name="txfAffiliation"
+                         Grid.Column="2" Grid.Row="12" Height="25" Margin="3" VerticalContentAlignment="Center" />
+                <TextBlock x:Name="msgContactNumber" Visibility="Collapsed"
+                           Grid.Column="0" Grid.Row="13" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
+                <TextBlock x:Name="msgEmailAddress" Visibility="Collapsed"
+                           Grid.Column="1" Grid.Row="13" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
+                <TextBlock x:Name="msgAffiliation" Visibility="Collapsed"
+                           Grid.Column="2" Grid.Row="13" Margin="5 -2 5 5" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
+            </Grid>
+            <Grid Margin="40 10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Margin="5" VerticalAlignment="Center" Foreground="Red" FontWeight="DemiBold">
+                    * Required Fields
+                </TextBlock>
+                <WrapPanel Grid.Column="1" FlowDirection="RightToLeft">
+                    <Button x:Name="btnSave" Margin="5" Padding="10 5" Content="SAVE" />
+                    <Button x:Name="btnClear" Margin="5" Padding="10 5" Content="CLEAR" />
+                </WrapPanel>
+            </Grid>
+        </StackPanel>
+        <Separator x:Name="sprAddCollector" Margin="10" DockPanel.Dock="Top" Visibility="Collapsed" />
+        <!-- View List -->
+        <DockPanel>
+            <Grid DockPanel.Dock="Top" Margin="2" Height="35">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="200" />
+                </Grid.ColumnDefinitions>
+
+                <Button x:Name="btnAddCollector" 
+                        Grid.Column="0" Margin="5" Content="Add Collector" />
+                <WrapPanel Grid.Column="2" Margin="5">
+                    <Label Content="Search: "/>
+                    <TextBox x:Name="txfSearch" Width="135" VerticalContentAlignment="Center"/>
+                </WrapPanel>
+            </Grid>
+            <DataGrid x:Name="dgrCollectorTable" DockPanel.Dock="Top" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0" GridLinesVisibility="Horizontal">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Lastname" Binding="{Binding LastName}" Width="2*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Firstname" Binding="{Binding FirstName}" Width="2*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Institution" Binding="{Binding Affiliation}" Width="3*" IsReadOnly="True"/>
+                    <DataGridTemplateColumn Header="Actions" Width="100">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <WrapPanel HorizontalAlignment="Center">
+                                    <Button x:Name="btnEdit"
+                                            Margin="1" Height="25" Width="25" 
+                                            Background="SkyBlue" BorderBrush="SkyBlue"
+                                            ToolTip="Edit">
+                                        <Rectangle Width="13" Height="11" Fill="Black">
+                                            <Rectangle.OpacityMask>
+                                                <ImageBrush ImageSource="{StaticResource glyphicon-edit}"/>
+                                            </Rectangle.OpacityMask>
+                                        </Rectangle>
+                                    </Button>
+                                </WrapPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </DockPanel>
+    </DockPanel>
+</Page>

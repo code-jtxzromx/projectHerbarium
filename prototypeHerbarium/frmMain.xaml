@@ -10,19 +10,20 @@
         Icon="{StaticResource favicon}"
         WindowStartupLocation="CenterScreen"
         MinHeight="400" MinWidth="400">
+    <Window.Background>
+        <ImageBrush ImageSource="{StaticResource background}"/>
+    </Window.Background>
+    
     <Grid>
-        <Grid.Background>
-            <ImageBrush ImageSource="{StaticResource background}"/>
-        </Grid.Background>
         <DockPanel>
             <DockPanel.Background>
                 <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
-                    <GradientStop Color="#CF66CC66" Offset="3"/>
-                    <GradientStop Color="#DF005500" Offset="0"/>
+                    <GradientStop Color="#AF66CC66" Offset="3"/>
+                    <GradientStop Color="#CF005500" Offset="0"/>
                 </LinearGradientBrush>
             </DockPanel.Background>
 
-            <Border Background="#3077DDDD" DockPanel.Dock="Top">
+            <Border Background="#4077DDDD" DockPanel.Dock="Top">
                 <Grid Height="30">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -170,29 +171,38 @@
                                     Click="btnTaxonSpecies_Click"
                                     Content="Species"/>
                         </StackPanel>
-                        <!--<Button x:Name="btnSpeciesDescription"
+                        <Button x:Name="btnSpeciesAuthor"
                                 Style="{StaticResource subMenuButton}"
-                                Content="Species Description"/>-->
+                                Click="btnSpeciesAuthor_Click"
+                                Content="Species Author"/>
+                        <Button x:Name="btnSpeciesAlternate"
+                                Style="{StaticResource subMenuButton}"
+                                Click="btnSpeciesAlternate_Click"
+                                Content="Species Alternate Names"/>
                         <Button x:Name="btnFamilyBox" 
                                 Style="{StaticResource subMenuButton}"
                                 Click="btnFamilyBox_Click"
-                                Content="Family Boxes"/>
+                                Content="Herbarium Boxes"/>
                         <Button x:Name="btnLocality"
                                 Style="{StaticResource subMenuButton}"
                                 Click="btnLocality_Click"
-                                Content="Locality"/>
+                                Content="Plant Locality"/>
                         <Button x:Name="btnCollector" 
                                 Style="{StaticResource subMenuButton}"
                                 Click="btnCollector_Click"
                                 Content="Collector"/>
-                        <!--<Button x:Name="btnValidator"
+                        <Button x:Name="btnBorrower" 
+                                Style="{StaticResource subMenuButton}"
+                                Click="btnBorrower_Click"
+                                Content="Plant Borrower"/>
+                        <Button x:Name="btnValidator"
                                 Style="{StaticResource subMenuButton}"
                                 Click="btnValidator_Click"
-                                Content="External Validator"/>-->
+                                Content="External Validator"/>
                         <Button x:Name="btnCurator"
                                 Style="{StaticResource subMenuButton}"
                                 Click="btnCurator_Click"
-                                Content="Staff Management"/>
+                                Content="Herbarium Staff"/>
                         <Button x:Name="btnAccounts" 
                                 Style="{StaticResource subMenuButton}"
                                 Click="btnAccounts_Click"
@@ -248,9 +258,9 @@
                                 Style="{StaticResource subMenuButton}"
                                 Content="Loan Plant" 
                                 Click="btnPlantLoaning_Click" />
-                        <!--<Button x:Name="btnSpeciesIdentification"
+                        <Button x:Name="btnSpeciesIdentification"
                                 Style="{StaticResource subMenuButton}"
-                                Content="Species Identification" />-->
+                                Content="Species Identification" />
                     </StackPanel>
                     <Button x:Name="btnUtilities" 
                             Style="{StaticResource menuButton}"
@@ -282,17 +292,20 @@
                                 Style="{StaticResource subMenuButton}"
                                 Content="Herbarium Inventory"
                                 Click="btnHerbariumInventory_Click" />
-                        <!--<Button x:Name="btnPlantTracking" 
+                        <Button x:Name="btnPlantTracking" 
                                 Style="{StaticResource subMenuButton}"
-                                Content="Herbarium Specimen Tracking" 
-                                Click="btnPlantTracking_Click"/>-->
-                        <!--<Button x:Name="btnBackupDeposits" 
+                                Content="Specimen Tracking" 
+                                Click="btnPlantTracking_Click"/>
+                        <Button x:Name="btnBackupDeposits" 
                                 Style="{StaticResource subMenuButton}"
-                                Content="Herbarium Back-Up"/>-->
-                        <!--<Button x:Name="btnAuditTrailing"
+                                Content="Herbarium Back-Up"/>
+                        <Button x:Name="btnAuditTrailing"
                                 Style="{StaticResource subMenuButton}"
                                 Click="btnAuditTrailing_Click"
-                                Content="Audit Trailing"/>-->
+                                Content="Transaction Trailing"/>
+                        <Button x:Name="btnSettings" 
+                                Style="{StaticResource subMenuButton}"
+                                Content="System Configurations"/>
                     </StackPanel>
                     <Button x:Name="btnQuery"
                             Style="{StaticResource menuButton}"
