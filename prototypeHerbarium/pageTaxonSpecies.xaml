@@ -50,7 +50,7 @@
                 <TextBlock Grid.Column="2" Grid.Row="2" Margin="5">
                     Common Name: <Span Foreground="Red">*</Span>
                 </TextBlock>
-                <TextBlock Grid.Column="3" Grid.Row="2" Margin="5">
+                <TextBlock x:Name="lblAuthor" Grid.Column="3" Grid.Row="2" Margin="5">
                     Species' Author: <Span Foreground="Red">*</Span>
                 </TextBlock>
                 
@@ -109,7 +109,7 @@
             <DataGrid x:Name="dgrSpeciesTable" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0" GridLinesVisibility="Horizontal">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Species ID" Binding="{Binding SpecieID}" Width="160"/>
-                    <DataGridTextColumn Header="Scientific Name" Binding="{Binding ScientificName}" Width="3*"/>
+                    <DataGridTextColumn Header="Scientific Name" Binding="{Binding ScientificName}" FontStyle="Italic" Width="3*"/>
                     <DataGridTextColumn Header="Common Name" Binding="{Binding CommonName}" Width="3*"/>
                     <DataGridTextColumn Header="Status" Binding="{Binding IdentifiedStatus}" Width="2*"/>
                     <DataGridTemplateColumn Header="Actions" Width="100">

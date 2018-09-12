@@ -10,12 +10,12 @@
 
     <DockPanel>
         <!-- Add / Edit Form -->
-        <StackPanel x:Name="pnlAddCollector" Background="#5FEEEEEE" DockPanel.Dock="Top"
+        <StackPanel x:Name="pnlAddBorrower" Background="#5FEEEEEE" DockPanel.Dock="Top"
                     Visibility="Visible" Margin="10">
             <TextBlock FontSize="20" 
                        FontFamily="SegoeUI" 
                        FontWeight="DemiBold"
-                       Margin="45 20">Add Collector</TextBlock>
+                       Margin="45 20">Add Plant Borrower</TextBlock>
             <Grid Margin="40 5">
                 <Grid.RowDefinitions>
                     <RowDefinition />
@@ -40,9 +40,9 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Column="0" Grid.Row="0" Margin="5">
-                    Collector ID:
+                    Borrower ID:
                 </TextBlock>
-                <TextBox x:Name="txfCollectorID" Background="LightGray" BorderBrush="Gray"
+                <TextBox x:Name="txfBorrowerID" Background="LightGray" BorderBrush="Gray"
                          Grid.Column="0" Grid.Row="1" Height="25" Margin="3" VerticalContentAlignment="Center" IsEnabled="False"/>
 
                 <TextBlock Grid.Column="0" Grid.Row="2" Margin="5">
@@ -116,12 +116,12 @@
                     * Required Fields
                 </TextBlock>
                 <WrapPanel Grid.Column="1" FlowDirection="RightToLeft">
-                    <Button x:Name="btnSave" Margin="5" Padding="10 5" Content="SAVE" />
-                    <Button x:Name="btnClear" Margin="5" Padding="10 5" Content="CLEAR" />
+                    <Button x:Name="btnSave" Click="btnSave_Click" Margin="5" Padding="10 5" Content="SAVE" />
+                    <Button x:Name="btnClear" Click="btnClear_Click" Margin="5" Padding="10 5" Content="CLEAR" />
                 </WrapPanel>
             </Grid>
         </StackPanel>
-        <Separator x:Name="sprAddCollector" Margin="10" DockPanel.Dock="Top" Visibility="Collapsed" />
+        <Separator x:Name="sprAddBorrower" Margin="10" DockPanel.Dock="Top" Visibility="Collapsed" />
         <!-- View List -->
         <DockPanel>
             <Grid DockPanel.Dock="Top" Margin="2" Height="35">
@@ -131,14 +131,15 @@
                     <ColumnDefinition Width="200" />
                 </Grid.ColumnDefinitions>
 
-                <Button x:Name="btnAddCollector" 
-                        Grid.Column="0" Margin="5" Content="Add Collector" />
+                <Button x:Name="btnAddBorrower" 
+                        Grid.Column="0" Margin="5" Content="Add Borrower" 
+                        Click="btnAddBorrower_Click"/>
                 <WrapPanel Grid.Column="2" Margin="5">
                     <Label Content="Search: "/>
-                    <TextBox x:Name="txfSearch" Width="135" VerticalContentAlignment="Center"/>
+                    <TextBox x:Name="txfSearch" TextChanged="txfSearch_TextChanged" Width="135" VerticalContentAlignment="Center"/>
                 </WrapPanel>
             </Grid>
-            <DataGrid x:Name="dgrCollectorTable" DockPanel.Dock="Top" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0" GridLinesVisibility="Horizontal">
+            <DataGrid x:Name="dgrBorrowerTable" DockPanel.Dock="Top" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0" GridLinesVisibility="Horizontal">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Lastname" Binding="{Binding LastName}" Width="2*" IsReadOnly="True"/>
                     <DataGridTextColumn Header="Firstname" Binding="{Binding FirstName}" Width="2*" IsReadOnly="True"/>
@@ -147,7 +148,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <WrapPanel HorizontalAlignment="Center">
-                                    <Button x:Name="btnEdit"
+                                    <Button x:Name="btnEdit" Click="btnEdit_Click"
                                             Margin="1" Height="25" Width="25" 
                                             Background="SkyBlue" BorderBrush="SkyBlue"
                                             ToolTip="Edit">

@@ -115,11 +115,15 @@ namespace prototypeHerbarium
             {
                 txfSpeciesName.IsEnabled = true;
                 txfSpeciesName.Clear();
+                lblAuthor.Visibility = Visibility.Visible;
+                cbxAuthor.Visibility = Visibility.Visible;
             }
             else
             {
                 txfSpeciesName.IsEnabled = false;
                 txfSpeciesName.Text = "sp.";
+                lblAuthor.Visibility = Visibility.Collapsed;
+                cbxAuthor.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -132,6 +136,7 @@ namespace prototypeHerbarium
             
             getSpecieTable();
             getGenusList();
+            getAuthorsList();
         }
 
         private void getSpecieTable()
@@ -168,21 +173,30 @@ namespace prototypeHerbarium
 
         private void getGenusList()
         {
-            // Database - Program Declaration
-            DatabaseConnection connection = new DatabaseConnection();
-
             cbxGenusName.Items.Clear();
 
-            // Query Command Setting
+            DatabaseConnection connection = new DatabaseConnection();
             connection.setQuery("SELECT strGenusName FROM tblGenus ORDER BY strGenusName");
             
-            // Query Execution
             SqlDataReader sqlData = connection.executeResult();
-
-            // Query Result
             while (sqlData.Read())
             {
                 cbxGenusName.Items.Add(sqlData[0]);
+            }
+            connection.closeResult();
+        }
+
+        private void getAuthorsList()
+        {
+            cbxAuthor.Items.Clear();
+
+            DatabaseConnection connection = new DatabaseConnection();
+            connection.setQuery("SELECT strAuthorsName FROM tblAuthor ORDER BY strAuthorsName");
+
+            SqlDataReader sqlData = connection.executeResult();
+            while (sqlData.Read())
+            {
+                cbxAuthor.Items.Add(sqlData[0]);
             }
             connection.closeResult();
         }
@@ -209,7 +223,7 @@ namespace prototypeHerbarium
                 msgCommonName.Visibility = Visibility.Visible;
                 formOK = false;
             }
-            if (cbxAuthor.SelectedIndex == -1)
+            if (chkIsUndeterminedSpecies.IsChecked == true && cbxAuthor.SelectedIndex == -1)
             {
                 msgAuthor.Visibility = Visibility.Visible;
                 formOK = false;
@@ -257,6 +271,7 @@ namespace prototypeHerbarium
             connection.addSprocParameter("@speciesName", SqlDbType.VarChar, txfSpeciesName.Text);
             connection.addSprocParameter("@commonName", SqlDbType.VarChar, txfCommonName.Text);
             connection.addSprocParameter("@author", SqlDbType.VarChar, cbxAuthor.SelectedItem.ToString());
+            connection.addSprocParameter("@isVerified", SqlDbType.Bit, (chkIsUndeterminedSpecies.IsChecked == true));
             status = connection.executeProcedure();
 
             switch (status)

@@ -84,7 +84,7 @@
             <DataGrid x:Name="dgrAuthorsTable" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0" GridLinesVisibility="Horizontal">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Author" Binding="{Binding AuthorName}" Width="2*" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Species Author Suffix" Binding="{Binding SpeciesSuffix}" Width="*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Species Author Suffix" Binding="{Binding AuthorSuffix}" Width="*" IsReadOnly="True"/>
                     <DataGridTemplateColumn Header="Actions" Width="100">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

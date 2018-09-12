@@ -7,6 +7,7 @@ FC:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbari
 FC:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\frmMain.xaml;;
 FC:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\pageAccounts.xaml;;
 FC:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\pageAuditTrailing.xaml;;
+FC:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\pageBorrower.xaml;;
 FC:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\pageClassification.xaml;;
 FC:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\pageCollector.xaml;;
 FC:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\pageDeposit.xaml;;
@@ -20,6 +21,8 @@ FC:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbari
 FC:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\pageQueries.xaml;;
 FC:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\pageReports.xaml;;
 FC:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\pageResubmit.xaml;;
+FC:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\pageSpeciesAlternate.xaml;;
+FC:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\pageSpeciesAuthor.xaml;;
 FC:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\pageStaff.xaml;;
 FC:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\pageTaxonClass.xaml;;
 FC:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\pageTaxonFamily.xaml;;
@@ -29,7 +32,4 @@ FC:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbari
 FC:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\pageTaxonSpecies.xaml;;
 FC:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\pageValidator.xaml;;
 FC:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\pageVerification.xaml;;
-FC:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\pageBorrower.xaml;;
-FC:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\pageSpeciesAlternate.xaml;;
-FC:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\pageSpeciesAuthor.xaml;;
 

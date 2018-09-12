@@ -113,9 +113,9 @@ namespace prototypeHerbarium
 
             btnClear_Click(btnClear, null);
 
-            connection.setQuery("SELECT intAuthorID, strAuthorName, strSpeciesSuffix " +
+            connection.setQuery("SELECT intAuthorID, strAuthorsName, strSpeciesSuffix " +
                                 "FROM viewSpeciesAuthor " +
-                                "ORDER BY strAuthorName");
+                                "ORDER BY strAuthorsName");
             SqlDataReader sqlData = connection.executeResult();
 
             while (sqlData.Read())
