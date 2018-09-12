@@ -33,7 +33,7 @@ namespace prototypeHerbarium
                 colActions.Visibility = Visibility.Collapsed;
             rbtResearch.IsChecked = true;
 
-            getCollectorList();
+            getBorrowerList();
             setDurationType();
             getFamilyList();
             getLoanTable();
@@ -67,7 +67,7 @@ namespace prototypeHerbarium
             }
             connection.closeResult();
 
-            lblViewCollector.Text = loans.Collector;
+            lblViewBorrower.Text = loans.Borrower;
             lblViewDuration.Text = loans.Duration;
             lblViewPurpose.Text = loans.Purpose;
             lblViewStatus.Text = loans.Status;
@@ -102,7 +102,7 @@ namespace prototypeHerbarium
             if (response == MessageBoxResult.Yes)
             {
                 pnlLoanTransactionForm.Visibility = Visibility.Hidden;
-                cbxCollector.SelectedIndex = -1;
+                cbxBorrower.SelectedIndex = -1;
                 dpkLoanDate.Text = "";
                 txfDuration.Text = "";
                 cbxDuration.SelectedIndex = -1;
@@ -122,7 +122,7 @@ namespace prototypeHerbarium
             if (response == MessageBoxResult.Yes)
             {
                 pnlPlantLoaningForm.Visibility = Visibility.Hidden;
-                cbxCollector.SelectedIndex = -1;
+                cbxBorrower.SelectedIndex = -1;
                 dpkLoanDate.Text = "";
                 txfDuration.Text = "";
                 cbxDuration.SelectedIndex = -1;
@@ -131,7 +131,7 @@ namespace prototypeHerbarium
                 dgrTaxonFamilies.ItemsSource = null;
                 dgrTaxonGenera.ItemsSource = null;
 
-                lblCollector.Text = "";
+                lblBorrower.Text = "";
                 lblDuration.Text = "";
                 lblPurpose.Text = "";
 
@@ -143,7 +143,7 @@ namespace prototypeHerbarium
         {
             pnlViewLoaningForm.Visibility = Visibility.Hidden;
 
-            lblViewCollector.Text = "";
+            lblViewBorrower.Text = "";
             lblViewDuration.Text = "";
             lblViewPurpose.Text = "";
             lblViewStatus.Text = "";
@@ -153,7 +153,7 @@ namespace prototypeHerbarium
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
-            cbxCollector.SelectedIndex = -1;
+            cbxBorrower.SelectedIndex = -1;
             dpkLoanDate.Text = "";
             txfDuration.Clear();
             cbxDuration.SelectedIndex = -1;
@@ -165,7 +165,7 @@ namespace prototypeHerbarium
             dgrTaxonGenera.ItemsSource = null;
             dgrTaxonSpecies.ItemsSource = null;
 
-            msgCollector.Visibility = Visibility.Collapsed;
+            msgBorrower.Visibility = Visibility.Collapsed;
             msgLoanDate.Visibility = Visibility.Collapsed;
             msgDuration.Visibility = Visibility.Collapsed;
             msgPurpose.Visibility = Visibility.Collapsed;
@@ -218,7 +218,7 @@ namespace prototypeHerbarium
                     DatabaseConnection connection = new DatabaseConnection();
 
                     connection.setStoredProc("dbo.procProcessLoan");
-                    connection.addSprocParameter("@collectorName", SqlDbType.VarChar, lblCollector.Text);
+                    connection.addSprocParameter("@borrowerName", SqlDbType.VarChar, lblBorrower.Text);
                     connection.addSprocParameter("@startDate", SqlDbType.Date, loanDate);
                     connection.addSprocParameter("@endDate", SqlDbType.Date, returnDate);
                     connection.addSprocParameter("@purpose", SqlDbType.VarChar, lblPurpose.Text);
@@ -229,8 +229,8 @@ namespace prototypeHerbarium
                     {
                         connection.setQuery("SELECT strLoanNumber " +
                                             "FROM viewPlantLoans " +
-                                            "WHERE strCollector = @collector AND dateLoan = @startdate AND dateReturning = @enddate");
-                        connection.addParameter("@collector", SqlDbType.VarChar, lblCollector.Text);
+                                            "WHERE strBorrower = @borrower AND dateLoan = @startdate AND dateReturning = @enddate");
+                        connection.addParameter("@borrower", SqlDbType.VarChar, lblBorrower.Text);
                         connection.addParameter("@startdate", SqlDbType.Date, loanDate);
                         connection.addParameter("@enddate", SqlDbType.Date, returnDate);
 
@@ -277,17 +277,17 @@ namespace prototypeHerbarium
             }
         }
 
-        private void getCollectorList()
+        private void getBorrowerList()
         {
-            cbxCollector.Items.Clear();
+            cbxBorrower.Items.Clear();
 
             DatabaseConnection connection = new DatabaseConnection();
-            connection.setQuery("SELECT strFullName FROM viewCollector ORDER BY strFullName ASC");
+            connection.setQuery("SELECT strFullName FROM viewBorrower ORDER BY strFullName ASC");
 
             SqlDataReader sqlData = connection.executeResult();
             while (sqlData.Read())
             {
-                cbxCollector.Items.Add(sqlData[0]);
+                cbxBorrower.Items.Add(sqlData[0]);
             }
             connection.closeResult();
         }
@@ -375,7 +375,7 @@ namespace prototypeHerbarium
             List<PlantLoans> loans = new List<PlantLoans>();
 
             // Query Command Setting
-            connection.setQuery("SELECT strLoanNumber, strCollector, dateLoan, dateReturning, strDuration, " +
+            connection.setQuery("SELECT strLoanNumber, strBorrower, dateLoan, dateReturning, strDuration, " +
                                     "dateProcessed, strPurpose, strStatus " +
                                 "FROM viewPlantLoans");
 
@@ -388,7 +388,7 @@ namespace prototypeHerbarium
                 loans.Add(new PlantLoans()
                 {
                     LoanNumber = sqlData[0].ToString(),
-                    Collector = sqlData[1].ToString(),
+                    Borrower = sqlData[1].ToString(),
                     StartDate = sqlData[2].ToString(),
                     ReturningDate = sqlData[3].ToString(),
                     Duration = sqlData[4].ToString(),
@@ -415,14 +415,14 @@ namespace prototypeHerbarium
         private bool validateForm()
         {
             bool formOk = true;
-            msgCollector.Visibility = Visibility.Collapsed;
+            msgBorrower.Visibility = Visibility.Collapsed;
             msgLoanDate.Visibility = Visibility.Collapsed;
             msgDuration.Visibility = Visibility.Collapsed;
             msgPurpose.Visibility = Visibility.Collapsed;
 
-            if (cbxCollector.SelectedIndex == -1)
+            if (cbxBorrower.SelectedIndex == -1)
             {
-                msgCollector.Visibility = Visibility.Visible;
+                msgBorrower.Visibility = Visibility.Visible;
                 formOk = false;
             }
             if (dpkLoanDate.Text == "")
@@ -463,7 +463,7 @@ namespace prototypeHerbarium
             else if (rbtOther.IsChecked == true)
                 lblPurpose.Text = txfOtherPurpose.Text;
 
-            lblCollector.Text = cbxCollector.SelectedItem.ToString();
+            lblBorrower.Text = cbxBorrower.SelectedItem.ToString();
             lblDuration.Text = loanDate.ToShortDateString() + " - " + returnDate.ToShortDateString();
         }
 
@@ -511,7 +511,7 @@ namespace prototypeHerbarium
 public class PlantLoans
 {
     public string LoanNumber { get; set; }
-    public string Collector { get; set; }
+    public string Borrower { get; set; }
     public string StartDate { get; set; }
     public string ReturningDate { get; set; }
     public string Duration { get; set; }

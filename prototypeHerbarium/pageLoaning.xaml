@@ -30,7 +30,7 @@
                 <DataGrid x:Name="dgrPlantLoans" DockPanel.Dock="Top" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Loan Number" Binding="{Binding LoanNumber}" Width="125" IsReadOnly="True"/>
-                        <DataGridTextColumn Header="Collector" Binding="{Binding Collector}" Width="2.5*" IsReadOnly="True">
+                        <DataGridTextColumn Header="Borrower" Binding="{Binding Borrower}" Width="2.5*" IsReadOnly="True">
                             <DataGridTextColumn.ElementStyle>
                                 <Style>
                                     <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
@@ -132,7 +132,7 @@
                         <TextBlock Grid.Column="4" Grid.Row="0" Grid.ColumnSpan="2" Margin="5">
                             Duration: <Span Foreground="Red">*</Span>
                         </TextBlock>
-                        <ComboBox x:Name="cbxCollector" 
+                        <ComboBox x:Name="cbxBorrower" 
                                   Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Height="25" Margin="3" VerticalContentAlignment="Center"/>
                         <DatePicker x:Name="dpkLoanDate" 
                                     Grid.Column="2" Grid.Row="1"  Grid.ColumnSpan="2" Height="25" Margin="3" VerticalContentAlignment="Center" />
@@ -140,7 +140,7 @@
                                  Grid.Column="4" Grid.Row="1" Height="25" Margin="3" VerticalContentAlignment="Center" />
                         <ComboBox x:Name="cbxDuration" 
                                   Grid.Column="5" Grid.Row="1" Height="25" Margin="3" VerticalContentAlignment="Center"/>
-                        <TextBlock x:Name="msgCollector" Visibility="Collapsed"
+                        <TextBlock x:Name="msgBorrower" Visibility="Collapsed"
                                    Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
                         <TextBlock x:Name="msgLoanDate" Visibility="Collapsed"
                                    Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="2" Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
@@ -262,7 +262,7 @@
                         </Grid.RowDefinitions>
 
                         <TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="5">
-                            Collector:
+                            Borrower:
                         </TextBlock>
                         <TextBlock Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="5">
                             Duration:
@@ -270,7 +270,7 @@
                         <TextBlock Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Margin="5">
                             Purpose of Loan:
                         </TextBlock>
-                        <TextBlock x:Name="lblCollector" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Margin="5" />
+                        <TextBlock x:Name="lblBorrower" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Margin="5" />
                         <TextBlock x:Name="lblDuration" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" Margin="5" />
                         <TextBlock x:Name="lblPurpose" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" Margin="5" />
                     </Grid>
@@ -338,7 +338,7 @@
                         </Grid.RowDefinitions>
 
                         <TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="5">
-                            Collector:
+                            Borrower:
                         </TextBlock>
                         <TextBlock Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="5">
                             Duration:
@@ -349,7 +349,7 @@
                         <TextBlock Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Margin="5">
                             Loan Status:
                         </TextBlock>
-                        <TextBlock x:Name="lblViewCollector" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Margin="5" />
+                        <TextBlock x:Name="lblViewBorrower" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Margin="5" />
                         <TextBlock x:Name="lblViewDuration" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" Margin="5" />
                         <TextBlock x:Name="lblViewPurpose" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" Margin="5" />
                         <TextBlock x:Name="lblViewStatus" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="2" Margin="5" />
