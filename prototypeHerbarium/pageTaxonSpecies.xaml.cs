@@ -44,6 +44,7 @@ namespace prototypeHerbarium
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
+            lblSpeciesForm.Text = "Add Species";
             chkIsUndeterminedSpecies.IsChecked = true;
             chkIsUndeterminedSpecies.IsEnabled = true;
             txfSpecieID.Clear();
@@ -88,6 +89,7 @@ namespace prototypeHerbarium
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
             btnSave.Content = "Update";
+            lblSpeciesForm.Text = "Edit Species";
             TaxonSpecies SelectedSpecie = dgrSpeciesTable.SelectedValue as TaxonSpecies;
 
             var result = from specie in TaxonomicSpecies
@@ -129,6 +131,7 @@ namespace prototypeHerbarium
 
         private void resetForm()
         {
+            lblSpeciesForm.Text = "Add Species";
             pnlAddSpecie.Visibility = Visibility.Collapsed;
             sprAddSpecie.Visibility = Visibility.Collapsed;
             btnAddSpecie.Content = "Add Species";

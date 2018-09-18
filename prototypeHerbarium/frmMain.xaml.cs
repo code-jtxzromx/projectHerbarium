@@ -107,6 +107,37 @@ namespace prototypeHerbarium
         }
 
         // Event:           Click
+        // Source:          btnUtilities
+        // Description:     Set Visibility of pnlUtilities to Visible or Collapsed
+
+        private void btnUtilities_Click(object sender, RoutedEventArgs e)
+        {
+            bool state = pnlUtilities.Visibility == Visibility.Collapsed;
+            pnlUtilities.Visibility = (state) ? Visibility.Visible : Visibility.Collapsed;
+
+            double angle = (state) ? 90 : 0;
+            iconUtilitiesChev.RenderTransform = new RotateTransform(angle);
+        }
+
+        private void btnQuery_Click(object sender, RoutedEventArgs e)
+        {
+            bool state = pnlQueries.Visibility == Visibility.Collapsed;
+            pnlQueries.Visibility = (state) ? Visibility.Visible : Visibility.Collapsed;
+
+            double angle = (state) ? 90 : 0;
+            iconQueriesChev.RenderTransform = new RotateTransform(angle);
+        }
+
+        private void btnReports_Click(object sender, RoutedEventArgs e)
+        {
+            bool state = pnlReports.Visibility == Visibility.Collapsed;
+            pnlReports.Visibility = (state) ? Visibility.Visible : Visibility.Collapsed;
+
+            double angle = (state) ? 90 : 0;
+            iconReportsChev.RenderTransform = new RotateTransform(angle);
+        }
+
+        // Event:           Click
         // Source:          btnTaxonomicHierarchy
         // Description:     Load pageTaxonomicHierarchy to pnlPageLoader
 
@@ -171,6 +202,13 @@ namespace prototypeHerbarium
         private void btnSpeciesAlternate_Click(object sender, RoutedEventArgs e)
         {
             pageSpeciesAlternate page = new pageSpeciesAlternate();
+            pnlPageLoader.Content = page;
+            lblPageName.Text = page.Title.ToUpper();
+        }
+
+        private void btnPlantTypes_Click(object sender, RoutedEventArgs e)
+        {
+            pagePlantType page = new pagePlantType();
             pnlPageLoader.Content = page;
             lblPageName.Text = page.Title.ToUpper();
         }
@@ -241,7 +279,7 @@ namespace prototypeHerbarium
 
         private void btnPlantDeposit_Click(object sender, RoutedEventArgs e)
         {
-            pageDeposit page = new pageDeposit();
+            pageDepositMenu page = new pageDepositMenu();
             pnlPageLoader.Content = page;
             lblPageName.Text = page.Title.ToUpper();
         }
@@ -256,9 +294,9 @@ namespace prototypeHerbarium
         // Event:           Click
         // Source:          btnPlantIdentification
 
-        private void btnPlantIdentification_Click(object sender, RoutedEventArgs e)
+        private void btnPlantReceiving_Click(object sender, RoutedEventArgs e)
         {
-            pageIdentification page = new pageIdentification();
+            pageReceiving page = new pageReceiving();
             pnlPageLoader.Content = page;
             lblPageName.Text = "PLANT RECEIVING";
         }
@@ -284,34 +322,7 @@ namespace prototypeHerbarium
         {
             pageLoaning page = new pageLoaning();
             pnlPageLoader.Content = page;
-            lblPageName.Text = "LOAN PLANT";
-        }
-
-        private void btnQuery_Click(object sender, RoutedEventArgs e)
-        {
-            pageQueries page = new pageQueries();
-            pnlPageLoader.Content = page;
-            lblPageName.Text = "QUERY";
-        }
-
-        private void btnReports_Click(object sender, RoutedEventArgs e)
-        {
-            pageReports page = new pageReports();
-            pnlPageLoader.Content = page;
-            lblPageName.Text = "REPORTS";
-        }
-
-        // Event:           Click
-        // Source:          btnUtilities
-        // Description:     Set Visibility of pnlUtilities to Visible or Collapsed
-
-        private void btnUtilities_Click(object sender, RoutedEventArgs e)
-        {
-            bool state = pnlUtilities.Visibility == Visibility.Collapsed;
-            pnlUtilities.Visibility = (state) ? Visibility.Visible : Visibility.Collapsed;
-
-            double angle = (state) ? 90 : 0;
-            iconUtilitiesChev.RenderTransform = new RotateTransform(angle);
+            lblPageName.Text = "PLANT LOANING";
         }
 
         private void btnHerbariumInventory_Click(object sender, RoutedEventArgs e)

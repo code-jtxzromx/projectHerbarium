@@ -707,6 +707,76 @@ BEGIN
 END
 GO
 
+-- Insert Plant Type
+IF OBJECT_ID('procInsertPlantType', 'P') IS NOT NULL
+	DROP PROCEDURE procInsertPlantType
+GO
+CREATE PROCEDURE procInsertPlantType
+	@plantCode		VARCHAR(255),
+	@plantType		VARCHAR(50)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	DECLARE @Result INT = 0
+
+	BEGIN TRANSACTION
+
+	BEGIN TRY
+		IF NOT EXISTS (SELECT * FROM tblPlantType WHERE strPlantTypeCode = @plantCode)
+		BEGIN
+			INSERT INTO tblPlantType(strPlantTypeCode, strPlantTypeName)
+			VALUES (@plantCode, @plantType)
+		END
+		ELSE
+		BEGIN
+			SET @Result = 2
+		END
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @Result = 1
+	END CATCH
+
+	IF XACT_STATE() = 1
+		COMMIT TRANSACTION
+
+	RETURN @Result
+END
+GO
+
+-- Update Plant Type
+IF OBJECT_ID('procUpdatePlantType', 'P') IS NOT NULL
+	DROP PROCEDURE procUpdatePlantType
+GO
+CREATE PROCEDURE procUpdatePlantType
+	@plantTypeID	INT,
+	@plantCode		VARCHAR(255),
+	@plantType		VARCHAR(50)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	DECLARE @Result INT = 0
+
+	BEGIN TRANSACTION
+
+	BEGIN TRY
+		UPDATE tblPlantType
+		SET strPlantTypeCode = @plantCode,
+			strPlantTypeName = @plantType
+		WHERE intPlantTypeID = @plantTypeID
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @Result = 1
+	END CATCH
+
+	IF XACT_STATE() = 1
+		COMMIT TRANSACTION
+
+	RETURN @Result
+END
+GO
+
 -- Insert Family Box
 IF OBJECT_ID('procInsertFamilyBox', 'P') IS NOT NULL
 	DROP PROCEDURE procInsertFamilyBox
@@ -1433,13 +1503,13 @@ IF OBJECT_ID('procInsertPlantDeposit', 'P') IS NOT NULL
 GO
 CREATE PROCEDURE procInsertPlantDeposit
 	@herbariumSheet		VARBINARY(MAX) = NULL,
-	@locality			VARCHAR(255),
-	@collector			VARCHAR(255),
-	@staff				VARCHAR(255),
+	@localityID			INT,
+	@collectorID		INT,
+	@staffID			INT,
 	@dateCollected		DATE,
 	@description		VARCHAR(MAX),
-	@plantType			CHAR,
-	@accessionDigits	VARCHAR(5) = NULL,
+	@plantTypeID		INT,
+	@accessionDigits	INT = NULL,
 	@dateDeposited		VARCHAR(50) = NULL
 AS
 BEGIN
@@ -1449,43 +1519,147 @@ BEGIN
 	BEGIN TRANSACTION
 	
 	BEGIN TRY
-		DECLARE @accessionNumber VARCHAR(50);
-		DECLARE @identifier INT;
-		DECLARE @localityID INT;
-		DECLARE @collectorID INT;
-		DECLARE @staffID INT;
-		DECLARE @yearCode INT;
-
-		SET @localityID = (SELECT intLocalityID FROM tblLocality WHERE strShortLocation = @locality);
-		SET @collectorID = (SELECT intCollectorID FROM viewCollector WHERE strFullName = @collector);
-		SET @staffID = (SELECT intStaffID FROM viewHerbariumStaff WHERE strFullName = @staff);
-
 		IF @accessionDigits IS NULL
 		BEGIN
-			SET @yearCode = YEAR(GETDATE()) % 100;
-			SET @identifier = (SELECT TOP 1 CAST(SUBSTRING(strAccessionNumber, 8, 5) AS INT) FROM tblPlantDeposit ORDER BY CAST(SUBSTRING(strAccessionNumber, 8, 5) AS INT) DESC);
-
-			IF @identifier IS NULL
-				SET @accessionNumber = 'PUPH-' + @plantType + '-00001-' + FORMAT(@yearCode, '0#');
-			ELSE
-				SET @accessionNumber = 'PUPH-' + @plantType + '-' + FORMAT(@identifier + 1, '0000#') + '-' + FORMAT(@yearCode, '0#');
+			INSERT INTO tblReceivedDeposits (intPlantTypeID, picHerbariumSheet, intCollectorID, intLocalityID, intStaffID, dateCollected, dateDeposited, strDescription, strStatus)
+			VALUES (@plantTypeID, @herbariumSheet, @collectorID, @localityID, @staffID, @dateCollected, GETDATE(), @description, 'New Deposit')
 		END
 		ELSE
 		BEGIN
-			SET @yearCode = YEAR(@dateDeposited) % 100;
-			SET @accessionNumber = 'PUPH-' + @plantType + '-' + @accessionDigits + '-' + FORMAT(@yearCode, '0#');
+			INSERT INTO tblPlantDeposit(intAccessionNumber, intPlantTypeID, intFormatID, picHerbariumSheet, intCollectorID, intLocalityID, 
+										intStaffID, dateCollected, dateDeposited, strDescription, strStatus)
+			VALUES(@accessionDigits, @plantTypeID, 1, @herbariumSheet, @collectorID, @localityID, @staffID, @dateCollected, @dateDeposited, @description, 'For Verification')
 		END
-
-		IF @dateDeposited IS NULL
-			SET @dateDeposited = (SELECT GETDATE());
-
-		INSERT INTO tblPlantDeposit(strAccessionNumber, picHerbariumSheet, intCollectorID, intLocalityID, intStaffID, 
-									dateCollected, dateDeposited, strDescription, strStatus)
-		VALUES(@accessionNumber, @herbariumSheet, @collectorID, @localityID, @staffID, @dateCollected, @dateDeposited, @description, 'For Verification')
-
 	END TRY
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
+		SET @Result = 1
+	END CATCH
+
+	IF XACT_STATE() = 1
+		COMMIT TRANSACTION
+
+	RETURN @Result
+END
+GO
+
+-- Accept/Reject Plant Deposit
+IF OBJECT_ID('procConfirmDeposit', 'P') IS NOT NULL
+	DROP PROCEDURE procConfirmDeposit
+GO
+CREATE PROCEDURE procConfirmDeposit
+	@depositID			VARCHAR(50),
+	@receiveStatus		VARCHAR(50)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	DECLARE @Result INT = 0
+
+	BEGIN TRANSACTION
+
+	BEGIN TRY
+		DECLARE @accessionNumber INT
+		SET @accessionNumber = (SELECT TOP 1 intAccessionNumber FROM tblPlantDeposit ORDER BY intAccessionNumber DESC)
+
+		UPDATE tblReceivedDeposits
+		SET strStatus = @receiveStatus
+		WHERE intDepositID = @depositID
+
+		IF @receiveStatus = 'Accepted'
+		BEGIN
+			IF @accessionNumber IS NULL
+				SET @accessionNumber = 1
+			ELSE
+				SET @accessionNumber += 1
+
+			INSERT INTO tblPlantDeposit(intAccessionNumber, intPlantTypeID, intFormatID, picHerbariumSheet, intCollectorID, intLocalityID, 
+										intStaffID, dateCollected, dateDeposited, strDescription, strStatus)
+			SELECT @accessionNumber, intPlantTypeID, 1, picHerbariumSheet, intCollectorID, intLocalityID, intStaffID, dateCollected, dateDeposited, strDescription, 'For Verification'
+			FROM tblReceivedDeposits
+			WHERE intDepositID = @depositID	
+		END
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION		
+		SET @Result = 1
+	END CATCH
+
+	IF XACT_STATE() = 1
+		COMMIT TRANSACTION
+
+	RETURN @Result
+END
+GO
+
+-- Resubmit Plant Deposit
+IF OBJECT_ID('procPlantResubmission', 'P') IS NOT NULL
+	DROP PROCEDURE procPlantResubmission
+GO
+CREATE PROCEDURE procPlantResubmission
+	@depositID			INT,
+	@herbariumSheet		VARBINARY(MAX) = NULL,
+	@localityID			INT,
+	@staffID			INT,
+	@description		VARCHAR(MAX),
+	@plantTypeID		INT
+AS
+BEGIN 
+	SET NOCOUNT ON;
+	DECLARE @Result INT = 0
+
+	BEGIN TRANSACTION
+
+	BEGIN TRY
+		UPDATE tblReceivedDeposits
+		SET picHerbariumSheet = @herbariumSheet,
+			intLocalityID = @localityID,
+			intStaffID = @staffID,
+			dateDeposited = GETDATE(),
+			strDescription = @description,
+			intPlantTypeID = @plantTypeID,
+			strStatus = 'Resubmitted'
+		WHERE intDepositID = @depositID
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION		
+		SET @Result = 1
+	END CATCH
+
+	IF XACT_STATE() = 1
+		COMMIT TRANSACTION
+
+	RETURN @Result
+END
+GO
+
+-- Further Verify Plant Deposit
+IF OBJECT_ID('procExternalVerifyDeposit', 'P') IS NOT NULL
+	DROP PROCEDURE procExternalVerifyDeposit
+GO
+CREATE PROCEDURE procExternalVerifyDeposit
+	@orgDepositID	INT,
+	@newDepositID	INT = NULL,
+	@speciesID		INT = NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+	DECLARE @Result INT = 0
+
+	BEGIN TRANSACTION
+
+	BEGIN TRY
+		UPDATE tblPlantDeposit
+		SET strStatus = 'Further Verification'
+		WHERE intPlantDepositID = @orgDepositID
+
+		IF @speciesID IS NOT NULL
+		BEGIN
+			INSERT INTO tblVerifyingDeposit (intPlantDepositID, intReferenceDepositID, intSpeciesID)
+			VALUES (@orgDepositID, @newDepositID, @speciesID)
+		END
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION		
 		SET @Result = 1
 	END CATCH
 
@@ -1501,10 +1675,10 @@ IF OBJECT_ID('procVerifyPlantDeposit', 'P') IS NOT NULL
 	DROP PROCEDURE procVerifyPlantDeposit
 GO
 CREATE PROCEDURE procVerifyPlantDeposit
-	@accessionNo	VARCHAR(50),
-	@referenceNo	VARCHAR(50),
-	@taxonName		VARCHAR(MAX),
-	@validatorName	VARCHAR(MAX),
+	@orgDepositID	INT,
+	@newDepositID	INT,
+	@speciesID		INT,
+	@validatorID	INT,
 	@dateVerified	DATE = NULL
 AS
 BEGIN
@@ -1514,19 +1688,9 @@ BEGIN
 	BEGIN TRANSACTION
 		
 	BEGIN TRY
-		DECLARE @orgDepositID INT;
-		DECLARE @newDepositID INT;
-		DECLARE @speciesID INT;
-		DECLARE @validatorID INT;
-
-		SET @orgDepositID = (SELECT intPlantDepositID FROM tblPlantDeposit WHERE strAccessionNumber = @accessionNo);
-		SET @newDepositID = (SELECT intPlantDepositID FROM tblPlantDeposit WHERE strAccessionNumber = @referenceNo);
-		SET @speciesID = (SELECT intSpeciesID FROM viewTaxonSpecies WHERE strScientificName = @taxonName);
-		SET @validatorID = (SELECT intValidatorID FROM viewValidator WHERE strFullName = @validatorName);
-
 		UPDATE tblPlantDeposit
 		SET strStatus = 'Verified'
-		WHERE strAccessionNumber = @accessionNo;
+		WHERE intPlantDepositID = @orgDepositID;
 
 		IF @dateVerified IS NULL
 			SET @dateVerified = GETDATE()
@@ -1551,20 +1715,20 @@ IF OBJECT_ID('procInsertVerifiedDeposit', 'P') IS NOT NULL
 	DROP PROCEDURE procInsertVerifiedDeposit
 GO
 CREATE PROCEDURE procInsertVerifiedDeposit
-	@accessionDigits	VARCHAR(50),
-	@referenceNumber	VARCHAR(50) = NULL,
+	@accessionDigits	INT,
+	@newDepositID		INT = NULL,
 	@sameAccession		BIT,
 	@herbariumSheet		VARBINARY(MAX) = NULL,
-	@locality			VARCHAR(255),
-	@taxonName			VARCHAR(MAX),
-	@collector			VARCHAR(255),
-	@validator			VARCHAR(255),
-	@staff				VARCHAR(255),
+	@localityID			INT,
+	@speciesID			INT,
+	@collectorID		INT,
+	@validatorID		INT,
+	@staffID			INT,
 	@dateCollected		DATE,
 	@dateDeposited		DATE,
 	@dateVerified		DATE,
 	@description		VARCHAR(MAX),
-	@plantType			CHAR
+	@plantTypeID		INT
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -1573,16 +1737,16 @@ BEGIN
 	BEGIN TRANSACTION
 
 	BEGIN TRY
-		EXECUTE @Result = procInsertPlantDeposit @herbariumSheet, @locality, @collector, @staff, @dateCollected, @description, @plantType, @accessionDigits, @dateDeposited
+		EXECUTE @Result = procInsertPlantDeposit @herbariumSheet, @localityID, @collectorID, @staffID, @dateCollected, @description, @plantTypeID, @accessionDigits, @dateDeposited
 		IF @Result = 0
 		BEGIN
-			DECLARE @accessionNumber VARCHAR(50);
-			SET @accessionNumber = (SELECT strAccessionNumber FROM tblPlantDeposit WHERE SUBSTRING(strAccessionNumber, 8, 5) = @accessionDigits)
+			DECLARE @orgDepositID VARCHAR(50);
+			SET @orgDepositID = (SELECT intPlantDepositID FROM viewPlantDeposit WHERE intAccessionNumber = @accessionDigits)
 
 			IF @sameAccession = 1
-				SET @referenceNumber = @accessionNumber
+				SET @newDepositID = @orgDepositID
 
-			EXECUTE @Result = procVerifyPlantDeposit @accessionNumber, @referenceNumber, @taxonName, @validator, @dateVerified
+			EXECUTE @Result = procVerifyPlantDeposit @orgDepositID, @newDepositID, @speciesID, @validatorID, @dateVerified
 		END
 	END TRY
 	BEGIN CATCH
@@ -1619,7 +1783,7 @@ BEGIN
 
 		SET @boxID = (SELECT intBoxID FROM viewFamilyBox WHERE strBoxNumber = @boxNumber);
 		SET @sheetID = (SELECT intHerbariumSheetID FROM viewHerbariumSheet WHERE strAccessionNumber = @accessionNumber);
-		SET @depositID = (SELECT intPlantDepositID FROM tblPlantDeposit WHERE strAccessionNumber = @accessionNumber)
+		SET @depositID = (SELECT intPlantDepositID FROM viewPlantDeposit WHERE strAccessionNumber = @accessionNumber)
 
 		UPDATE tblPlantDeposit SET strStatus = 'Stored' WHERE intPlantDepositID = @depositID;
 
@@ -1643,7 +1807,7 @@ IF OBJECT_ID('procProcessLoan', 'P') IS NOT NULL
 	DROP PROCEDURE procProcessLoan
 GO
 CREATE PROCEDURE procProcessLoan
-	@collectorName	VARCHAR(255),
+	@borrowerName	VARCHAR(255),
 	@startDate		DATE,
 	@endDate		DATE,
 	@purpose		VARCHAR(255),
@@ -1656,11 +1820,11 @@ BEGIN
 	BEGIN TRANSACTION
 
 	BEGIN TRY
-		DECLARE @collectorID INT;
-		SET @collectorID = (SELECT intCollectorID FROM viewCollector WHERE strFullName = @collectorName);
+		DECLARE @borrowerID INT;
+		SET @borrowerID = (SELECT intBorrowerID FROM viewBorrower WHERE strFullName = @borrowerName);
 	
-		INSERT INTO tblPlantLoanTransaction(intCollectorID, dateLoan, dateReturning, dateProcessed, strPurpose, strStatus)
-		VALUES (@collectorID, @startDate, @endDate, GETDATE(), @purpose, @status)
+		INSERT INTO tblPlantLoanTransaction(intBorrowerID, dateLoan, dateReturning, dateProcessed, strPurpose, strStatus)
+		VALUES (@borrowerID, @startDate, @endDate, GETDATE(), @purpose, @status)
 	END TRY
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
@@ -1757,7 +1921,7 @@ EXECUTE procInsertCollector 'Rhisiel', 'V', 'Valle', 'V', '', 'Manila', '0936123
 EXECUTE procInsertCollector 'Maica', 'C', 'Opena', 'O', '', 'Muntilupa City', '09219876543', 'opena_maica@ymail.com', 'College of Accounting and Finance'
 
 EXECUTE procInsertBorrower 'David Adrienne', 'J', 'Fernando', 'J', '', 'Manila', '09997654321', 'vidfernando@yandex.com', 'College of Business Administration'
-EXECUTE procInsertBorrower 'Guiller', 'G', 'Pascual', 'G', '', 'Manila', '09001234567', 'sensei_guiller@gmail.com', 'College of Compute and Information Sciences'
+EXECUTE procInsertBorrower 'Guiller', 'G', 'Pascual', 'G', '', 'Manila', '09001234567', 'sensei_guiller@gmail.com', 'College of Computer and Information Sciences'
 
 EXECUTE procInsertValidator 'Paolo', 'J', 'Labrador', 'J', '', '09881234567', 'paololabrador@gmail.com', 'National Herbarium Center'
 EXECUTE procInsertValidator 'Marie Annthonite', 'N', 'Buena', 'N', '', '09111234567', 'tonetbuena@yahoo.com', 'University of Santo Tomas'
@@ -1786,6 +1950,13 @@ EXECUTE procInsertSpecies 'Vitex', 'negundo', 'Chinese chastetree', 'Carl Linnea
 
 EXECUTE procInsertSpeciesAlternate 'Vitex negundo L.', 'Filipino', 'Lagundi'
 EXECUTE procInsertFamilyBox 'Lamiaceae', 20, 1, 1, 1
+
+EXECUTE procInsertPlantType 'V', 'Vascular'
+EXECUTE procInsertPlantType 'B', 'Bryophytes'
+EXECUTE procInsertPlantType 'F', 'Flowering'
+EXECUTE procInsertPlantType 'A', 'Algae'
+
+INSERT INTO tblAccessionFormat (strInstitutionCode, strAccessionFormat, strYearFormat) VALUES ('PUPH', '0000#', '0#')
 
 --SELECT * FROM tblLocality
 --SELECT * FROM tblPerson

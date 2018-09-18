@@ -24,64 +24,92 @@ namespace prototypeHerbarium
     /// </summary>
     public partial class pageResubmit : Page
     {
+        WebCam camera;
+        bool webcamOpened = false;
+
         public pageResubmit()
         {
             InitializeComponent();
 
-            //getRejectedDeposits();
+            getRejectedDeposits();
+            getPlantTypeList();
+            getLocalityList();
+
+            camera = new WebCam();
+            camera.InitializeCamera(ref picCamera);
         }
 
         private void btnReSubmit_Click(object sender, RoutedEventArgs e)
         {
-            /*
-            // Database - Program Declaration
             DatabaseConnection connection = new DatabaseConnection();
-            PlantDeposit plantDeposit = dgrRejectedDeposited.SelectedValue as PlantDeposit;
-
-            // Query Command Setting
-            connection.setQuery("SELECT strDepositNumber, picHerbariumSheet, strScientificName, strCommonName, " +
-                                        "CONVERT(VARCHAR, dateCollected, 107), strFullLocality, strCollector, " +
-                                        "strDescription, strComment " +
-                                "FROM viewPlantDeposit " +
+            ReceivedDeposit plantDeposit = dgrRejectedDeposited.SelectedValue as ReceivedDeposit;
+            
+            connection.setQuery("SELECT intDepositID, strDepositNumber, strPlantTypeName, picHerbariumSheet, " +
+                                    "strCollector, strShortLocation, CONVERT(VARCHAR, dateCollected, 107), strDescription " +
+                                "FROM viewReceivedDeposit " +
                                 "WHERE strDepositNumber = @depositNo");
             connection.addParameter("@depositNo", SqlDbType.VarChar, plantDeposit.DepositNumber);
-
-            // Query Execution
             SqlDataReader sqlData = connection.executeResult();
-
-            // Query Result
+            
             pnlPlantDeposit.Visibility = Visibility.Visible;
-
             while (sqlData.Read())
             {
-                byte[] tempBlob = (byte[])sqlData[1];
-                picHerbariumSheet.Source = getHerbariumSheet(tempBlob);
+                try
+                {
+                    byte[] tempBlob = (byte[])sqlData[3];
+                    picHerbariumPicture.Source = getHerbariumSheet(tempBlob);
+                }
+                catch (Exception) { }
 
-                lblDepositNumber.Text = sqlData[0].ToString();
-                lblScientificName.Text = sqlData[2].ToString();
-                lblCommonName.Text = sqlData[3].ToString();
-                lblDateCollected.Text = sqlData[4].ToString();
-                lblLocality.Text = sqlData[5].ToString();
-                lblCollector.Text = sqlData[6].ToString();
+                lblDepositID.Text = sqlData[0].ToString();
+                lblDepositNumber.Text = sqlData[1].ToString();
+                lblCollector.Text = sqlData[4].ToString();
+                lblDateCollected.Text = sqlData[6].ToString();
                 txaDescription.Text = sqlData[7].ToString();
-                lblComments.Text = sqlData[8].ToString();
+                
+                foreach (var item in cbxPlantType.Items)
+                    if ((item as ComboBoxItem).Item == sqlData[2].ToString())
+                        cbxPlantType.SelectedItem = item;
+                foreach (var item in cbxLocality.Items)
+                    if ((item as ComboBoxItem).Item == sqlData[5].ToString())
+                        cbxLocality.SelectedItem = item;
             }
             connection.closeResult();
-            */
         }
 
         private void btnReturn_Click(object sender, RoutedEventArgs e)
         {
             pnlPlantDeposit.Visibility = Visibility.Hidden;
 
-            picHerbariumSheet = new Image();
+            picHerbariumSheet.Source = null;
+            lblDepositID.Text = "";
             lblDepositNumber.Text = "";
-            lblScientificName.Text = "";
-            lblCommonName.Text = "";
-            lblDateCollected.Text = "";
-            lblLocality.Text = "";
+            cbxPlantType.Text = "";
             lblCollector.Text = "";
+            cbxLocality.Text = "";
+            lblDateCollected.Text = "";
             txaDescription.Text = "";
+            chkGoodCondition.IsChecked = false;
+        }
+
+        private void btnSubmit_Click(object sender, RoutedEventArgs e)
+        {
+            byte[] picture = getPictureToBinary(picHerbariumPicture);
+
+            DatabaseConnection connection = new DatabaseConnection();
+            connection.setStoredProc("dbo.procPlantResubmission");
+            connection.addSprocParameter("@depositID", SqlDbType.Int, lblDepositID.Text);
+            connection.addSprocParameter("@herbariumSheet", SqlDbType.VarBinary, picture);
+            connection.addSprocParameter("@localityID", SqlDbType.Int, (cbxLocality.SelectedItem as ComboBoxItem).ID);
+            connection.addSprocParameter("@staffID", SqlDbType.Int, StaticData.ID);
+            connection.addSprocParameter("@description", SqlDbType.VarChar, txaDescription.Text);
+            connection.addSprocParameter("@plantTypeID", SqlDbType.Int, (cbxPlantType.SelectedItem as ComboBoxItem).ID);
+            connection.executeStoredProc();
+
+            MessageBox.Show("Plant Deposit Submitted", "Record Saved");
+
+            pnlPlantDeposit.Visibility = Visibility.Hidden;
+            getRejectedDeposits();
         }
 
         private void btnReUpload_Click(object sender, RoutedEventArgs e)
@@ -98,57 +126,126 @@ namespace prototypeHerbarium
             }
         }
 
-        private void btnSubmit_Click(object sender, RoutedEventArgs e)
+        private void btnReCapture_Click(object sender, RoutedEventArgs e)
         {
-            /*
-            byte[] picture = getPictureToBinary(picHerbariumSheet);
+            pnlCapturePicture.Visibility = Visibility.Visible;
+            if (!webcamOpened)
+                camera.Start();
+            else
+                camera.Continue();
+            webcamOpened = true;
 
-            DatabaseConnection connection = new DatabaseConnection();
-            connection.setStoredProc("dbo.procResubmitPlantDeposit");
-            connection.addSprocParameter("@plantDepositNo", SqlDbType.VarChar, lblDepositNumber.Text);
-            connection.addSprocParameter("@herbariumSheet", SqlDbType.VarBinary, picture);
-            connection.addSprocParameter("@staff", SqlDbType.VarChar, StaticData.staffname);
-            connection.addSprocParameter("@description", SqlDbType.VarChar, txaDescription.Text);
+            btnCapturePic.Visibility = Visibility.Visible;
+            btnDiscardPic.Visibility = Visibility.Collapsed;
+            btnSavePic.Visibility = Visibility.Collapsed;
+        }
 
-            connection.executeStoredProc();
+        private void btnReturnPic_Click(object sender, RoutedEventArgs e)
+        {
+            pnlCapturePicture.Visibility = Visibility.Collapsed;
+            btnDiscardPic_Click(btnDiscardPic, null);
+            camera.Stop();
+        }
 
-            MessageBox.Show("Plant Deposit Submitted", "Record Saved");
+        private void btnResolutionSetting_Click(object sender, RoutedEventArgs e) => camera.ResolutionSetting();
 
-            pnlPlantDeposit.Visibility = Visibility.Hidden;
+        private void btnCameraSetting_Click(object sender, RoutedEventArgs e) => camera.AdvanceSetting();
 
-            getRejectedDeposits();
-            */
+        private void btnCapturePic_Click(object sender, RoutedEventArgs e)
+        {
+            picHerbariumSheet.Source = picCamera.Source;
+            picHerbariumSheet.Visibility = Visibility.Visible;
+            picCamera.Visibility = Visibility.Collapsed;
+
+            btnCapturePic.Visibility = Visibility.Collapsed;
+            btnDiscardPic.Visibility = Visibility.Visible;
+            btnSavePic.Visibility = Visibility.Visible;
+        }
+
+        private void btnDiscardPic_Click(object sender, RoutedEventArgs e)
+        {
+            picCamera.Visibility = Visibility.Visible;
+            picHerbariumSheet.Visibility = Visibility.Collapsed;
+
+            btnCapturePic.Visibility = Visibility.Visible;
+            btnDiscardPic.Visibility = Visibility.Collapsed;
+            btnSavePic.Visibility = Visibility.Collapsed;
+        }
+
+        private void btnSavePic_Click(object sender, RoutedEventArgs e)
+        {
+            picHerbariumPicture.Source = picHerbariumSheet.Source;
+            btnReturnPic_Click(btnReturnPic, null);
         }
 
         public void getRejectedDeposits()
         {
-            /*
-            // Database - Program Declaration
             DatabaseConnection connection = new DatabaseConnection();
-            List<PlantDeposit> plantDeposits = new List<PlantDeposit>();
+            List<ReceivedDeposit> plantDeposits = new List<ReceivedDeposit>();
 
-            // Query Command Setting
-            connection.setQuery("SELECT strDepositNumber, strScientificName, strCollector " +
-                                "FROM viewPlantDeposit " +
+            connection.setQuery("SELECT intDepositID, strDepositNumber, strCollector, CONVERT(VARCHAR, dateCollected, 107) " +
+                                "FROM viewReceivedDeposit " +
                                 "WHERE strStatus = 'Rejected'");
-
-            // Query Execution
+            
             SqlDataReader sqlData = connection.executeResult();
-
-            // Query Result
             while (sqlData.Read())
             {
-                plantDeposits.Add(new PlantDeposit()
+                plantDeposits.Add(new ReceivedDeposit()
                 {
-                    DepositNumber = sqlData[0].ToString(),
-                    ScientificName = sqlData[1].ToString(),
-                    Collector = sqlData[2].ToString()
+                    DepositID = Convert.ToInt32(sqlData[0]),
+                    DepositNumber = sqlData[1].ToString(),
+                    Collector = sqlData[2].ToString(),
+                    DateCollected = sqlData[3].ToString()
                 });
             }
             connection.closeResult();
-
             dgrRejectedDeposited.ItemsSource = plantDeposits;
-            */
+        }
+
+        private void getPlantTypeList()
+        {
+            cbxPlantType.Items.Clear();
+            List<ComboBoxItem> plantTypes = new List<ComboBoxItem>();
+
+            DatabaseConnection connection = new DatabaseConnection();
+            connection.setQuery("SELECT intPlantTypeID, strPlantTypeName " +
+                                "FROM tblPlantType " +
+                                "ORDER BY strPlantTypeCode");
+
+            SqlDataReader sqlData = connection.executeResult();
+            while (sqlData.Read())
+            {
+                plantTypes.Add(new ComboBoxItem()
+                {
+                    ID = Convert.ToInt32(sqlData[0]),
+                    Item = sqlData[1].ToString()
+                });
+            }
+            connection.closeResult();
+            cbxPlantType.ItemsSource = plantTypes;
+        }
+
+        private void getLocalityList()
+        {
+            cbxLocality.Items.Clear();
+            List<ComboBoxItem> localityList = new List<ComboBoxItem>();
+
+            DatabaseConnection connection = new DatabaseConnection();
+            connection.setQuery("SELECT intLocalityID, strShortLocation " +
+                                "FROM tblLocality " +
+                                "ORDER BY strShortLocation");
+
+            SqlDataReader sqlData = connection.executeResult();
+            while (sqlData.Read())
+            {
+                localityList.Add(new ComboBoxItem()
+                {
+                    ID = Convert.ToInt32(sqlData[0]),
+                    Item = sqlData[1].ToString()
+                });
+            }
+            connection.closeResult();
+            cbxLocality.ItemsSource = localityList;
         }
 
         public BitmapImage getHerbariumSheet(byte[] blob)

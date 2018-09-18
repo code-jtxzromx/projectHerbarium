@@ -65,6 +65,7 @@ namespace prototypeHerbarium
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
+            lblStaffForm.Text = "Add Herbarium Staff";
             txfStaffID.Clear();
             cbxRole.SelectedIndex = -1;
             txfFirstname.Clear();
@@ -113,6 +114,7 @@ namespace prototypeHerbarium
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
             btnSave.Content = "Update";
+            lblStaffForm.Text = "Edit Herbarium Staff";
             Staff SelectedStaff = dgrStaffTable.SelectedValue as Staff;
 
             var result = from staff in HerbariumStaff
@@ -177,6 +179,7 @@ namespace prototypeHerbarium
 
         public void resetForm()
         {
+            lblStaffForm.Text = "Add Herbarium Staff";
             pnlAddStaff.Visibility = Visibility.Collapsed;
             sprAddStaff.Visibility = Visibility.Collapsed;
             btnAddStaff.Content = "Add Staff";

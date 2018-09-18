@@ -7,6 +7,11 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="pageVerification">
+    <Page.Resources>
+        <DataTemplate x:Key="ComboBoxItemTemplate" DataType="ComboBoxItem">
+            <TextBlock Text="{Binding Item}" />
+        </DataTemplate>
+    </Page.Resources>
 
     <Grid>
         <DockPanel>
@@ -42,7 +47,7 @@
                 </DataGrid.Columns>
             </DataGrid>
         </DockPanel>
-        <Grid x:Name="pnlPlantDeposit" Visibility="Hidden">
+        <Grid x:Name="pnlPlantDeposit" Visibility="Visible">
             <Grid.Background>
                 <SolidColorBrush Color="#7F555555"/>
             </Grid.Background>
@@ -84,6 +89,16 @@
                 </WrapPanel>
                 <ScrollViewer Margin="5 0 0 5" ScrollViewer.VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="0 0 5 0">
+                        <Grid Visibility="Collapsed">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Deposit ID:" />
+                            <TextBlock x:Name="lblDepositID" Grid.Column="1" 
+                                   Margin="5" TextWrapping="Wrap" Text="" />
+                        </Grid>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -92,7 +107,7 @@
 
                             <Label Grid.Column="0" Content="Scientific Name:" VerticalContentAlignment="Center"/>
                             <ComboBox x:Name="cbxScientificName" SelectionChanged="cbxScientificName_SelectionChanged" 
-                                      Grid.Column="1" Margin="5"/>
+                                      ItemTemplate="{StaticResource ComboBoxItemTemplate}" Grid.Column="1" Margin="5"/>
                         </Grid>
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -102,7 +117,7 @@
 
                             <Label Grid.Column="0" Content="Accession Number:" />
                             <TextBlock x:Name="lblAccessionNumber" Grid.Column="1" 
-                                   Margin="5" TextWrapping="Wrap" Text="" />
+                                       Margin="5" TextWrapping="Wrap" Text="" />
                         </Grid>
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -120,17 +135,7 @@
                             </Grid.ColumnDefinitions>
 
                             <Label Grid.Column="0" Content="Reference Accession:" VerticalContentAlignment="Center"/>
-                            <ComboBox x:Name="cbxReferenceNumber" Grid.Column="1" Margin="5" />
-                        </Grid>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="2*" />
-                            </Grid.ColumnDefinitions>
-
-                            <Label Grid.Column="0" Content="Common Name:" VerticalContentAlignment="Center"/>
-                            <TextBox x:Name="txfCommonName" TextChanged="txfCommonName_TextChanged"
-                                     Grid.Column="1" Margin="5 3" Height="23" VerticalContentAlignment="Center" />
+                            <ComboBox x:Name="cbxReferenceNumber" Grid.Column="1" Margin="5" ItemTemplate="{StaticResource ComboBoxItemTemplate}" />
                         </Grid>
                         <Grid>
                             <Grid.ColumnDefinitions>

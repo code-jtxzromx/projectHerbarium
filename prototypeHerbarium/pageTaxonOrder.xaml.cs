@@ -44,6 +44,7 @@ namespace prototypeHerbarium
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
+            lblOrderForm.Text = "Add Order";
             txfOrderID.Clear();
             cbxClassName.SelectedIndex = -1;
             txfOrderName.Clear();
@@ -56,6 +57,7 @@ namespace prototypeHerbarium
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
             btnSave.Content = "Update";
+            lblOrderForm.Text = "Edit Order";
             TaxonOrder selectedOrder = dgrOrderTable.SelectedValue as TaxonOrder;
 
             var result = from order in TaxonomicOrders
@@ -99,6 +101,7 @@ namespace prototypeHerbarium
 
         private void resetForm()
         {
+            lblOrderForm.Text = "Add Order";
             pnlAddOrder.Visibility = Visibility.Collapsed;
             sprAddOrder.Visibility = Visibility.Collapsed;
             btnAddOrder.Content = "Add Order";

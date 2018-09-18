@@ -142,7 +142,6 @@ C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\prototypeHerbar
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\bin\Debug\prototypeHerbarium.exe.config
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\bin\Debug\prototypeHerbarium.exe
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\bin\Debug\prototypeHerbarium.pdb
-C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\prototypeHerbarium.csprojAssemblyReference.cache
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\resourceHerbarium.baml
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\ctrlComboBox.g.cs
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\ctrlDateField.g.cs
@@ -158,7 +157,6 @@ C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbariu
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageHerbariumInventory.g.cs
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageHerbariumTracking.g.cs
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageHomepage.g.cs
-C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageIdentification.g.cs
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageLoaning.g.cs
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageLocality.g.cs
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageQueries.g.cs
@@ -192,7 +190,6 @@ C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbariu
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageHerbariumInventory.baml
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageHerbariumTracking.baml
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageHomepage.baml
-C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageIdentification.baml
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageLoaning.baml
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageLocality.baml
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageQueries.baml
@@ -327,3 +324,12 @@ C:\Users\ndesc\Desktop\projectHerbarium\prototypeHerbarium\obj\Debug\prototypeHe
 C:\Users\ndesc\Desktop\projectHerbarium\prototypeHerbarium\obj\Debug\prototypeHerbarium.csproj.CopyComplete
 C:\Users\ndesc\Desktop\projectHerbarium\prototypeHerbarium\obj\Debug\prototypeHerbarium.exe
 C:\Users\ndesc\Desktop\projectHerbarium\prototypeHerbarium\obj\Debug\prototypeHerbarium.pdb
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageReceiving.g.cs
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageReceiving.baml
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pagePlantType.g.cs
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pagePlantType.baml
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageDepositMenu.g.cs
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageDepositMenu.baml
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\viewDeposit.g.cs
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\viewDeposit.baml
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\prototypeHerbarium.csprojAssemblyReference.cache

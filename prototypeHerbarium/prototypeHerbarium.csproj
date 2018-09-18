@@ -90,6 +90,9 @@
     <Compile Include="frmMain.xaml.cs">
       <DependentUpon>frmMain.xaml</DependentUpon>
     </Compile>
+    <Compile Include="viewDeposit.xaml.cs">
+      <DependentUpon>viewDeposit.xaml</DependentUpon>
+    </Compile>
     <Page Include="ctrlComboBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -142,6 +145,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="pageDepositMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="pageFamilyBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -158,7 +165,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="pageIdentification.xaml">
+    <Page Include="pagePlantType.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="pageReceiving.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -230,6 +241,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="viewDeposit.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="pageAccounts.xaml.cs">
@@ -250,6 +265,9 @@
     <Compile Include="pageDeposit.xaml.cs">
       <DependentUpon>pageDeposit.xaml</DependentUpon>
     </Compile>
+    <Compile Include="pageDepositMenu.xaml.cs">
+      <DependentUpon>pageDepositMenu.xaml</DependentUpon>
+    </Compile>
     <Compile Include="pageFamilyBox.xaml.cs">
       <DependentUpon>pageFamilyBox.xaml</DependentUpon>
     </Compile>
@@ -262,8 +280,11 @@
     <Compile Include="pageHomepage.xaml.cs">
       <DependentUpon>pageHomepage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="pageIdentification.xaml.cs">
-      <DependentUpon>pageIdentification.xaml</DependentUpon>
+    <Compile Include="pagePlantType.xaml.cs">
+      <DependentUpon>pagePlantType.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="pageReceiving.xaml.cs">
+      <DependentUpon>pageReceiving.xaml</DependentUpon>
     </Compile>
     <Compile Include="pageLoaning.xaml.cs">
       <DependentUpon>pageLoaning.xaml</DependentUpon>

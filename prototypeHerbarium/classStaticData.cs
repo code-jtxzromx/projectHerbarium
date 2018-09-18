@@ -11,6 +11,7 @@ namespace prototypeHerbarium
 {
     public static class StaticData
     {
+        public static int ID = 0;
         public static string username = "USERNAME";
         public static string staffname = "NAME";
         public static string role = "CURATOR";

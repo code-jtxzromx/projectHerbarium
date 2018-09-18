@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -59,6 +60,12 @@ namespace prototypeHerbarium
             cbxComboBox.Items.Add(item);
         }
 
+        public IEnumerable ItemsSource
+        {
+            get { return cbxComboBox.ItemsSource; }
+            set { cbxComboBox.ItemsSource = value; }
+        }
+
         public void Reset()
         {
             cbxComboBox.Items.Clear();
@@ -69,5 +76,11 @@ namespace prototypeHerbarium
         {
             SelectionChange?.Invoke(this, EventArgs.Empty);
         }
+    }
+
+    public class ComboBoxItem
+    {
+        public int ID { get; set; }
+        public string Item { get; set; }
     }
 }

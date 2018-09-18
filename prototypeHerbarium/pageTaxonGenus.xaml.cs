@@ -44,6 +44,7 @@ namespace prototypeHerbarium
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
+            lblGenusForm.Text = "Add Genus";
             txfGenusID.Clear();
             cbxFamilyName.SelectedIndex = -1;
             txfGenusName.Clear();
@@ -80,6 +81,7 @@ namespace prototypeHerbarium
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
             btnSave.Content = "Update";
+            lblGenusForm.Text = "Edit Genus";
             TaxonGenus SelectedGenus = dgrGenusTable.SelectedValue as TaxonGenus;
 
             var result = from genus in TaxonomicGenus
@@ -131,6 +133,7 @@ namespace prototypeHerbarium
 
         private void resetForm()
         {
+            lblGenusForm.Text = "Add Genus";
             pnlAddGenus.Visibility = Visibility.Collapsed;
             sprAddGenus.Visibility = Visibility.Collapsed;
             btnAddGenus.Content = "Add Genus";

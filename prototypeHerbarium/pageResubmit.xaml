@@ -6,7 +6,12 @@
       xmlns:local="clr-namespace:prototypeHerbarium"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="Re-Submit Plant Deposit">
+      Title="Plant Resubmission">
+    <Page.Resources>
+        <DataTemplate x:Key="ComboBoxItemTemplate" DataType="local:ComboBoxItem">
+            <TextBlock Text="{Binding Item}"/>
+        </DataTemplate>
+    </Page.Resources>
 
     <Grid>
         <DockPanel>
@@ -24,8 +29,8 @@
             <DataGrid x:Name="dgrRejectedDeposited" DockPanel.Dock="Top" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0">
                 <DataGrid.Columns>
                     <DataGridTextColumn Width="*" Header="Deposit Number" Binding="{Binding DepositNumber}"/>
-                    <DataGridTextColumn Width="1.5*" Header="Scientific Name" Binding="{Binding ScientificName}"/>
-                    <DataGridTextColumn Width="*" Header="Collector" Binding="{Binding Collector}"/>
+                    <DataGridTextColumn Width="2*" Header="Collector" Binding="{Binding Collector}"/>
+                    <DataGridTextColumn Width="*" Header="Date Collected" Binding="{Binding DateCollected}"/>
                     <DataGridTemplateColumn Header="Actions" Width="110">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -33,8 +38,8 @@
                                     <Button x:Name="btnReSubmit" 
                                         Padding="2" Margin="2"
                                         Click="btnReSubmit_Click"
-                                        ToolTip="Re-Submit Deposit"
-                                        Content="RE-SUBMIT" />
+                                        ToolTip="Resubmit Deposit"
+                                        Content="RESUBMIT" />
                                 </WrapPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -42,7 +47,7 @@
                 </DataGrid.Columns>
             </DataGrid>
         </DockPanel>
-        <Grid x:Name="pnlPlantDeposit" Visibility="Hidden">
+        <Grid x:Name="pnlPlantDeposit" Visibility="Collapsed">
             <Grid.Background>
                 <SolidColorBrush Color="#7F555555"/>
             </Grid.Background>
@@ -60,7 +65,7 @@
 
             <DockPanel Grid.Column="1" Grid.Row="1" Margin="30 10" Background="White">
                 <Border DockPanel.Dock="Left" BorderBrush="Gray" BorderThickness="1" Margin="15 5" VerticalAlignment="Center">
-                    <Image x:Name="picHerbariumSheet" Height="400" Width="300" Stretch="Uniform" />
+                    <Image x:Name="picHerbariumPicture" Height="400" Width="300" Stretch="Uniform" />
                 </Border>
                 <Grid Margin="5" DockPanel.Dock="Top">
                     <Grid.ColumnDefinitions>
@@ -68,7 +73,7 @@
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
 
-                    <Label FontWeight="DemiBold" Margin="0 5">Do you want to Re-Submit this Plant Deposit?</Label>
+                    <Label FontWeight="DemiBold" Margin="0 5">Do you want to Resubmit this Plant Deposit?</Label>
                     <WrapPanel Margin="5" Grid.Column="1" FlowDirection="RightToLeft" VerticalAlignment="Center">
                         <Button x:Name="btnReturn" Click="btnReturn_Click" 
                             Padding="2" ToolTip="Close"
@@ -79,11 +84,24 @@
                     </WrapPanel>
                 </Grid>
                 <WrapPanel Margin="15" DockPanel.Dock="Bottom" FlowDirection="RightToLeft">
-                    <Button x:Name="btnSubmit" Click="btnSubmit_Click" Margin="5" Padding="10 5">SUBMIT DEPOSIT</Button>
-                    <Button x:Name="btnReUpload" Click="btnReUpload_Click" Margin="5" Padding="10 5">RE-UPLOAD PICTURE</Button>
+                    <Button x:Name="btnSubmit" Click="btnSubmit_Click" Margin="5" Padding="10 5"
+                            IsEnabled="{Binding ElementName=chkGoodCondition, Path=IsChecked, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                        SUBMIT DEPOSIT
+                    </Button>
+                    <Button x:Name="btnReUpload" Click="btnReUpload_Click" Margin="5" Padding="10 5">UPLOAD PICTURE</Button>
+                    <Button x:Name="btnReCapture" Click="btnReCapture_Click" Margin="5" Padding="10 5">CAPTURE PICTURE</Button>
                 </WrapPanel>
                 <ScrollViewer Margin="5 0 0 5" ScrollViewer.VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="0 0 5 0">
+                        <Grid Visibility="Collapsed">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Deposit ID:" />
+                            <TextBlock x:Name="lblDepositID" Grid.Column="1" Margin="5" TextWrapping="Wrap" Text="" />
+                        </Grid>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -91,48 +109,7 @@
                             </Grid.ColumnDefinitions>
 
                             <Label Grid.Column="0" Content="Deposit Number:" />
-                            <TextBlock x:Name="lblDepositNumber" Grid.Column="1" 
-                                   Margin="5" TextWrapping="Wrap" Text="" />
-                        </Grid>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="2*" />
-                            </Grid.ColumnDefinitions>
-
-                            <Label Grid.Column="0" Content="Scientific Name:" />
-                            <TextBlock x:Name="lblScientificName" Grid.Column="1" 
-                                   Margin="5" TextWrapping="Wrap" Text="" />
-                        </Grid>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="2*" />
-                            </Grid.ColumnDefinitions>
-
-                            <Label Grid.Column="0" Content="Common Name:" />
-                            <TextBlock x:Name="lblCommonName" Grid.Column="1" 
-                                       Margin="5" TextWrapping="Wrap" Text="" />
-                        </Grid>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="2*" />
-                            </Grid.ColumnDefinitions>
-
-                            <Label Grid.Column="0" Content="Date Collected:" />
-                            <TextBlock x:Name="lblDateCollected" Grid.Column="1" 
-                                       Margin="5" TextWrapping="Wrap" Text="" />
-                        </Grid>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="2*" />
-                            </Grid.ColumnDefinitions>
-
-                            <Label Grid.Column="0" Content="Locality:" />
-                            <TextBlock x:Name="lblLocality" Grid.Column="1" 
-                                       Margin="5" TextWrapping="Wrap" Text="" />
+                            <TextBlock x:Name="lblDepositNumber" Grid.Column="1" Margin="5" TextWrapping="Wrap" Text="" />
                         </Grid>
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -141,8 +118,34 @@
                             </Grid.ColumnDefinitions>
 
                             <Label Grid.Column="0" Content="Collector:" />
-                            <TextBlock x:Name="lblCollector" Grid.Column="1" 
-                                       Margin="5" TextWrapping="Wrap" Text="" />
+                            <TextBlock x:Name="lblCollector" Grid.Column="1" Margin="5" TextWrapping="Wrap" Text="" />
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Date Collected:" />
+                            <TextBlock x:Name="lblDateCollected" Grid.Column="1" Margin="5" TextWrapping="Wrap" Text="" />
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Plant Type:" VerticalContentAlignment="Center" />
+                            <ComboBox x:Name="cbxPlantType" ItemTemplate="{StaticResource ComboBoxItemTemplate}" Grid.Column="1" Margin="5"/>
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Locality:" />
+                            <ComboBox x:Name="cbxLocality" ItemTemplate="{StaticResource ComboBoxItemTemplate}" Grid.Column="1" Margin="5"/>
                         </Grid>
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -151,24 +154,72 @@
                             </Grid.ColumnDefinitions>
 
                             <Label Grid.Column="0" Content="Description:" />
-                            <TextBox x:Name="txaDescription" Grid.Column="1"
-                                     Margin="5" Padding="5" TextWrapping="Wrap" Height="75" 
-                                     AcceptsReturn="True" AcceptsTab="True" 
-                                     ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" />
+                            <TextBox x:Name="txaDescription" Grid.Column="1" AcceptsReturn="True" AcceptsTab="True"
+                                       Margin="5" Height="75" TextWrapping="Wrap" Text="" />
                         </Grid>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="2*" />
-                            </Grid.ColumnDefinitions>
-
-                            <Label Grid.Column="0" Content="Comments:" />
-                            <TextBlock x:Name="lblComments" Grid.Column="1" 
-                                       Margin="5" TextWrapping="Wrap" Text="" />
-                        </Grid>
+                        <CheckBox x:Name="chkGoodCondition" Margin="10 5" Content="Plant Deposit Received in Good Condition" />
                     </StackPanel>
                 </ScrollViewer>
             </DockPanel>
+        </Grid>
+        <Grid x:Name="pnlCapturePicture" Visibility="Collapsed">
+            <Grid.Background>
+                <SolidColorBrush Color="#7F555555" />
+            </Grid.Background>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="500" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="520" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Column="1" Grid.Row="1" Margin="50 10" Background="White">
+                <Grid Margin="5" DockPanel.Dock="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <Label FontWeight="DemiBold" Margin="5">Capture Herbarium Sheet Picture</Label>
+                    <WrapPanel Margin="5" Grid.Column="1" FlowDirection="RightToLeft" VerticalAlignment="Center">
+                        <Button x:Name="btnReturnPic" Click="btnReturnPic_Click"
+                                Padding="5" ToolTip="Close" Height="20" VerticalAlignment="Bottom"
+                                Background="#55FFFFFF" BorderBrush="#00FFFFFF" >
+                            <Image Source="{StaticResource glyphicon-remove}"/>
+                        </Button>
+                        <Button x:Name="btnResolutionSetting" Click="btnResolutionSetting_Click"
+                                Padding="5" ToolTip="Resolution Settings" Height="20" VerticalAlignment="Bottom"
+                                Background="#55FFFFFF" BorderBrush="#00FFFFFF" >
+                            <Image Source="{StaticResource glyphicon-camera}"/>
+                        </Button>
+                        <Button x:Name="btnCameraSetting" Click="btnCameraSetting_Click"
+                                Padding="5" ToolTip="Hardware Settings" Height="20" VerticalAlignment="Bottom"
+                                Background="#55FFFFFF" BorderBrush="#00FFFFFF" >
+                            <Image Source="{StaticResource glyphicon-cogwheel}"/>
+                        </Button>
+
+                    </WrapPanel>
+                </Grid>
+                <Border BorderBrush="Gray" BorderThickness="1" Margin="49 5" VerticalAlignment="Center">
+                    <Grid>
+                        <Image x:Name="picHerbariumSheet" Visibility="Collapsed" Height="400" Width="300" Stretch="UniformToFill" />
+                        <Image x:Name="picCamera" Visibility="Visible" Height="400" Width="300" Stretch="UniformToFill" />
+                    </Grid>
+                </Border>
+                <WrapPanel HorizontalAlignment="Center">
+                    <Button x:Name="btnCapturePic" Click="btnCapturePic_Click"
+                            Width="120" Margin="5" Padding="5" Content="Capture Photo" />
+                    <Button x:Name="btnDiscardPic" Click="btnDiscardPic_Click"
+                            Width="120" Margin="5" Padding="5" Content="Discard Photo" />
+                    <Button x:Name="btnSavePic" Click="btnSavePic_Click"
+                            Width="120" Margin="5" Padding="5" Content="Save Photo" />
+                </WrapPanel>
+            </StackPanel>
         </Grid>
     </Grid>
 </Page>

@@ -5,12 +5,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:prototypeHerbarium"
              mc:Ignorable="d">
+    <UserControl.Resources>
+        <DataTemplate x:Key="ComboBoxItemTemplate" DataType="ComboBoxItem">
+            <TextBlock Text="{Binding Item}" />
+        </DataTemplate>
+    </UserControl.Resources>
     <StackPanel>
         <WrapPanel Margin="5">
             <TextBlock x:Name="lblFieldLabel" />
             <TextBlock x:Name="lblRequired" Margin="5 0" Text="*" Foreground="Red"/>
         </WrapPanel>
-        <ComboBox x:Name="cbxComboBox" Height="25" Margin="3" VerticalContentAlignment="Center" SelectionChanged="cbxComboBox_SelectionChanged"/>
+        <ComboBox x:Name="cbxComboBox" Height="25" Margin="3" ItemTemplate="{StaticResource ComboBoxItemTemplate}" 
+                  VerticalContentAlignment="Center" SelectionChanged="cbxComboBox_SelectionChanged"/>
         <TextBlock x:Name="lblErrorMessage" Visibility="Collapsed"
                    Margin="5 -2" Foreground="Red" FontSize="10" FontWeight="DemiBold" Text="This field is required"/>
     </StackPanel>

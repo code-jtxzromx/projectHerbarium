@@ -179,6 +179,10 @@
                                 Style="{StaticResource subMenuButton}"
                                 Click="btnSpeciesAlternate_Click"
                                 Content="Species Alternate Names"/>
+                        <Button x:Name="btnPlantTypes"
+                                Style="{StaticResource subMenuButton}"
+                                Click="btnPlantTypes_Click"
+                                Content="Plant Types"/>
                         <Button x:Name="btnFamilyBox" 
                                 Style="{StaticResource subMenuButton}"
                                 Click="btnFamilyBox_Click"
@@ -238,14 +242,14 @@
                                 Style="{StaticResource subMenuButton}"
                                 Click="btnPlantDeposit_Click"
                                 Content="Plant Deposit" />
-                        <!--<Button x:Name="btnPlantResubmit"
+                        <Button x:Name="btnPlantResubmit"
                                 Style="{StaticResource subMenuButton}"
                                 Click="btnPlantResubmit_Click"
-                                Content="Re-Submit Plant Deposit" />
-                        <Button x:Name="btnPlantIdentification"
+                                Content="Plant Resubmission" />
+                        <Button x:Name="btnPlantReceiving"
                                 Style="{StaticResource subMenuButton}" 
-                                Click="btnPlantIdentification_Click"
-                                Content="Plant Receiving" />-->
+                                Click="btnPlantReceiving_Click"
+                                Content="Plant Receiving" />
                         <Button x:Name="btnPlantVerification" 
                                 Style="{StaticResource subMenuButton}"
                                 Click="btnPlantVerification_Click" 
@@ -256,8 +260,11 @@
                                 Content="Plant Classification" />
                         <Button x:Name="btnPlantLoaning" 
                                 Style="{StaticResource subMenuButton}"
-                                Content="Loan Plant" 
+                                Content="Plant Loaning" 
                                 Click="btnPlantLoaning_Click" />
+                        <Button x:Name="btnReturnLoaning" 
+                                Style="{StaticResource subMenuButton}"
+                                Content="Loan Returns" />
                         <Button x:Name="btnSpeciesIdentification"
                                 Style="{StaticResource subMenuButton}"
                                 Content="Species Identification" />
@@ -296,16 +303,16 @@
                                 Style="{StaticResource subMenuButton}"
                                 Content="Specimen Tracking" 
                                 Click="btnPlantTracking_Click"/>
-                        <Button x:Name="btnBackupDeposits" 
+                        <!--<Button x:Name="btnBackupDeposits" 
                                 Style="{StaticResource subMenuButton}"
-                                Content="Herbarium Back-Up"/>
+                                Content="Herbarium Back-Up"/>-->
                         <Button x:Name="btnAuditTrailing"
                                 Style="{StaticResource subMenuButton}"
                                 Click="btnAuditTrailing_Click"
                                 Content="Transaction Trailing"/>
-                        <Button x:Name="btnSettings" 
+                        <!--<Button x:Name="btnSettings" 
                                 Style="{StaticResource subMenuButton}"
-                                Content="System Configurations"/>
+                                Content="System Configurations"/>-->
                     </StackPanel>
                     <Button x:Name="btnQuery"
                             Style="{StaticResource menuButton}"
@@ -314,14 +321,35 @@
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="35" />
-                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="170" />
+                                    <ColumnDefinition Width="20" />
                                 </Grid.ColumnDefinitions>
                                 <Image Source="{StaticResource glyphicon-list-alt}"
                                        Grid.Column="0" Margin="3"/>
                                 <TextBlock Grid.Column="1" Padding="2">QUERY</TextBlock>
+                                <Image x:Name="iconQueriesChev" 
+                                       Source="{StaticResource glyphicon-collapse}"
+                                       Grid.Column="2" Margin="2" RenderTransformOrigin="0.5,0.5">
+                                    <Image.RenderTransform>
+                                        <TransformGroup>
+                                            <RotateTransform Angle="0"/>
+                                        </TransformGroup>
+                                    </Image.RenderTransform>
+                                </Image>
                             </Grid>
                         </Button.Content>
                     </Button>
+                    <StackPanel x:Name="pnlQueries" Visibility="Collapsed">
+                        <Button x:Name="btnQTaxonSpecies" 
+                                Style="{StaticResource subMenuButton}"
+                                Content="Taxon Species"/>
+                        <Button x:Name="btnQHerbariumSheet" 
+                                Style="{StaticResource subMenuButton}"
+                                Content="Herbarium Sheet"/>
+                        <Button x:Name="btnQPlantLoans" 
+                                Style="{StaticResource subMenuButton}"
+                                Content="Plant Loans"/>
+                    </StackPanel>
                     <Button x:Name="btnReports" 
                             Style="{StaticResource menuButton}"
                             Click="btnReports_Click">
@@ -329,14 +357,38 @@
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="35" />
-                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="170" />
+                                    <ColumnDefinition Width="20" />
                                 </Grid.ColumnDefinitions>
                                 <Image Source="{StaticResource glyphicon-file-download}"
                                        Grid.Column="0" Margin="3"/>
-                                <TextBlock Grid.Column="1" Padding="2">REPORTS</TextBlock>
+                                <TextBlock Grid.Column="1" Padding="2">REPORT</TextBlock>
+                                <Image x:Name="iconReportsChev" 
+                                       Source="{StaticResource glyphicon-collapse}"
+                                       Grid.Column="2" Margin="2" RenderTransformOrigin="0.5,0.5">
+                                    <Image.RenderTransform>
+                                        <TransformGroup>
+                                            <RotateTransform Angle="0"/>
+                                        </TransformGroup>
+                                    </Image.RenderTransform>
+                                </Image>
                             </Grid>
                         </Button.Content>
                     </Button>
+                    <StackPanel x:Name="pnlReports" Visibility="Collapsed">
+                        <Button x:Name="btnRTaxonSpecies" 
+                                Style="{StaticResource subMenuButton}"
+                                Content="Taxon Species"/>
+                        <Button x:Name="btnRPlantDeposit" 
+                                Style="{StaticResource subMenuButton}"
+                                Content="Plant Deposits"/>
+                        <Button x:Name="btnRHerbariumSheet" 
+                                Style="{StaticResource subMenuButton}"
+                                Content="Herbarium Sheet"/>
+                        <Button x:Name="btnRPlantLoans" 
+                                Style="{StaticResource subMenuButton}"
+                                Content="Plant Loans"/>
+                    </StackPanel>
                 </StackPanel>
             </ScrollViewer>
 

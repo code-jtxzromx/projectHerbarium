@@ -44,6 +44,7 @@ namespace prototypeHerbarium
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
+            lblValidatorForm.Text = "Add External Validator";
             txfValidatorID.Clear();
             txfFirstname.Clear();
             txfMiddlename.Clear();
@@ -89,6 +90,7 @@ namespace prototypeHerbarium
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
             btnSave.Content = "Update";
+            lblValidatorForm.Text = "Edit External Validator";
             Validator SelectedValidator = dgrValidatorTable.SelectedValue as Validator;
 
             var result = from validator in ExternalValidators
@@ -114,6 +116,7 @@ namespace prototypeHerbarium
         
         public void resetForm()
         {
+            lblValidatorForm.Text = "Add External Validator";
             pnlAddValidator.Visibility = Visibility.Collapsed;
             sprAddValidator.Visibility = Visibility.Collapsed;
             btnAddValidator.Content = "Add Validator";

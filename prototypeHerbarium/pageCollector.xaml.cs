@@ -44,6 +44,7 @@ namespace prototypeHerbarium
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
+            lblCollectorForm.Text = "Add Collector";
             txfCollectorID.Clear();
             txfFirstname.Clear();
             txfMiddlename.Clear();
@@ -90,6 +91,7 @@ namespace prototypeHerbarium
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
             btnSave.Content = "Update";
+            lblCollectorForm.Text = "Edit Collector";
             Collector SelectedCollector = dgrCollectorTable.SelectedValue as Collector;
 
             var result = from collector in CollectorsList
@@ -116,6 +118,7 @@ namespace prototypeHerbarium
 
         public void resetForm()
         {
+            lblCollectorForm.Text = "Add Collector";
             pnlAddCollector.Visibility = Visibility.Collapsed;
             sprAddCollector.Visibility = Visibility.Collapsed;
             btnAddCollector.Content = "Add Collector";

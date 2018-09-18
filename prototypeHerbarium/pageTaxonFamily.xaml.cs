@@ -44,6 +44,7 @@ namespace prototypeHerbarium
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
+            lblFamilyForm.Text = "Add Family";
             txfFamilyID.Clear();
             cbxOrderName.SelectedIndex = -1;
             txfFamilyName.Clear();
@@ -80,6 +81,7 @@ namespace prototypeHerbarium
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
             btnSave.Content = "Update";
+            lblFamilyForm.Text = "Edit Family";
             TaxonFamily selectedFamily = dgrFamilyTable.SelectedValue as TaxonFamily;
 
             var result = from family in TaxonomicFamilies
@@ -99,6 +101,7 @@ namespace prototypeHerbarium
 
         private void resetForm()
         {
+            lblFamilyForm.Text = "Add Family";
             pnlAddFamily.Visibility = Visibility.Collapsed;
             sprAddFamily.Visibility = Visibility.Collapsed;
             btnAddFamily.Content = "Add Family";

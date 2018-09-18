@@ -44,6 +44,7 @@ namespace prototypeHerbarium
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
+            lblHerbariumBoxForm.Text = "Add Herbarium Box";
             txfBoxNumber.Clear();
             cbxFamily.SelectedIndex = -1;
             txfBoxLimit.Clear();
@@ -64,7 +65,7 @@ namespace prototypeHerbarium
             bool state = (pnlAddBox.Visibility == Visibility.Collapsed) ? true : false;
             pnlAddBox.Visibility = (state) ? Visibility.Visible : Visibility.Collapsed;
             sprAddBox.Visibility = (state) ? Visibility.Visible : Visibility.Collapsed;
-            btnAddBox.Content = (state) ? "Close Panel" : "Add Family Box";
+            btnAddBox.Content = (state) ? "Close Panel" : "Add Herbarium Box";
 
             if (!state)
                 btnClear_Click(btnClear, null);
@@ -85,6 +86,7 @@ namespace prototypeHerbarium
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
             btnSave.Content = "Clear";
+            lblHerbariumBoxForm.Text = "Edit Herbarium Box";
             FamilyBox SelectedBox = dgrBoxTable.SelectedValue as FamilyBox;
 
             var result = from box in HerbariumBoxes
@@ -107,9 +109,10 @@ namespace prototypeHerbarium
 
         public void resetForm()
         {
+            lblHerbariumBoxForm.Text = "Add Herbarium Box";
             pnlAddBox.Visibility = Visibility.Collapsed;
             sprAddBox.Visibility = Visibility.Collapsed;
-            btnAddBox.Content = "Add Family Box";
+            btnAddBox.Content = "Add Herbarium Box";
             btnClear_Click(btnClear, null);
 
             getFamilyBoxTable();

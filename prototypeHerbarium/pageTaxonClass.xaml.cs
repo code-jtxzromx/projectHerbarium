@@ -44,6 +44,7 @@ namespace prototypeHerbarium
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
+            lblClassForm.Text = "Add Class";
             txfClassID.Clear();
             cbxPhylumName.SelectedIndex = -1;
             txfClassName.Clear();
@@ -56,6 +57,7 @@ namespace prototypeHerbarium
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
             btnSave.Content = "Update";
+            lblClassForm.Text = "Edit Class";
             TaxonClass selectedClass = dgrClassTable.SelectedValue as TaxonClass;
 
             var result = from sclass in TaxonomicClasses
@@ -99,6 +101,7 @@ namespace prototypeHerbarium
 
         private void resetForm()
         {
+            lblClassForm.Text = "Add Class";
             pnlAddClass.Visibility = Visibility.Collapsed;
             sprAddClass.Visibility = Visibility.Collapsed;
             btnAddClass.Content = "Add Class";

@@ -12,10 +12,10 @@
         <!-- Add / Edit Form -->
         <StackPanel x:Name="pnlAddAccount" Background="#5FEEEEEE" DockPanel.Dock="Top"
                     Visibility="Visible" Margin="10">
-            <TextBlock FontSize="20" 
+            <TextBlock x:Name="lblAccountForm" FontSize="20" 
                        FontFamily="SegoeUI" 
                        FontWeight="DemiBold"
-                       Margin="45 20">Add Account</TextBlock>
+                       Margin="45 20" Text="Add Access Account" />
             <Grid Margin="40 5">
                 <Grid.RowDefinitions>
                     <RowDefinition />

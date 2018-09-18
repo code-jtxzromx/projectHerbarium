@@ -44,6 +44,7 @@ namespace prototypeHerbarium
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
+            lblSpeciesAuthorForm.Text = "Add Species Author";
             txfAuthorID.Clear();
             txfAuthorName.Clear();
             txfAuthorSuffix.Clear();
@@ -56,6 +57,7 @@ namespace prototypeHerbarium
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
             btnSave.Content = "Update";
+            lblSpeciesAuthorForm.Text = "Edit Species Author";
             SpeciesAuthor selectedAuthor = dgrAuthorsTable.SelectedValue as SpeciesAuthor;
             
             var result = from author in SpeciesAuthors
@@ -98,6 +100,7 @@ namespace prototypeHerbarium
 
         private void resetForm()
         {
+            lblSpeciesAuthorForm.Text = "Add Species Author";
             pnlAddSpeciesAuthor.Visibility = Visibility.Collapsed;
             sprAddSpeciesAuthor.Visibility = Visibility.Collapsed;
             btnAddSpeciesAuthor.Content = "Add Author";
@@ -114,7 +117,7 @@ namespace prototypeHerbarium
             btnClear_Click(btnClear, null);
 
             connection.setQuery("SELECT intAuthorID, strAuthorsName, strSpeciesSuffix " +
-                                "FROM viewSpeciesAuthor " +
+                                "FROM tblAuthor " +
                                 "ORDER BY strAuthorsName");
             SqlDataReader sqlData = connection.executeResult();
 

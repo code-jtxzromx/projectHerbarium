@@ -44,6 +44,7 @@ namespace prototypeHerbarium
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
+            lblBorrowerForm.Text = "Add Plant Borrower";
             txfBorrowerID.Clear();
             txfFirstname.Clear();
             txfMiddlename.Clear();
@@ -90,6 +91,7 @@ namespace prototypeHerbarium
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
             btnSave.Content = "Update";
+            lblBorrowerForm.Text = "Edit Plant Borrower";
             Borrower SelectedBorrower = dgrBorrowerTable.SelectedValue as Borrower;
 
             var result = from collector in BorrowersList
@@ -116,6 +118,7 @@ namespace prototypeHerbarium
 
         private void resetForm()
         {
+            lblBorrowerForm.Text = "Add Plant Borrower";
             pnlAddBorrower.Visibility = Visibility.Collapsed;
             sprAddBorrower.Visibility = Visibility.Collapsed;
             btnAddBorrower.Content = "Add Borrower";

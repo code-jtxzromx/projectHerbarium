@@ -45,6 +45,7 @@ namespace prototypeHerbarium
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
+            lblPhylumForm.Text = "Add Phylum";
             txfPhylumID.Clear();
             txfPhylumName.Clear();
             chkIsKingdomPlant.IsChecked = true;
@@ -59,6 +60,7 @@ namespace prototypeHerbarium
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
             btnSave.Content = "Update";
+            lblPhylumForm.Text = "Edit Phylum";
             TaxonPhylum selectedFamily = dgrPhylumTable.SelectedValue as TaxonPhylum;
 
             var result = from phylum in TaxonomicPhyla
@@ -132,6 +134,7 @@ namespace prototypeHerbarium
 
         private void resetForm()
         {
+            lblPhylumForm.Text = "Add Phylum";
             pnlAddPhylum.Visibility = Visibility.Collapsed;
             sprAddPhylum.Visibility = Visibility.Collapsed;
             btnAddPhylum.Content = "Add Phylum";

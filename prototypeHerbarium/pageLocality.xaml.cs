@@ -47,6 +47,7 @@ namespace prototypeHerbarium
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
+            lblLocalityForm.Text = "Add Plant Locality";
             txfLocalityID.Clear();
             txfCountry.Clear();
             cbxIsland.SelectedIndex = -1;
@@ -106,6 +107,7 @@ namespace prototypeHerbarium
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
             btnSave.Content = "Update";
+            lblLocalityForm.Text = "Edit Plant Locality";
             Locality SelectedLocality = dgrLocalityTable.SelectedValue as Locality;
 
             var result = from locality in Origins
@@ -247,6 +249,7 @@ namespace prototypeHerbarium
         {
             rbtPhilippines.IsChecked = true;
 
+            lblLocalityForm.Text = "Add Plant Locality";
             pnlAddLocality.Visibility = Visibility.Collapsed;
             sprAddLocality.Visibility = Visibility.Collapsed;
             btnAddLocality.Content = "Add Locality";

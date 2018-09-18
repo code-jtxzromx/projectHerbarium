@@ -72,7 +72,7 @@ namespace prototypeHerbarium
             else
             {
                 DatabaseConnection connection = new DatabaseConnection();
-                connection.setQuery("SELECT strFullName, strUsername, strRole " +
+                connection.setQuery("SELECT intStaffID, strFullName, strUsername, strRole " +
                                     "FROM viewAccounts " +
                                     "WHERE strUsername = @username AND strPassword = @password");
                 connection.addParameter("@username", System.Data.SqlDbType.VarChar, txfUsername.Text);
@@ -84,9 +84,10 @@ namespace prototypeHerbarium
                     txfSuccess.Visibility = Visibility.Visible;
                     while (sqlData.Read())
                     {
-                        StaticData.staffname = sqlData[0].ToString();
-                        StaticData.username = sqlData[1].ToString();
-                        StaticData.role = sqlData[2].ToString();
+                        StaticData.ID = Convert.ToInt32(sqlData[0]);
+                        StaticData.staffname = sqlData[1].ToString();
+                        StaticData.username = sqlData[2].ToString();
+                        StaticData.role = sqlData[3].ToString();
 
                         loginSuccess();
                     }

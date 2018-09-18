@@ -1,4 +1,4 @@
-﻿<Page x:Class="prototypeHerbarium.pageIdentification"
+﻿<Page x:Class="prototypeHerbarium.pageReceiving"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:prototypeHerbarium"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="pageIdentification">
+      Title="Plant Receiving">
 
     <Grid>
         <DockPanel>
@@ -24,18 +24,18 @@
             <DataGrid x:Name="dgrDepositedSheets" DockPanel.Dock="Top" Margin="5" AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0">
                 <DataGrid.Columns>
                     <DataGridTextColumn Width="*" Header="Deposit Number" Binding="{Binding DepositNumber}"/>
-                    <DataGridTextColumn Width="1.5*" Header="Scientific Name" Binding="{Binding ScientificName}"/>
+                    <DataGridTextColumn Width="2*" Header="Collector" Binding="{Binding Collector}"/>
                     <DataGridTextColumn Width="*" Header="Date Deposited" Binding="{Binding DateDeposited}"/>
-                    <DataGridTextColumn Width="*" Header="Received by" Binding="{Binding Account}"/>
+                    <DataGridTextColumn Width="2*" Header="Received by" Binding="{Binding Staff}"/>
                     <DataGridTemplateColumn Header="Actions" Width="110">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <WrapPanel HorizontalAlignment="Center">
                                     <Button x:Name="btnView" 
                                         Padding="2" Margin="2"
-                                        ToolTip="View Deposit"
+                                        ToolTip="Confirm Deposit"
                                         Click="btnView_Click"
-                                        Content="VIEW" />
+                                        Content="CONFIRM" />
                                 </WrapPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -69,7 +69,7 @@
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
 
-                    <Label FontWeight="DemiBold" Margin="0 5">Plant Deposit</Label>
+                    <Label FontWeight="DemiBold" Margin="0 5">Do you want to Accept this Plant Deposit?</Label>
                     <WrapPanel Margin="5" Grid.Column="1" FlowDirection="RightToLeft" VerticalAlignment="Center">
                         <Button x:Name="btnReturn" Click="btnReturn_Click" 
                             Padding="2" ToolTip="Close"
@@ -80,11 +80,21 @@
                     </WrapPanel>
                 </Grid>
                 <WrapPanel Margin="15" DockPanel.Dock="Bottom" FlowDirection="RightToLeft">
-                    <Button x:Name="btnConfirm" Click="btnConfirm_Click" IsEnabled="False" Margin="5" Padding="10 5">RECEIVE</Button>
-                    <Button x:Name="btnReject" Click="btnReject_Click" IsEnabled="False" Margin="5" Padding="10 5">REJECT</Button>
+                    <Button x:Name="btnConfirm" Click="btnConfirm_Click" Margin="5" Padding="10 5">ACCEPT DEPOSIT</Button>
+                    <Button x:Name="btnReject" Click="btnReject_Click" Margin="5" Padding="10 5">REJECT DEPOSIT</Button>
                 </WrapPanel>
                 <ScrollViewer Margin="5 0 0 5" ScrollViewer.VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="0 0 5 0">
+                        <Grid Visibility="Collapsed">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Deposit ID:" />
+                            <TextBlock x:Name="lblDepositID" Grid.Column="1" 
+                                   Margin="5" TextWrapping="Wrap" Text="" />
+                        </Grid>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -101,18 +111,8 @@
                                 <ColumnDefinition Width="2*" />
                             </Grid.ColumnDefinitions>
 
-                            <Label Grid.Column="0" Content="Scientific Name:" />
-                            <TextBlock x:Name="lblScientificName" Grid.Column="1" 
-                                   Margin="5" TextWrapping="Wrap" Text="" />
-                        </Grid>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="2*" />
-                            </Grid.ColumnDefinitions>
-
-                            <Label Grid.Column="0" Content="Common Name:" />
-                            <TextBlock x:Name="lblCommonName" Grid.Column="1" 
+                            <Label Grid.Column="0" Content="Plant Type:" />
+                            <TextBlock x:Name="lblPlantType" Grid.Column="1" 
                                        Margin="5" TextWrapping="Wrap" Text="" />
                         </Grid>
                         <Grid>
@@ -131,24 +131,61 @@
                                 <ColumnDefinition Width="2*" />
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Column="0" Margin="5">
-                                Comments: 
-                                <Span Foreground="Red">*</Span>
-                            </TextBlock>
-                            <TextBox x:Name="txaDescription" Grid.Column="1"
-                                     Margin="5" Padding="5" TextWrapping="Wrap" Height="75" 
-                                     AcceptsReturn="True" AcceptsTab="True" TextChanged="txaDescription_TextChanged"
-                                     ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" />
+                            <Label Grid.Column="0" Content="Date Collected:" />
+                            <TextBlock x:Name="lblDateCollected" Grid.Column="1" 
+                                       Margin="5" TextWrapping="Wrap" Text="" />
                         </Grid>
-                        <StackPanel Margin="0 5">
-                            <Label Content="Herbarium Requirements:" />
-                            <CheckBox x:Name="chkCondition1" 
-                                      Checked="triggerButton" Unchecked="triggerButton"
-                                      Margin="10 5" Content="Dried Plant" />
-                            <CheckBox x:Name="chkCondition2"  
-                                      Checked="triggerButton" Unchecked="triggerButton"
-                                      Margin="10 5" Content="Properly Installed on Herbarium Sheet"/>
-                        </StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Date Deposited:" />
+                            <TextBlock x:Name="lblDateDeposit" Grid.Column="1" 
+                                       Margin="5" TextWrapping="Wrap" Text="" />
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Locality:" />
+                            <TextBlock x:Name="lblLocality" Grid.Column="1" 
+                                       Margin="5" TextWrapping="Wrap" Text="" />
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Description:" />
+                            <TextBlock x:Name="lblDescription" Grid.Column="1" 
+                                       Margin="5" TextWrapping="Wrap" Text="" />
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Processed by:" />
+                            <TextBlock x:Name="lblStaff" Grid.Column="1" 
+                                       Margin="5" TextWrapping="Wrap" Text="" />
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Content="Transaction Mode:" />
+                            <TextBlock x:Name="lblMode" Grid.Column="1" 
+                                       Margin="5" TextWrapping="Wrap" Text="" />
+                        </Grid>
+                        <CheckBox x:Name="chkGoodCondition" IsEnabled="False" Margin="10 5" Content="Plant Deposit Received in Good Condition" />
                     </StackPanel>
                 </ScrollViewer>
             </DockPanel>

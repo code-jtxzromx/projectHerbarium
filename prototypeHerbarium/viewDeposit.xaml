@@ -1,0 +1,175 @@
+﻿<UserControl x:Class="prototypeHerbarium.viewDeposit"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:prototypeHerbarium"
+             xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <DockPanel Margin="0 10">
+            <Grid Margin="10 10 10 0" DockPanel.Dock="Bottom">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="300" />
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="150" />
+                </Grid.ColumnDefinitions>
+                <WrapPanel Grid.Column="0">
+                    <Button x:Name="btnUploadPicture" Click="btnUploadPicture_Click"
+                            Margin="5" Padding="10 5">
+                        Upload Herbarium Sheet
+                    </Button>
+                    <Button x:Name="btnCapturePicture" Click="btnCapturePicture_Click"
+                            Margin="5" Padding="10 5">
+                        Capture Picture
+                    </Button>
+                </WrapPanel>
+                <WrapPanel Grid.Column="2" FlowDirection="RightToLeft">
+                    <Button x:Name="btnProceed" Click="btnProceed_Click" Margin="5" Padding="10 5" Content="PROCEED"
+                            IsEnabled="{Binding ElementName=chkGoodCondition, Path=IsChecked, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <Button x:Name="btnClear" Click="btnClear_Click" Margin="5" Padding="10 5" Content="CLEAR" 
+                            IsEnabled="{Binding ElementName=chkGoodCondition, Path=IsChecked, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+                </WrapPanel>
+            </Grid>
+
+            <StackPanel DockPanel.Dock="Left">
+                <TextBlock Margin="15 5" x:Name="lblErrorPicture" Foreground="Red" 
+                           Text="Herbarium Sheet Picture is Required" Visibility="Collapsed" />
+                <Border Margin="10" Height="400" Width="300" Background="#1FFFFFFF">
+                    <Image x:Name="picHerbariumPlant" Stretch="Uniform"/>
+                </Border>
+            </StackPanel>
+
+            <ScrollViewer  Grid.Column="1" Margin="20 10" VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <metro:ToggleSwitch x:Name="btnVerifiedRecord"
+                                        OnLabel="Verified Deposit" OffLabel="Unverified Deposit"
+                                        Checked="btnVerifiedRecord_CheckChanged" Unchecked="btnVerifiedRecord_CheckChanged"
+                                        Margin="5" FontSize="12" Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}" />
+
+                    <local:ctrlComboBox x:Name="cbxTaxonName" Label="Scientific Name:" SelectionChange="cbxTaxonName_SelectionChange" />
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <local:ctrlTextField x:Name="txfAccessionNumber" Grid.Column="0" Grid.Row="0" Label="Original Accession No:" MaxLength="5"
+                                             PreviewTextInput="txfAccessionNumber_PreviewTextInput"/>
+                        <local:ctrlComboBox x:Name="cbxReferenceNumber" Grid.Column="1" Grid.Row="0" Label="Verified Accession No:" />
+                        <CheckBox x:Name="chkSameAccession" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="10 5 10 10"
+                                  Checked="chkSameAccession_CheckChanged" Unchecked="chkSameAccession_CheckChanged"
+                                  Content="Reference Number is same as Accession Number" />
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition x:Name="defValidator" />
+                        </Grid.ColumnDefinitions>
+
+                        <local:ctrlComboBox x:Name="cbxCollector" Grid.Column="0" Label="Collector's Name:" />
+                        <local:ctrlComboBox x:Name="cbxValidator" Grid.Column="1" Label="Validator's Name:" />
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition x:Name="defDateCollected"/>
+                        </Grid.ColumnDefinitions>
+
+                        <local:ctrlDateField x:Name="dpkDateCollected" Grid.Column="0" Label="Date Collected:" />
+                        <local:ctrlDateField x:Name="dpkDateDeposited" Grid.Column="1" Label="Date Deposited:" />
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <local:ctrlDateField x:Name="dpkDateVerified" Grid.Column="0" Label="Date Verified:" />
+                    </Grid>
+
+                    <local:ctrlComboBox x:Name="cbxLocality" Label="Location:" />
+                    <local:ctrlComboBox x:Name="cbxPlantType" Label="Plant Type" />
+
+                    <TextBlock Margin="5">
+                        Plant Description:
+                    </TextBlock>
+                    <TextBox x:Name="txaDescription" Grid.Row="7" Height="75" Margin="3" VerticalContentAlignment="Top" Padding="5" 
+                             AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" 
+                             ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto"/>
+
+                    <CheckBox x:Name="chkGoodCondition" Grid.Column="0" Margin="10 10 20 5"
+                              Content="Plant Deposit is in Good Condition" />
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+        <Grid x:Name="pnlCapturePicture" Visibility="Hidden">
+            <Grid.Background>
+                <SolidColorBrush Color="#7F555555" />
+            </Grid.Background>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="500" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="500" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Column="1" Grid.Row="1" Margin="50 0" Background="White">
+                <Grid Margin="5" DockPanel.Dock="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <Label FontWeight="DemiBold" Margin="5">Capture Herbarium Sheet Picture</Label>
+                    <WrapPanel Margin="5" Grid.Column="1" FlowDirection="RightToLeft" VerticalAlignment="Center">
+                        <Button x:Name="btnReturn" Click="btnReturn_Click"
+                                Padding="5" ToolTip="Close" Height="20" VerticalAlignment="Bottom"
+                                Background="#55FFFFFF" BorderBrush="#00FFFFFF" >
+                            <Image Source="{StaticResource glyphicon-remove}"/>
+                        </Button>
+                        <Button x:Name="btnResolutionSetting" Click="btnResolutionSetting_Click"
+                                Padding="5" ToolTip="Resolution Settings" Height="20" VerticalAlignment="Bottom"
+                                Background="#55FFFFFF" BorderBrush="#00FFFFFF" >
+                            <Image Source="{StaticResource glyphicon-camera}"/>
+                        </Button>
+                        <Button x:Name="btnCameraSetting" Click="btnCameraSetting_Click"
+                                Padding="5" ToolTip="Hardware Settings" Height="20" VerticalAlignment="Bottom"
+                                Background="#55FFFFFF" BorderBrush="#00FFFFFF" >
+                            <Image Source="{StaticResource glyphicon-cogwheel}"/>
+                        </Button>
+
+                    </WrapPanel>
+                </Grid>
+                <Border BorderBrush="Gray" BorderThickness="1" Margin="49 0 49 5" VerticalAlignment="Center">
+                    <Grid>
+                        <Image x:Name="picHerbariumSheet" Visibility="Collapsed" Height="400" Width="300" Stretch="UniformToFill" />
+                        <Image x:Name="picCamera" Visibility="Visible" Height="400" Width="300" Stretch="UniformToFill" />
+                    </Grid>
+                </Border>
+                <WrapPanel HorizontalAlignment="Center">
+                    <Button x:Name="btnCapturePic" Click="btnCapturePic_Click"
+                            Width="120" Margin="5" Padding="5" Content="Capture Photo" />
+                    <Button x:Name="btnDiscardPic" Click="btnDiscardPic_Click"
+                            Width="120" Margin="5" Padding="5" Content="Discard Photo" />
+                    <Button x:Name="btnSavePic" Click="btnSavePic_Click"
+                            Width="120" Margin="5" Padding="5" Content="Save Photo" />
+                </WrapPanel>
+            </StackPanel>
+        </Grid>        
+    </Grid>
+</UserControl>

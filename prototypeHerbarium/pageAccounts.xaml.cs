@@ -43,6 +43,7 @@ namespace prototypeHerbarium
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
+            lblAccountForm.Text = "Add Access Account";
             txfAccountID.Clear();
             cbxStaff.SelectedIndex = -1;
             txfUsername.Clear();
@@ -80,6 +81,7 @@ namespace prototypeHerbarium
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
             btnSave.Content = "Update";
+            lblAccountForm.Text = "Edit Access Account";
             Account SelectedAccount = dgrAccountTable.SelectedValue as Account;
 
             var result = from account in accessAccounts
@@ -126,6 +128,7 @@ namespace prototypeHerbarium
 
         public void resetForm()
         {
+            lblAccountForm.Text = "Add Access Account";
             pnlAddAccount.Visibility = Visibility.Collapsed;
             sprAddAccount.Visibility = Visibility.Collapsed;
             btnAddAccount.Content = "Add Account";

@@ -58,9 +58,9 @@
             <ScrollViewer  Grid.Column="1" Margin="20 10" VerticalScrollBarVisibility="Auto">
                 <StackPanel>
                     <metro:ToggleSwitch x:Name="btnVerifiedRecord"
-                                            OnLabel="Verified Deposit" OffLabel="Unverified Deposit" 
-                                            Checked="btnVerifiedRecord_ToggleChange" Unchecked="btnVerifiedRecord_ToggleChange"
-                                            Margin="5" FontSize="12" Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}" />
+                                        OnLabel="Verified Deposit" OffLabel="Unverified Deposit" 
+                                        Checked="btnVerifiedRecord_ToggleChange" Unchecked="btnVerifiedRecord_ToggleChange"
+                                        Margin="5" FontSize="12" Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}" />
 
                     <local:ctrlComboBox x:Name="cbxTaxonName" Label="Scientific Name:" SelectionChange="cbxTaxonName_SelectionChange" />
 
@@ -112,37 +112,17 @@
                     </Grid>
 
                     <local:ctrlComboBox x:Name="cbxLocality" Label="Location:" />
+                    <local:ctrlComboBox x:Name="cbxPlantType" Label="Plant Type" />
 
-                    <StackPanel VerticalAlignment="Center">
-                        <TextBlock Margin="5">
-                            Plant Type: <Span Foreground="Red">*</Span>
-                        </TextBlock>
-                        <WrapPanel>
-                            <RadioButton x:Name="rbtVascular" 
-                                 GroupName="PlantType"
-                                 Content="Vascular"
-                                 IsChecked="True"
-                                 Margin="10 5" />
-                            <RadioButton x:Name="rbtFlowering" 
-                                 GroupName="PlantType"
-                                 Content="Flowering"
-                                 Margin="10 5" />
-                            <RadioButton x:Name="rbtAlgae" 
-                                 GroupName="PlantType"
-                                 Content="Algae"
-                                 Margin="10 5" />
-                            <RadioButton x:Name="rbtBryophyte" 
-                                 GroupName="PlantType"
-                                 Content="Bryophytes"
-                                 Margin="10 5" />
-                        </WrapPanel>
-                    </StackPanel>
                     <TextBlock Margin="5">
                         Plant Description:
                     </TextBlock>
                     <TextBox x:Name="txaDescription" Grid.Row="7" Height="75" Margin="3" VerticalContentAlignment="Top" Padding="5" 
                              AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" 
                              ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto"/>
+
+                    <CheckBox x:Name="chkGoodCondition" Grid.Column="0" Margin="10 10 20 5"
+                              Content="Plant Deposit is in Good Condition" />
                 </StackPanel>
             </ScrollViewer>
         </DockPanel>

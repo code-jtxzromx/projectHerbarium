@@ -36,6 +36,7 @@ namespace prototypeHerbarium
             getValidatorList();
             getLocalityList();
             getTaxonList();
+            getPlantTypeList();
 
             rbtNew.IsChecked = true;
             camera = new WebCam();
@@ -208,6 +209,7 @@ namespace prototypeHerbarium
 
         private void btnProceed_Click(object sender, RoutedEventArgs e)
         {
+            MessageBox.Show((cbxPlantType.SelectedItem as ComboBoxItem).ID.ToString());
             if (validateForm())
             {
                 MessageBoxResult result;
@@ -325,6 +327,29 @@ namespace prototypeHerbarium
             connection.closeResult();
         }
 
+        private void getPlantTypeList()
+        {
+            cbxPlantType.Reset();
+            List<ComboBoxItem> plantTypes = new List<ComboBoxItem>();
+
+            DatabaseConnection connection = new DatabaseConnection();
+            connection.setQuery("SELECT intPlantTypeID, strPlantTypeName " +
+                                "FROM tblPlantType " +
+                                "ORDER BY strPlantTypeCode");
+            
+            SqlDataReader sqlData = connection.executeResult();
+            while (sqlData.Read())
+            {
+                plantTypes.Add(new ComboBoxItem()
+                {
+                    ID = Convert.ToInt32(sqlData[0]),
+                    Item = sqlData[1].ToString()
+                });
+            }
+            connection.closeResult();
+            cbxPlantType.ItemsSource = plantTypes;
+        }
+
         private bool validateForm()
         {
             bool formOK = true;
@@ -398,11 +423,6 @@ namespace prototypeHerbarium
             try { picture = getPictureToBinary(picHerbariumPlant); }
             catch (Exception) { pictureEmpty = true; }
 
-            if (rbtVascular.IsChecked == true) plantType = 'V';
-            else if (rbtFlowering.IsChecked == true) plantType = 'F';
-            else if (rbtAlgae.IsChecked == true) plantType = 'A';
-            else if (rbtBryophyte.IsChecked == true) plantType = 'B';
-
             DatabaseConnection connection = new DatabaseConnection();
             connection.setStoredProc("dbo.procInsertPlantDeposit");
             if (!pictureEmpty) connection.addSprocParameter("@herbariumSheet", System.Data.SqlDbType.VarBinary, picture);
@@ -437,12 +457,7 @@ namespace prototypeHerbarium
 
             try { picture = getPictureToBinary(picHerbariumPlant); }
             catch (Exception) { pictureEmpty = true; }
-
-            if (rbtVascular.IsChecked == true) plantType = 'V';
-            else if (rbtFlowering.IsChecked == true) plantType = 'F';
-            else if (rbtAlgae.IsChecked == true) plantType = 'A';
-            else if (rbtBryophyte.IsChecked == true) plantType = 'B';
-
+            
             DatabaseConnection connection = new DatabaseConnection();
             connection.setStoredProc("dbo.procInsertPlantDeposit");
             if (!pictureEmpty) connection.addSprocParameter("@herbariumSheet", System.Data.SqlDbType.VarBinary, picture);
@@ -478,12 +493,7 @@ namespace prototypeHerbarium
 
             try { picture = getPictureToBinary(picHerbariumPlant); }
             catch (Exception) { pictureEmpty = true; }
-
-            if (rbtVascular.IsChecked == true) plantType = 'V';
-            else if (rbtFlowering.IsChecked == true) plantType = 'F';
-            else if (rbtAlgae.IsChecked == true) plantType = 'A';
-            else if (rbtBryophyte.IsChecked == true) plantType = 'B';
-
+            
             DatabaseConnection connection = new DatabaseConnection();
             connection.setStoredProc("dbo.procInsertVerifiedDeposit");
             connection.addSprocParameter("@accessionDigits", System.Data.SqlDbType.VarChar, txfAccessionNumber.TextContent);

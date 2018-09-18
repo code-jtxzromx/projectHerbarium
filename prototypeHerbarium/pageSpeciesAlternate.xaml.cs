@@ -44,6 +44,7 @@ namespace prototypeHerbarium
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
+            lblSpeciesAlternateForm.Text = "Add Species Alternate Name";
             txfAltNameID.Clear();
             cbxTaxonName.SelectedIndex = -1;
             txfLanguage.Clear();
@@ -58,6 +59,7 @@ namespace prototypeHerbarium
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
             btnSave.Content = "Update";
+            lblSpeciesAlternateForm.Text = "Edit Species Alternate Name";
             SpeciesAlternate selectedAlternate = dgrSpeciesAlternateTable.SelectedValue as SpeciesAlternate;
             
             var result = from alternate in AlternateNames
@@ -102,6 +104,7 @@ namespace prototypeHerbarium
 
         private void resetForm()
         {
+            lblSpeciesAlternateForm.Text = "Add Species Alternate Name";
             pnlAddSpeciesAlternate.Visibility = Visibility.Collapsed;
             sprAddSpeciesAlternate.Visibility = Visibility.Collapsed;
             btnAddSpeciesAlternate.Content = "Add Alternate Name";

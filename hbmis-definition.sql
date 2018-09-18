@@ -111,7 +111,7 @@ CREATE TABLE tblSpecies
 GO
 
 -- Author
-IF OBJECT_ID('tblSAuthor', 'U') IS NOT NULL
+IF OBJECT_ID('tblAuthor', 'U') IS NOT NULL
 	DROP TABLE tblAuthor
 GO
 CREATE TABLE tblAuthor
@@ -151,6 +151,19 @@ CREATE TABLE tblSpeciesAlternateName
 	CONSTRAINT pk_tblSpeciesAlternateName PRIMARY KEY(intAltNameID),
 	CONSTRAINT fk_tblSpeciesAlternateName_tblSpecies FOREIGN KEY(intSpeciesID)
 		REFERENCES tblSpecies(intSpeciesID)
+)
+GO
+
+-- Plant Types
+IF OBJECT_ID('tblPlantType', 'U') IS NOT NULL
+	DROP TABLE tblPlantType
+GO
+CREATE TABLE tblPlantType
+(
+	intPlantTypeID INT IDENTITY(1, 1) NOT NULL,
+	strPlantTypeCode VARCHAR(5) NOT NULL,
+	strPlantTypeName VARCHAR(50) NOT NULL,
+	CONSTRAINT pk_tblPlantType PRIMARY KEY(intPlantTypeID)
 )
 GO
 
@@ -215,7 +228,7 @@ CREATE TABLE tblCollector
 )
 GO
 
--- Collector
+-- Borrower
 IF OBJECT_ID('tblBorrower', 'U') IS NOT NULL
 	DROP TABLE tblBorrower
 GO
@@ -298,14 +311,57 @@ CREATE TABLE tblAccounts
 ALTER TABLE tblAccounts ADD CONSTRAINT df_tblAccounts_boolActive DEFAULT 1 FOR boolActive
 GO
 
+-- Accession Number Format
+IF OBJECT_ID('tblAccessionFormat', 'U') IS NOT NULL
+	DROP TABLE tblAccessionFormat
+GO
+CREATE TABLE tblAccessionFormat
+(
+	intFormatID INT IDENTITY(1, 1) NOT NULL,
+	strInstitutionCode VARCHAR(10) NOT NULL,
+	strAccessionFormat VARCHAR(10) NOT NULL,
+	strYearFormat VARCHAR(10) NOT NULL,
+	CONSTRAINT pk_tblAccessionFormat PRIMARY KEY(intFormatID)
+)
+
+-- New Plant Deposit
+IF OBJECT_ID('tblReceivedDeposits' ,'U') IS NOT NULL
+	DROP TABLE tblReceivedDeposits
+GO
+CREATE TABLE tblReceivedDeposits
+(
+	intDepositID INT IDENTITY(1, 1) NOT NULL,
+	intPlantTypeID INT NOT NULL,
+	picHerbariumSheet VARBINARY(MAX),
+	intCollectorID INT NOT NULL,
+	intLocalityID INT NOT NULL,
+	intStaffID INT NOT NULL,
+	dateCollected DATE NOT NULL,
+	dateDeposited DATE NOT NULL,
+	strDescription VARCHAR(MAX) NOT NULL,
+	strStatus VARCHAR(50) NOT NULL,
+	CONSTRAINT pk_tblReceivedDeposit PRIMARY KEY(intDepositID),
+	CONSTRAINT fk_tblReceivedDeposit_tblPlantType FOREIGN KEY(intPlantTypeID)
+		REFERENCES tblPlantType(intPlantTypeID),
+	CONSTRAINT fk_tblReceivedDeposit_tblCollector FOREIGN KEY(intCollectorID)
+		REFERENCES tblCollector(intCollectorID),
+	CONSTRAINT fk_tblReceivedDeposit_tblLocality FOREIGN KEY(intLocalityID)
+		REFERENCES tblLocality(intLocalityID),
+	CONSTRAINT fk_tblReceivedDeposit_tblHerbariumStaff FOREIGN KEY(intStaffID)
+		REFERENCES tblHerbariumStaff(intStaffID)
+)
+GO
+
 -- Plant Deposit
 IF OBJECT_ID('tblPlantDeposit', 'U') IS NOT NULL
 	DROP TABLE tblPlantDeposit
 GO
 CREATE TABLE tblPlantDeposit
 (
-	intPlantDepositID INT IDENTITY(1000, 1) NOT NULL,
-	strAccessionNumber VARCHAR(50) NOT NULL,
+	intPlantDepositID INT IDENTITY(1, 1) NOT NULL,
+	intAccessionNumber INT NOT NULL,
+	intPlantTypeID INT NOT NULL,
+	intFormatID INT NOT NULL,
 	picHerbariumSheet VARBINARY(MAX),
 	intCollectorID INT NOT NULL,
 	intLocalityID INT NOT NULL,
@@ -315,12 +371,35 @@ CREATE TABLE tblPlantDeposit
 	strDescription VARCHAR(MAX) NOT NULL,
 	strStatus VARCHAR(50) NOT NULL,
 	CONSTRAINT pk_tblPlantDeposit PRIMARY KEY(intPlantDepositID),
+	CONSTRAINT fk_tblPlantDeposit_tblPlantType FOREIGN KEY(intPlantTypeID)
+		REFERENCES tblPlantType(intPlantTypeID),
+	CONSTRAINT fk_tblPlantDeposit_tblAccessionFormat FOREIGN KEY(intFormatID)
+		REFERENCES tblAccessionFormat(intFormatID),
 	CONSTRAINT fk_tblPlantDeposit_tblCollector FOREIGN KEY(intCollectorID)
 		REFERENCES tblCollector(intCollectorID),
 	CONSTRAINT fk_tblPlantDeposit_tblLocality FOREIGN KEY(intLocalityID)
 		REFERENCES tblLocality(intLocalityID),
 	CONSTRAINT fk_tblPlantDeposit_tblHerbariumStaff FOREIGN KEY(intStaffID)
 		REFERENCES tblHerbariumStaff(intStaffID)
+)
+GO
+
+-- Further Verification Plant Deposit
+IF OBJECT_ID('tblVerifyingDeposit', 'U') IS NOT NULL
+	DROP TABLE tblVerifyingDeposit
+GO
+CREATE TABLE tblVerifyingDeposit
+(
+	intPlantDepositID INT NOT NULL,
+	intSpeciesID INT NOT NULL,
+	intReferenceDepositID INT NOT NULL,
+	CONSTRAINT pk_tblVerifyingDeposit PRIMARY KEY(intPlantDepositID),
+	CONSTRAINT fk_tblVerifyingDeposit_tblPlantDeposit_Org FOREIGN KEY(intPlantDepositID)
+		REFERENCES tblPlantDeposit(intPlantDepositID),
+	CONSTRAINT fk_tblVerifyingDeposit_tblSpecies FOREIGN KEY(intSpeciesID)
+		REFERENCES tblSpecies(intSpeciesID),	
+	CONSTRAINT fk_tblVerifyingDeposit_tblPlantDeposit_Dup FOREIGN KEY(intPlantDepositID)
+		REFERENCES tblPlantDeposit(intPlantDepositID)
 )
 GO
 
@@ -372,15 +451,15 @@ GO
 CREATE TABLE tblPlantLoanTransaction
 (
 	intLoanID INT IDENTITY(1, 1) NOT NULL,
-	intCollectorID INT NOT NULL,
+	intBorrowerID INT NOT NULL,
 	dateLoan DATE NOT NULL,
 	dateReturning DATE NOT NULL,
 	dateProcessed DATETIME NOT NULL,
 	strPurpose VARCHAR(255) NOT NULL,
 	strStatus VARCHAR(10) NOT NULL,
 	CONSTRAINT pk_tblPlantLoanTransaction PRIMARY KEY(intLoanID),
-	CONSTRAINT fk_tblPlantLoanTransaction_tblCollector FOREIGN KEY(intCollectorID)
-		REFERENCES tblCollector(intCollectorID)
+	CONSTRAINT fk_tblPlantLoanTransaction_tblBorrower FOREIGN KEY(intBorrowerID)
+		REFERENCES tblBorrower(intBorrowerID)
 )
 GO
 
@@ -534,18 +613,6 @@ AS
 )
 GO
 
--- Species Author
-IF OBJECT_ID('viewSpeciesAuthor', 'V') IS NOT NULL
-	DROP VIEW viewSpeciesAuthor
-GO
-CREATE VIEW viewSpeciesAuthor
-AS
-(
-	SELECT Au.intAuthorID, Au.strAuthorsName, Au.strSpeciesSuffix
-	FROM tblAuthor Au
-)
-GO
-
 -- Full Species View
 IF OBJECT_ID('viewTaxonSpecies', 'V') IS NOT NULL
 	DROP VIEW viewTaxonSpecies
@@ -666,10 +733,28 @@ GO
 CREATE VIEW viewAccounts
 AS
 (
-	SELECT Ac.intAccountID, HS.strFullName, Ac.strUsername, Ac.strPassword, HS.strRole, Ac.boolActive
+	SELECT Ac.intAccountID, HS.intStaffID, HS.strFullName, Ac.strUsername, Ac.strPassword, HS.strRole, Ac.boolActive
 	FROM tblAccounts Ac	
 		INNER JOIN viewHerbariumStaff HS ON Ac.intStaffID = HS.intStaffID
 	WHERE Ac.boolActive = 1
+)
+GO
+
+-- Received Deposit View
+IF OBJECT_ID('viewReceivedDeposit', 'V') IS NOT NULL
+	DROP VIEW viewReceivedDeposit
+GO
+CREATE VIEW viewReceivedDeposit
+AS
+(
+	SELECT RD.intDepositID, CONCAT('DEP-', FORMAT(RD.intDepositID, '00000#')) strDepositNumber, RD.intPlantTypeID, 
+			PT.strPlantTypeName, RD.picHerbariumSheet, Co.strFullName AS strCollector, Lo.strFullLocality, Lo.strShortLocation,
+			St.strFullName AS strStaff, RD.dateCollected, RD.dateDeposited, RD.strDescription, RD.strStatus
+	FROM tblReceivedDeposits RD
+		INNER JOIN tblPlantType PT ON RD.intPlantTypeID = PT.intPlantTypeID
+		INNER JOIN viewCollector Co ON RD.intCollectorID = Co.intCollectorID
+		INNER JOIN viewLocality Lo ON RD.intLocalityID = Lo.intLocalityID
+		INNER JOIN viewHerbariumStaff St ON RD.intStaffID = St.intStaffID
 )
 GO
 
@@ -680,9 +765,14 @@ GO
 CREATE VIEW viewPlantDeposit
 AS
 (
-	SELECT PD.intPlantDepositID, PD.strAccessionNumber, PD.picHerbariumSheet, Co.strFullName AS strCollector, Lo.strFullLocality,
+	SELECT PD.intPlantDepositID, 
+			CONCAT(AF.strInstitutionCode,'-', PT.strPlantTypeCode, '-', FORMAT(PD.intAccessionNumber, AF.strAccessionFormat), '-', 
+			FORMAT(YEAR(PD.dateDeposited) % POWER(10, LEN(AF.strYearFormat)), AF.strYearFormat)) strAccessionNumber, PD.intAccessionNumber,
+			PD.picHerbariumSheet, Co.strFullName AS strCollector, Lo.strFullLocality,
 			St.strFullName AS strStaff, PD.dateCollected, PD.dateDeposited, PD.strDescription, PD.strStatus
 	FROM tblPlantDeposit PD
+		INNER JOIN tblPlantType PT ON PD.intPlantTypeID = PT.intPlantTypeID
+		INNER JOIN tblAccessionFormat AF ON PD.intFormatID = AF.intFormatID
 		INNER JOIN viewCollector Co ON PD.intCollectorID = Co.intCollectorID
 		INNER JOIN viewLocality Lo ON PD.intLocalityID = Lo.intLocalityID
 		INNER JOIN viewHerbariumStaff St ON PD.intStaffID = St.intStaffID
@@ -696,7 +786,8 @@ GO
 CREATE VIEW viewHerbariumSheet
 AS
 (
-	SELECT HS.intHerbariumSheetID, PD_A.strAccessionNumber, PD_B.strAccessionNumber AS strReferenceAccession, 
+	SELECT HS.intHerbariumSheetID, HS.intPlantDepositID, PD_A.strAccessionNumber, 
+			HS.intPlantReferenceID, PD_B.strAccessionNumber AS strReferenceAccession, 
 			PD_A.picHerbariumSheet, TS.strFamilyName, TS.strScientificName, TS.strCommonName, PD_A.strCollector, 
 			PD_A.strFullLocality, PD_A.strStaff, PD_A.dateCollected, PD_A.dateDeposited, HS.dateVerified,
 			PD_A.strDescription, Va.strFullName AS strValidator, PD_A.strStatus
@@ -732,11 +823,11 @@ GO
 CREATE VIEW viewPlantLoans
 AS
 (
-	SELECT PL.intLoanID, CONCAT('HB-', FORMAT(PL.intLoanID, '00000#')) as strLoanNumber, Co.strFullName AS strCollector, 
+	SELECT PL.intLoanID, CONCAT('HB-', FORMAT(PL.intLoanID, '00000#')) as strLoanNumber, Bo.strFullName AS strBorrower, 
 		PL.dateLoan, PL.dateReturning, CONCAT(CONVERT(VARCHAR, PL.dateLoan, 107), ' - ', CONVERT(VARCHAR, PL.dateReturning, 107)) as strDuration, 
 		PL.dateProcessed, PL.strPurpose, PL.strStatus
 	FROM tblPlantLoanTransaction PL
-		INNER JOIN viewCollector Co ON PL.intCollectorID = Co.intCollectorID
+		INNER JOIN viewBorrower Bo ON PL.intBorrowerID = Bo.intBorrowerID
 )
 GO
 

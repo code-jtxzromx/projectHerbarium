@@ -12,10 +12,10 @@
         <!-- Add / Edit Form -->
         <StackPanel x:Name="pnlAddSpecie" Background="#5FEEEEEE" DockPanel.Dock="Top"
                     Visibility="Visible" Margin="10">
-            <TextBlock FontSize="20" 
+            <TextBlock x:Name="lblSpeciesForm" FontSize="20" 
                        FontFamily="SegoeUI" 
                        FontWeight="DemiBold"
-                       Margin="45 20">Add Species</TextBlock>
+                       Margin="45 20" Text="Add Species" />
             <Grid Margin="40 5">
                 <Grid.RowDefinitions>
                     <RowDefinition />
