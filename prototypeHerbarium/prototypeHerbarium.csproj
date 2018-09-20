@@ -93,6 +93,9 @@
     <Compile Include="viewDeposit.xaml.cs">
       <DependentUpon>viewDeposit.xaml</DependentUpon>
     </Compile>
+    <Compile Include="viewQTaxonSpecies.xaml.cs">
+      <DependentUpon>viewQTaxonSpecies.xaml</DependentUpon>
+    </Compile>
     <Page Include="ctrlComboBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -138,10 +141,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="pageCollector.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="pageDeposit.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -245,6 +244,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="viewQTaxonSpecies.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="pageAccounts.xaml.cs">
@@ -261,9 +264,6 @@
     </Compile>
     <Compile Include="pageCollector.xaml.cs">
       <DependentUpon>pageCollector.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="pageDeposit.xaml.cs">
-      <DependentUpon>pageDeposit.xaml</DependentUpon>
     </Compile>
     <Compile Include="pageDepositMenu.xaml.cs">
       <DependentUpon>pageDepositMenu.xaml</DependentUpon>

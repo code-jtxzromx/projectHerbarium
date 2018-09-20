@@ -152,7 +152,6 @@ C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbariu
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageAuditTrailing.g.cs
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageClassification.g.cs
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageCollector.g.cs
-C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageDeposit.g.cs
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageFamilyBox.g.cs
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageHerbariumInventory.g.cs
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageHerbariumTracking.g.cs
@@ -185,7 +184,6 @@ C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbariu
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageAuditTrailing.baml
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageClassification.baml
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageCollector.baml
-C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageDeposit.baml
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageFamilyBox.baml
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageHerbariumInventory.baml
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\pageHerbariumTracking.baml
@@ -333,3 +331,5 @@ C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbariu
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\viewDeposit.g.cs
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\viewDeposit.baml
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\prototypeHerbarium.csprojAssemblyReference.cache
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\viewQTaxonSpecies.g.cs
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\viewQTaxonSpecies.baml

@@ -121,20 +121,16 @@ namespace prototypeHerbarium
 
         private void btnQuery_Click(object sender, RoutedEventArgs e)
         {
-            bool state = pnlQueries.Visibility == Visibility.Collapsed;
-            pnlQueries.Visibility = (state) ? Visibility.Visible : Visibility.Collapsed;
-
-            double angle = (state) ? 90 : 0;
-            iconQueriesChev.RenderTransform = new RotateTransform(angle);
+            pageQueries page = new pageQueries();
+            pnlPageLoader.Content = page;
+            lblPageName.Text = page.Title.ToUpper();
         }
 
         private void btnReports_Click(object sender, RoutedEventArgs e)
         {
-            bool state = pnlReports.Visibility == Visibility.Collapsed;
-            pnlReports.Visibility = (state) ? Visibility.Visible : Visibility.Collapsed;
-
-            double angle = (state) ? 90 : 0;
-            iconReportsChev.RenderTransform = new RotateTransform(angle);
+            pageReports page = new pageReports();
+            pnlPageLoader.Content = page;
+            lblPageName.Text = page.Title.ToUpper();
         }
 
         // Event:           Click

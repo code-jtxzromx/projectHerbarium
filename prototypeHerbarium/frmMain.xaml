@@ -327,29 +327,9 @@
                                 <Image Source="{StaticResource glyphicon-list-alt}"
                                        Grid.Column="0" Margin="3"/>
                                 <TextBlock Grid.Column="1" Padding="2">QUERY</TextBlock>
-                                <Image x:Name="iconQueriesChev" 
-                                       Source="{StaticResource glyphicon-collapse}"
-                                       Grid.Column="2" Margin="2" RenderTransformOrigin="0.5,0.5">
-                                    <Image.RenderTransform>
-                                        <TransformGroup>
-                                            <RotateTransform Angle="0"/>
-                                        </TransformGroup>
-                                    </Image.RenderTransform>
-                                </Image>
                             </Grid>
                         </Button.Content>
                     </Button>
-                    <StackPanel x:Name="pnlQueries" Visibility="Collapsed">
-                        <Button x:Name="btnQTaxonSpecies" 
-                                Style="{StaticResource subMenuButton}"
-                                Content="Taxon Species"/>
-                        <Button x:Name="btnQHerbariumSheet" 
-                                Style="{StaticResource subMenuButton}"
-                                Content="Herbarium Sheet"/>
-                        <Button x:Name="btnQPlantLoans" 
-                                Style="{StaticResource subMenuButton}"
-                                Content="Plant Loans"/>
-                    </StackPanel>
                     <Button x:Name="btnReports" 
                             Style="{StaticResource menuButton}"
                             Click="btnReports_Click">
@@ -363,32 +343,9 @@
                                 <Image Source="{StaticResource glyphicon-file-download}"
                                        Grid.Column="0" Margin="3"/>
                                 <TextBlock Grid.Column="1" Padding="2">REPORT</TextBlock>
-                                <Image x:Name="iconReportsChev" 
-                                       Source="{StaticResource glyphicon-collapse}"
-                                       Grid.Column="2" Margin="2" RenderTransformOrigin="0.5,0.5">
-                                    <Image.RenderTransform>
-                                        <TransformGroup>
-                                            <RotateTransform Angle="0"/>
-                                        </TransformGroup>
-                                    </Image.RenderTransform>
-                                </Image>
                             </Grid>
                         </Button.Content>
                     </Button>
-                    <StackPanel x:Name="pnlReports" Visibility="Collapsed">
-                        <Button x:Name="btnRTaxonSpecies" 
-                                Style="{StaticResource subMenuButton}"
-                                Content="Taxon Species"/>
-                        <Button x:Name="btnRPlantDeposit" 
-                                Style="{StaticResource subMenuButton}"
-                                Content="Plant Deposits"/>
-                        <Button x:Name="btnRHerbariumSheet" 
-                                Style="{StaticResource subMenuButton}"
-                                Content="Herbarium Sheet"/>
-                        <Button x:Name="btnRPlantLoans" 
-                                Style="{StaticResource subMenuButton}"
-                                Content="Plant Loans"/>
-                    </StackPanel>
                 </StackPanel>
             </ScrollViewer>
 
