@@ -163,6 +163,7 @@ namespace prototypeHerbarium
             DatabaseConnection connection = new DatabaseConnection();
 
             connection.setStoredProc("dbo.procInsertPlantType");
+            connection.addSprocParameter("@isIDBase", SqlDbType.Bit, 0);
             connection.addSprocParameter("@plantCode", SqlDbType.VarChar, txfPlantCode.Text);
             connection.addSprocParameter("@plantType", SqlDbType.VarChar, txfPlantType.Text);
             status = connection.executeProcedure();
@@ -188,6 +189,7 @@ namespace prototypeHerbarium
             DatabaseConnection connection = new DatabaseConnection();
 
             connection.setStoredProc("dbo.procUpdatePlantType");
+            connection.addSprocParameter("@isIDBase", SqlDbType.Bit, 0);
             connection.addSprocParameter("@plantTypeID", SqlDbType.Int, txfPlantTypeID.Text);
             connection.addSprocParameter("@plantCode", SqlDbType.VarChar, txfPlantCode.Text);
             connection.addSprocParameter("@plantType", SqlDbType.VarChar, txfPlantType.Text);

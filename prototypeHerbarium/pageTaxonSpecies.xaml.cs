@@ -241,6 +241,7 @@ namespace prototypeHerbarium
             DatabaseConnection connection = new DatabaseConnection();
 
             connection.setStoredProc("dbo.procInsertSpecies");
+            connection.addSprocParameter("@isIDBase", SqlDbType.Bit, 0);
             connection.addSprocParameter("@genusName", SqlDbType.VarChar, cbxGenusName.SelectedItem.ToString());
             connection.addSprocParameter("@speciesName", SqlDbType.VarChar, txfSpeciesName.Text);
             connection.addSprocParameter("@commonName", SqlDbType.VarChar, txfCommonName.Text);
@@ -269,6 +270,7 @@ namespace prototypeHerbarium
             DatabaseConnection connection = new DatabaseConnection();
 
             connection.setStoredProc("dbo.procUpdateSpecies");
+            connection.addSprocParameter("@isIDBase", SqlDbType.Bit, 0);
             connection.addSprocParameter("@speciesNo", SqlDbType.VarChar, txfSpecieID.Text);
             connection.addSprocParameter("@genusName", SqlDbType.VarChar, cbxGenusName.SelectedItem.ToString());
             connection.addSprocParameter("@speciesName", SqlDbType.VarChar, txfSpeciesName.Text);

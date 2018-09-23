@@ -333,3 +333,5 @@ C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbariu
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\prototypeHerbarium.csprojAssemblyReference.cache
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\viewQTaxonSpecies.g.cs
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\viewQTaxonSpecies.baml
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\viewExcelDepositUpload.g.cs
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\viewExcelDepositUpload.baml

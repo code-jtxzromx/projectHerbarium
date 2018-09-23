@@ -123,15 +123,16 @@ namespace prototypeHerbarium
             if(result == MessageBoxResult.Yes)
             {
                 int status;
-                int refAccession = (chkIsDuplicate.IsChecked == false) 
-                                       ? Convert.ToInt32(lblDepositID.Text) : (cbxReferenceNumber.SelectedItem as ComboBoxItem).ID;
+                string refAccession = (chkIsDuplicate.IsChecked == false) 
+                                       ? lblAccessionNumber.Text : (cbxReferenceNumber.SelectedItem as ComboBoxItem).Item;
                 
                 DatabaseConnection connection = new DatabaseConnection();
                 connection.setStoredProc("dbo.procVerifyPlantDeposit");
-                connection.addSprocParameter("@orgDepositID", SqlDbType.Int, lblDepositID.Text);
-                connection.addSprocParameter("@newDepositID", SqlDbType.Int, refAccession);
-                connection.addSprocParameter("@speciesID", SqlDbType.Int, (cbxScientificName.SelectedItem as ComboBoxItem).ID);
-                connection.addSprocParameter("@validatorID", SqlDbType.Int, StaticData.ID);
+                connection.addSprocParameter("@isIDBase", SqlDbType.Bit, 0);
+                connection.addSprocParameter("@orgDeposit", SqlDbType.VarChar, lblAccessionNumber.Text);
+                connection.addSprocParameter("@newDeposit", SqlDbType.VarChar, refAccession);
+                connection.addSprocParameter("@species", SqlDbType.VarChar, (cbxScientificName.SelectedItem as ComboBoxItem).Item);
+                connection.addSprocParameter("@validator", SqlDbType.VarChar, StaticData.staffname);
                 status = connection.executeProcedure();
 
                 switch (status)
@@ -155,14 +156,15 @@ namespace prototypeHerbarium
 
             DatabaseConnection connection = new DatabaseConnection();
             connection.setStoredProc("dbo.procExternalVerifyDeposit");
-            connection.addSprocParameter("@orgDepositID", SqlDbType.Int, lblDepositID.Text);
+            connection.addSprocParameter("@isIDBase", SqlDbType.Bit, 0);
+            connection.addSprocParameter("@orgDeposit", SqlDbType.VarChar, lblAccessionNumber.Text);
             if (cbxScientificName.SelectedIndex != -1)
             {
-                int refAccession = (chkIsDuplicate.IsChecked == false)
-                          ? Convert.ToInt32(lblDepositID.Text) : (cbxReferenceNumber.SelectedItem as ComboBoxItem).ID;
+                string refAccession = (chkIsDuplicate.IsChecked == false)
+                          ? lblAccessionNumber.Text : (cbxReferenceNumber.SelectedItem as ComboBoxItem).Item;
 
-                connection.addSprocParameter("@newDepositID", SqlDbType.Int, refAccession);
-                connection.addSprocParameter("@speciesID", SqlDbType.Int, (cbxScientificName.SelectedItem as ComboBoxItem).ID);
+                connection.addSprocParameter("@newDeposit", SqlDbType.VarChar, refAccession);
+                connection.addSprocParameter("@species", SqlDbType.VarChar, (cbxScientificName.SelectedItem as ComboBoxItem).Item);
             }
             status = connection.executeProcedure();
 

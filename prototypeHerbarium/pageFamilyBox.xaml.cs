@@ -219,6 +219,7 @@ namespace prototypeHerbarium
             DatabaseConnection connection = new DatabaseConnection();
 
             connection.setStoredProc("dbo.procInsertFamilyBox");
+            connection.addSprocParameter("@isIDBase", SqlDbType.Bit, 0);
             connection.addSprocParameter("@familyName", SqlDbType.VarChar, cbxFamily.SelectedItem);
             connection.addSprocParameter("@boxLimit", SqlDbType.Int, txfBoxLimit.Text);
             connection.addSprocParameter("@rack", SqlDbType.Int, txfRack.Text);
@@ -247,6 +248,7 @@ namespace prototypeHerbarium
             DatabaseConnection connection = new DatabaseConnection();
 
             connection.setStoredProc("dbo.procUpdateFamilyBox");
+            connection.addSprocParameter("@isIDBase", SqlDbType.Bit, 0);
             connection.addSprocParameter("@boxNumber", SqlDbType.VarChar, txfBoxNumber.Text);
             connection.addSprocParameter("@familyName", SqlDbType.VarChar, cbxFamily.SelectedItem);
             connection.addSprocParameter("@boxLimit", SqlDbType.Int, txfBoxLimit.Text);

@@ -23,9 +23,10 @@ namespace prototypeHerbarium
     public partial class pageLocality : Page
     {
         List<Locality> Origins = new List<Locality>();
-        private string[] islands;
-        private string[][] regions;
-        private string[][][] provinces;
+
+        List<string> Countries = new List<string>();
+        List<string> Provinces = new List<string>();
+        List<string[]> Cities = new List<string[]>();
 
         public pageLocality()
         {
@@ -49,31 +50,18 @@ namespace prototypeHerbarium
         {
             lblLocalityForm.Text = "Add Plant Locality";
             txfLocalityID.Clear();
-            txfCountry.Clear();
-            cbxIsland.SelectedIndex = -1;
-            txfCity.Clear();
-            txfArea.Clear();
+            cbxCountry.SelectedItem = "Philippines";
+            cbxProvince.SelectedIndex = -1;
             txfSpecificLocation.Clear();
             txfShortcut.Clear();
             txfFullLocality.Clear();
             txfLatitude.Clear();
             txfLongtitude.Clear();
             btnSave.Content = "Save";
-
-            msgIsland.Visibility = Visibility.Collapsed;
-            msgRegion.Visibility = Visibility.Collapsed;
-            msgProvince.Visibility = Visibility.Collapsed;
-            msgCity.Visibility = Visibility.Collapsed;
-            msgArea.Visibility = Visibility.Collapsed;
-            msgSpecificLocation.Visibility = Visibility.Collapsed;
-            msgShortcut.Visibility = Visibility.Collapsed;
-
+            
             msgCountry.Visibility = Visibility.Collapsed;
-            msgIsland.Visibility = Visibility.Collapsed;
-            msgRegion.Visibility = Visibility.Collapsed;
             msgProvince.Visibility = Visibility.Collapsed;
             msgCity.Visibility = Visibility.Collapsed;
-            msgArea.Visibility = Visibility.Collapsed;
             msgSpecificLocation.Visibility = Visibility.Collapsed;
             msgFullLocality.Visibility = Visibility.Collapsed;
             msgShortcut.Visibility = Visibility.Collapsed;
@@ -97,7 +85,6 @@ namespace prototypeHerbarium
             var result = from record in Origins
                          where record.Province.ToUpper().Contains(input) ||
                                 record.City.ToUpper().Contains(input) ||
-                                record.Area.ToUpper().Contains(input) ||
                                 record.SpecificLocation.ToUpper().Contains(input)
                          select record;
 
@@ -119,145 +106,80 @@ namespace prototypeHerbarium
 
             foreach(Locality data in result)
             {
+                txfLocalityID.Text = data.LocalityID.ToString();
+                cbxCountry.SelectedItem = data.Country;
+                txfShortcut.Text = data.ShortLocation;
+                txfLatitude.Text = data.Latitude;
+                txfLongtitude.Text = data.Longtitude;
+
                 if (data.Country == "Philippines")
                 {
-                    rbtPhilippines.IsChecked = true;
-                    txfLocalityID.Text = data.LocalityID.ToString();
-                    cbxIsland.SelectedItem = data.Island;
-                    cbxRegion.SelectedItem = data.Region;
                     cbxProvince.SelectedItem = data.Province;
-                    txfCity.Text = data.City;
-                    txfArea.Text = data.Area;
+                    cbxCity.SelectedItem = data.City;
                     txfSpecificLocation.Text = data.SpecificLocation;
-                    txfShortcut.Text = data.ShortLocation;
-                    txfLatitude.Text = data.Latitude;
-                    txfLongtitude.Text = data.Longtitude;
                 }
                 else
                 {
-                    rbtOtherCountries.IsChecked = true;
-                    txfCountry.Text = data.Country;
                     txfFullLocality.Text = data.FullLocation;
-                    txfShortcut.Text = data.ShortLocation;
-                    txfLatitude.Text = data.Latitude;
-                    txfLongtitude.Text = data.Longtitude;
                 }
 
             }
         }
         
-        private void rbtCountries_Checked(object sender, RoutedEventArgs e)
+        private void cbxCountry_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (rbtPhilippines.IsChecked == true)
-            {
-                txfCountry.Visibility = Visibility.Collapsed;
-                cbxIsland.Visibility = Visibility.Visible;
-                cbxRegion.Visibility = Visibility.Visible;
-                cbxProvince.Visibility = Visibility.Visible;
-                txfCity.Visibility = Visibility.Visible;
-                txfArea.Visibility = Visibility.Visible;
-                txfSpecificLocation.Visibility = Visibility.Visible;
-                txfFullLocality.Visibility = Visibility.Collapsed;
+            bool isCountryPH = (cbxCountry.SelectedItem.ToString() == "Philippines");
 
-                lblCountryName.Visibility = Visibility.Collapsed;
-                lblIsland.Visibility = Visibility.Visible;
-                lblRegion.Visibility = Visibility.Visible;
-                lblProvince.Visibility = Visibility.Visible;
-                lblCity.Visibility = Visibility.Visible;
-                lblArea.Visibility = Visibility.Visible;
-                lblSpecificLocation.Visibility = Visibility.Visible;
-                lblFullLocality.Visibility = Visibility.Collapsed;
+            cbxProvince.Visibility = (isCountryPH) ? Visibility.Visible : Visibility.Collapsed;
+            cbxCity.Visibility = (isCountryPH) ? Visibility.Visible : Visibility.Collapsed;
+            txfSpecificLocation.Visibility = (isCountryPH) ? Visibility.Visible : Visibility.Collapsed;
+            txfFullLocality.Visibility = (isCountryPH) ? Visibility.Collapsed : Visibility.Visible;
 
-                msgCountry.Visibility = Visibility.Collapsed;
-                msgIsland.Visibility = Visibility.Collapsed;
-                msgRegion.Visibility = Visibility.Collapsed;
-                msgProvince.Visibility = Visibility.Collapsed;
-                msgCity.Visibility = Visibility.Collapsed;
-                msgArea.Visibility = Visibility.Collapsed;
-                msgSpecificLocation.Visibility = Visibility.Collapsed;
-                msgFullLocality.Visibility = Visibility.Collapsed;
-                msgShortcut.Visibility = Visibility.Collapsed;
-            }
-            else if (rbtOtherCountries.IsChecked == true)
-            {
-                txfCountry.Visibility = Visibility.Visible;
-                cbxIsland.Visibility = Visibility.Collapsed;
-                cbxRegion.Visibility = Visibility.Collapsed;
-                cbxProvince.Visibility = Visibility.Collapsed;
-                txfCity.Visibility = Visibility.Collapsed;
-                txfArea.Visibility = Visibility.Collapsed;
-                txfSpecificLocation.Visibility = Visibility.Collapsed;
-                txfFullLocality.Visibility = Visibility.Visible;
+            lblProvince.Visibility = (isCountryPH) ? Visibility.Visible : Visibility.Collapsed;
+            lblCity.Visibility = (isCountryPH) ? Visibility.Visible : Visibility.Collapsed;
+            lblSpecificLocation.Visibility = (isCountryPH) ? Visibility.Visible : Visibility.Collapsed;
+            lblFullLocality.Visibility = (isCountryPH) ? Visibility.Collapsed : Visibility.Visible;
 
-                lblCountryName.Visibility = Visibility.Visible;
-                lblIsland.Visibility = Visibility.Collapsed;
-                lblRegion.Visibility = Visibility.Collapsed;
-                lblProvince.Visibility = Visibility.Collapsed;
-                lblCity.Visibility = Visibility.Collapsed;
-                lblArea.Visibility = Visibility.Collapsed;
-                lblSpecificLocation.Visibility = Visibility.Collapsed;
-                lblFullLocality.Visibility = Visibility.Visible;
-
-                msgCountry.Visibility = Visibility.Collapsed;
-                msgIsland.Visibility = Visibility.Collapsed;
-                msgRegion.Visibility = Visibility.Collapsed;
-                msgProvince.Visibility = Visibility.Collapsed;
-                msgCity.Visibility = Visibility.Collapsed;
-                msgArea.Visibility = Visibility.Collapsed;
-                msgSpecificLocation.Visibility = Visibility.Collapsed;
-                msgFullLocality.Visibility = Visibility.Collapsed;
-                msgShortcut.Visibility = Visibility.Collapsed;
-            }
+            msgProvince.Visibility = Visibility.Collapsed;
+            msgCity.Visibility = Visibility.Collapsed;
+            msgSpecificLocation.Visibility = Visibility.Collapsed;
+            msgFullLocality.Visibility = Visibility.Collapsed;
+            msgShortcut.Visibility = Visibility.Collapsed;
         }
 
-        private void cbxIsland_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void cbxProvince_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            int index = cbxIsland.SelectedIndex;
-
-            cbxRegion.Items.Clear();
-            if(index != -1)
+            if (cbxProvince.SelectedIndex != -1)
             {
-                foreach(string region in regions[index])
-                {
-                    cbxRegion.Items.Add(region);
-                }
+                string selectedProvince = cbxProvince.SelectedItem.ToString();
+                var resultCities = from city in Cities
+                                   where city[0] == selectedProvince
+                                   select city[1];
+                cbxCity.ItemsSource = resultCities;
             }
-        }
-
-        private void cbxRegion_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            int indexIsland = cbxIsland.SelectedIndex;
-            int indexRegion = cbxRegion.SelectedIndex;
-
-            cbxProvince.Items.Clear();
-            cbxProvince.IsEnabled = true;
-            if(indexRegion != -1)
+            else
             {
-                foreach (string province in provinces[indexIsland][indexRegion])
-                {
-                    cbxProvince.Items.Add(province);
-                }
-            }
-            if(indexIsland == 0 && indexRegion == 0)
-            {
-                cbxProvince.IsEnabled = false;
-                cbxProvince.SelectedIndex = 0;
+                cbxCity.ItemsSource = null;
             }
         }
 
         public void resetForm()
         {
-            rbtPhilippines.IsChecked = true;
+            cbxCountry.SelectedItem = "Philippines";
 
             lblLocalityForm.Text = "Add Plant Locality";
             pnlAddLocality.Visibility = Visibility.Collapsed;
             sprAddLocality.Visibility = Visibility.Collapsed;
             btnAddLocality.Content = "Add Locality";
             btnClear_Click(btnClear, null);
-
-            initializeLocality();
-            setIslandList();
+            
             getLocalityTable();
+            getCountryList();
+            getProvinceList();
+            getCityList();
+
+            cbxCountry.ItemsSource = Countries;
+            cbxProvince.ItemsSource = Provinces;
         }
 
         public void getLocalityTable()
@@ -269,8 +191,8 @@ namespace prototypeHerbarium
             btnClear_Click(btnClear, null);
 
             // Query Command Setting
-            connection.setQuery("SELECT intLocalityID, strCountry, strIsland, strRegion, strProvince, strCity, strArea, " +
-                                    "strSpecificLocation, strShortLocation, strFullLocality, strLatitude, strLongtitude " +
+            connection.setQuery("SELECT intLocalityID, strCountry, strProvince, strCity, strSpecificLocation, " +
+                                        "strShortLocation, strFullLocality, strLatitude, strLongtitude " +
                                 "FROM viewLocality " +
                                 "ORDER BY strFullLocality");
 
@@ -283,16 +205,13 @@ namespace prototypeHerbarium
                 {
                     LocalityID = Convert.ToInt32(sqlData[0]),
                     Country = sqlData[1].ToString(),
-                    Island = sqlData[2].ToString(),
-                    Region = sqlData[3].ToString(),
-                    Province = sqlData[4].ToString(),
-                    City = sqlData[5].ToString(),
-                    Area = sqlData[6].ToString(),
-                    SpecificLocation = sqlData[7].ToString(),
-                    ShortLocation = sqlData[8].ToString(),
-                    FullLocation = sqlData[9].ToString(),
-                    Latitude = sqlData[10].ToString(),
-                    Longtitude = sqlData[11].ToString()
+                    Province = sqlData[2].ToString(),
+                    City = sqlData[3].ToString(),
+                    SpecificLocation = sqlData[4].ToString(),
+                    ShortLocation = sqlData[5].ToString(),
+                    FullLocation = sqlData[6].ToString(),
+                    Latitude = sqlData[7].ToString(),
+                    Longtitude = sqlData[8].ToString()
                 });
             }
             connection.closeResult();
@@ -301,118 +220,82 @@ namespace prototypeHerbarium
             Origins = localities;
         }
 
-        public void initializeLocality()
+        public void getCountryList()
         {
-            islands = new string[] {"Luzon", "Visayas", "Mindanao"};
-            regions = new string[3][];
+            DatabaseConnection connection = new DatabaseConnection();
+            connection.setQuery("SELECT strCountry FROM tblCountry");
 
-            regions[0] = new string[] {"National Capital Region", "Cordillera Administrative Region", "Ilocos Region",
-                                        "Cagayan Valley", "Central Luzon", "CALABARZON", "MIMAROPA", "Bicol Region"};
-            regions[1] = new string[] {"Western Visayas", "Central Visayas", "Eastern Visayas"};
-            regions[2] = new string[] {"Zamboanga Peninsula", "Northern Mindanao", "Davao Region",
-                                        "SOCCSKSARGEN", "Caraga Region", "Autonomous Region in Muslim Mindanao"};
-
-            provinces = new string[3][][];
-
-            provinces[0] = new string[8][];
-            provinces[1] = new string[3][];
-            provinces[2] = new string[6][];
-
-            provinces[0][0] = new string[] { "Metro Manila" };
-            provinces[0][1] = new string[] { "Abra", "Apayao", "Benguet", "Ifugao", "Kalinga", "Mountain Province" };
-            provinces[0][2] = new string[] { "Ilocos Norte", "Ilocos Sur", "La Union", "Pangasinan" };
-            provinces[0][3] = new string[] { "Cagayan", "Isabela", "Nueva Vizcaya", "Quirino" };
-            provinces[0][4] = new string[] { "Aurora", "Bataan", "Bulacan", "Nueva Ecija", "Pampanga", "Tarlac", "Zambales" };
-            provinces[0][5] = new string[] { "Batangas", "Cavite", "Laguna", "Quezon", "Rizal" };
-            provinces[0][6] = new string[] { "Marinduque", "Occidental Mindoro", "Oriental Mindoro", "Palawan", "Romblon" };
-            provinces[0][7] = new string[] { "Albay", "Camarines Norte", "Camarines Sur", "Catanduanes", "Masbate", "Sorsogon" };
-            provinces[1][0] = new string[] { "Aklan", "Antique", "Capiz", "Guimaras", "Negros Occidental", "Iloilo" };
-            provinces[1][1] = new string[] { "Bohol", "Cebu", "Negros Oriental", "Siquijor" };
-            provinces[1][2] = new string[] { "Biliran", "Eastern Samar", "Leyte", "Northern Samar", "Southern Leyte" };
-            provinces[2][0] = new string[] { "Zamboanga del Norte", "Zamboanga del Sur", "Zamboanga Sibugay" };
-            provinces[2][1] = new string[] { "Bukidnon", "Camiguin", "Lanao del Norte", "Misamis Occidental", "Misamis Oriental" };
-            provinces[2][2] = new string[] { "Compostella Valley", "Davao del Norte", "Davao del Sur", "Davao Occidental", "Davao Oriental" };
-            provinces[2][3] = new string[] { "Cotabato", "Saranggani", "South Cotabato", "Sultan Kudarat" };
-            provinces[2][4] = new string[] { "Agusan del Norte", "Agusan del Sur", "Dinagat Islands", "Surigao del Norte", "Surigao del Sur" };
-            provinces[2][5] = new string[] { "Basilan", "Lanao del Sur", "Maguindanao", "Sulu", "Tawi-Tawi" };
+            SqlDataReader sqlData = connection.executeResult();
+            while (sqlData.Read())
+            {
+                Countries.Add(sqlData[0].ToString());
+            }
+            connection.closeResult();
         }
 
-        public void setIslandList()
+        public void getProvinceList()
         {
-            foreach (string island in islands)
+            DatabaseConnection connection = new DatabaseConnection();
+            connection.setQuery("SELECT strProvince FROM tblProvince");
+
+            SqlDataReader sqlData = connection.executeResult();
+            while (sqlData.Read())
             {
-                cbxIsland.Items.Add(island);
+                Provinces.Add(sqlData[0].ToString());
             }
+            connection.closeResult();
+        }
+
+        public void getCityList()
+        {
+            DatabaseConnection connection = new DatabaseConnection();
+            connection.setQuery("SELECT strProvince, strCity FROM tblCity Ci INNER JOIN tblProvince Pr ON Ci.intProvinceID = Pr.intProvinceID");
+
+            SqlDataReader sqlData = connection.executeResult();
+            while (sqlData.Read())
+            {
+                Cities.Add(new string[]
+                {
+                    sqlData[0].ToString(), sqlData[1].ToString()
+                });
+            }
+            connection.closeResult();
         }
 
         private bool validateForm()
         {
             bool formOK = true;
             msgCountry.Visibility = Visibility.Collapsed;
-            msgIsland.Visibility = Visibility.Collapsed;
-            msgRegion.Visibility = Visibility.Collapsed;
             msgProvince.Visibility = Visibility.Collapsed;
             msgCity.Visibility = Visibility.Collapsed;
-            msgArea.Visibility = Visibility.Collapsed;
             msgSpecificLocation.Visibility = Visibility.Collapsed;
             msgFullLocality.Visibility = Visibility.Collapsed;
             msgShortcut.Visibility = Visibility.Collapsed;
 
-            if (rbtPhilippines.IsChecked == true)
+            if (cbxCountry.SelectedItem.ToString() == "Philippines" && cbxProvince.SelectedIndex == -1)
             {
-                if (cbxIsland.SelectedIndex == -1)
-                {
-                    msgIsland.Visibility = Visibility.Visible;
-                    formOK = false;
-                }
-                if (cbxRegion.SelectedIndex == -1)
-                {
-                    msgRegion.Visibility = Visibility.Visible;
-                    formOK = false;
-                }
-                if (cbxProvince.SelectedIndex == -1)
-                {
-                    msgProvince.Visibility = Visibility.Visible;
-                    formOK = false;
-                }
-                if (txfCity.Text == "")
-                {
-                    msgCity.Visibility = Visibility.Visible;
-                    formOK = false;
-                }
-                if (txfArea.Text == "")
-                {
-                    msgArea.Visibility = Visibility.Visible;
-                    formOK = false;
-                }
-                if (txfSpecificLocation.Text == "")
-                {
-                    msgSpecificLocation.Visibility = Visibility.Visible;
-                    formOK = false;
-                }
-                if (txfShortcut.Text == "")
-                {
-                    msgShortcut.Visibility = Visibility.Visible;
-                    formOK = false;
-                }
+                msgProvince.Visibility = Visibility.Visible;
+                formOK = false;
             }
-            else if (rbtOtherCountries.IsChecked == true)
+            if (cbxCountry.SelectedItem.ToString() == "Philippines" && cbxProvince.SelectedIndex == -1)
             {
-                if (txfCountry.Text == "")
-                {
-                    msgCountry.Visibility = Visibility.Visible;
-                    formOK = false;
-                }
-                if (txfFullLocality.Text == "")
-                {
-                    msgFullLocality.Visibility = Visibility.Visible;
-                    formOK = false;
-                }
-                if (txfShortcut.Text == "")
-                {
-                    msgShortcut.Visibility = Visibility.Visible;
-                    formOK = false;
-                }
+                msgCity.Visibility = Visibility.Visible;
+                formOK = false;
+            }
+            if (cbxCountry.SelectedItem.ToString() == "Philippines" && txfSpecificLocation.Text == "")
+            {
+                msgSpecificLocation.Visibility = Visibility.Visible;
+                formOK = false;
+            }
+            if (cbxCountry.SelectedItem.ToString() != "Philippines" && txfFullLocality.Text == "")
+            {
+                msgFullLocality.Visibility = Visibility.Visible;
+                formOK = false;
+            }
+            if (txfShortcut.Text == "")
+            {
+                msgShortcut.Visibility = Visibility.Visible;
+                formOK = false;
             }
 
             return formOK;
@@ -422,18 +305,15 @@ namespace prototypeHerbarium
         {
             int status;
             DatabaseConnection connection = new DatabaseConnection();
-            string country = (rbtPhilippines.IsChecked == true) ? "Philippines" : txfCountry.Text;
-            string island = (cbxIsland.SelectedIndex == -1) ? "" : cbxIsland.SelectedItem.ToString();
-            string region = (cbxRegion.SelectedIndex == -1) ? "" : cbxRegion.SelectedItem.ToString();
+            string country = (cbxCountry.SelectedIndex == -1) ? "" : cbxCountry.SelectedItem.ToString();
             string province = (cbxProvince.SelectedIndex == -1) ? "" : cbxProvince.SelectedItem.ToString();
+            string city = (cbxCity.SelectedIndex == -1) ? "" : cbxCity.SelectedItem.ToString();
 
             connection.setStoredProc("dbo.procInsertLocality");
+            connection.addSprocParameter("@isIDBase", SqlDbType.Bit, 0);
             connection.addSprocParameter("@country", SqlDbType.VarChar, country);
-            connection.addSprocParameter("@island", SqlDbType.VarChar, island);
-            connection.addSprocParameter("@region", SqlDbType.VarChar, region);
             connection.addSprocParameter("@province", SqlDbType.VarChar, province);
-            connection.addSprocParameter("@city", SqlDbType.VarChar, txfCity.Text);
-            connection.addSprocParameter("@area", SqlDbType.VarChar, txfArea.Text);
+            connection.addSprocParameter("@city", SqlDbType.VarChar, city);
             connection.addSprocParameter("@specificLocation", SqlDbType.VarChar, txfSpecificLocation.Text);
             connection.addSprocParameter("@shortLocation", SqlDbType.VarChar, txfShortcut.Text);
             connection.addSprocParameter("@fullLocation", SqlDbType.VarChar, txfFullLocality.Text);
@@ -460,19 +340,16 @@ namespace prototypeHerbarium
         {
             int status;
             DatabaseConnection connection = new DatabaseConnection();
-            string country = (rbtPhilippines.IsChecked == true) ? "Philippines" : txfCountry.Text;
-            string island = (cbxIsland.SelectedIndex == -1) ? "" : cbxIsland.SelectedItem.ToString();
-            string region = (cbxRegion.SelectedIndex == -1) ? "" : cbxRegion.SelectedItem.ToString();
+            string country = (cbxCountry.SelectedIndex == -1) ? "" : cbxCountry.SelectedItem.ToString();
             string province = (cbxProvince.SelectedIndex == -1) ? "" : cbxProvince.SelectedItem.ToString();
+            string city = (cbxCity.SelectedIndex == -1) ? "" : cbxCity.SelectedItem.ToString();
 
             connection.setStoredProc("dbo.procUpdateLocality");
+            connection.addSprocParameter("@isIDBase", SqlDbType.Bit, 0);
             connection.addSprocParameter("@localityID", SqlDbType.Int, txfLocalityID.Text);
             connection.addSprocParameter("@country", SqlDbType.VarChar, country);
-            connection.addSprocParameter("@island", SqlDbType.VarChar, island);
-            connection.addSprocParameter("@region", SqlDbType.VarChar, region);
             connection.addSprocParameter("@province", SqlDbType.VarChar, province);
-            connection.addSprocParameter("@city", SqlDbType.VarChar, txfCity.Text);
-            connection.addSprocParameter("@area", SqlDbType.VarChar, txfArea.Text);
+            connection.addSprocParameter("@city", SqlDbType.VarChar, city);
             connection.addSprocParameter("@specificLocation", SqlDbType.VarChar, txfSpecificLocation.Text);
             connection.addSprocParameter("@shortLocation", SqlDbType.VarChar, txfShortcut.Text);
             connection.addSprocParameter("@fullLocation", SqlDbType.VarChar, txfFullLocality.Text);
@@ -499,11 +376,8 @@ public class Locality
     public int LocalityID { get; set; }
     public string FullLocation { get; set; }
     public string Country { get; set; }
-    public string Island { get; set; }
-    public string Region { get; set; }
     public string Province { get; set; }
     public string City { get; set; }
-    public string Area { get; set; }
     public string SpecificLocation { get; set; }
     public string ShortLocation { get; set; }
     public string Latitude { get; set; }

@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Data;
 
 namespace prototypeHerbarium
 {
@@ -225,6 +226,7 @@ namespace prototypeHerbarium
             DatabaseConnection connection = new DatabaseConnection();
 
             connection.setStoredProc("dbo.procInsertAccount");
+            connection.addSprocParameter("@isIDBase", SqlDbType.Bit, 0);
             connection.addSprocParameter("@staffName", System.Data.SqlDbType.VarChar, cbxStaff.SelectedItem.ToString());
             connection.addSprocParameter("@username", System.Data.SqlDbType.VarChar, txfUsername.Text);
             connection.addSprocParameter("@password", System.Data.SqlDbType.VarChar, txfPassword.Password);
@@ -251,8 +253,8 @@ namespace prototypeHerbarium
             DatabaseConnection connection = new DatabaseConnection();
 
             connection.setStoredProc("dbo.procUpdateAccount");
-            connection.addSprocParameter("@accountID", System.Data.SqlDbType.Int, txfAccountID.Text);
-            connection.addSprocParameter("@staffName", System.Data.SqlDbType.VarChar, cbxStaff.SelectedItem.ToString());
+            connection.addSprocParameter("@isIDBase", SqlDbType.Bit, 0);
+            connection.addSprocParameter("@staffID", System.Data.SqlDbType.Int, txfAccountID.Text);
             connection.addSprocParameter("@username", System.Data.SqlDbType.VarChar, txfUsername.Text);
             connection.addSprocParameter("@password", System.Data.SqlDbType.VarChar, txfPassword.Password);
             status = connection.executeProcedure();

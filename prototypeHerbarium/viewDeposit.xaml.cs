@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
@@ -492,13 +493,14 @@ namespace prototypeHerbarium
 
             DatabaseConnection connection = new DatabaseConnection();
             connection.setStoredProc("dbo.procInsertPlantDeposit");
+            connection.addSprocParameter("@isIDBase", SqlDbType.Bit, 0);
             if (!pictureEmpty) connection.addSprocParameter("@herbariumSheet", System.Data.SqlDbType.VarBinary, picture);
-            connection.addSprocParameter("@localityID", System.Data.SqlDbType.Int, (cbxLocality.SelectedItem as ComboBoxItem).ID);
-            connection.addSprocParameter("@collectorID", System.Data.SqlDbType.Int, (cbxCollector.SelectedItem as ComboBoxItem).ID);
-            connection.addSprocParameter("@staffID", System.Data.SqlDbType.Int, StaticData.ID);
-            connection.addSprocParameter("@dateCollected", System.Data.SqlDbType.Date, dpkDateCollected.DateContent);
-            connection.addSprocParameter("@description", System.Data.SqlDbType.VarChar, txaDescription.Text);
-            connection.addSprocParameter("@plantTypeID", System.Data.SqlDbType.Int, (cbxPlantType.SelectedItem as ComboBoxItem).ID);
+            connection.addSprocParameter("@locality", SqlDbType.VarChar, (cbxLocality.SelectedItem as ComboBoxItem).Item);
+            connection.addSprocParameter("@collector", SqlDbType.VarChar, (cbxCollector.SelectedItem as ComboBoxItem).Item);
+            connection.addSprocParameter("@staff", SqlDbType.VarChar, StaticData.staffname);
+            connection.addSprocParameter("@dateCollected", SqlDbType.Date, dpkDateCollected.DateContent);
+            connection.addSprocParameter("@description", SqlDbType.VarChar, txaDescription.Text);
+            connection.addSprocParameter("@plantType", SqlDbType.VarChar, (cbxPlantType.SelectedItem as ComboBoxItem).Item);
             status = connection.executeProcedure();
 
             switch (status)
@@ -512,7 +514,6 @@ namespace prototypeHerbarium
             }
 
             btnClear_Click(btnClear, null);
-
         }
 
         private void addExistingDeposit()
@@ -526,15 +527,16 @@ namespace prototypeHerbarium
 
             DatabaseConnection connection = new DatabaseConnection();
             connection.setStoredProc("dbo.procInsertPlantDeposit");
-            if (!pictureEmpty) connection.addSprocParameter("@herbariumSheet", System.Data.SqlDbType.VarBinary, picture);
-            connection.addSprocParameter("@localityID", System.Data.SqlDbType.Int, (cbxLocality.SelectedItem as ComboBoxItem).ID);
-            connection.addSprocParameter("@collectorID", System.Data.SqlDbType.Int, (cbxCollector.SelectedItem as ComboBoxItem).ID);
-            connection.addSprocParameter("@staffID", System.Data.SqlDbType.Int, StaticData.ID);
-            connection.addSprocParameter("@dateCollected", System.Data.SqlDbType.Date, dpkDateCollected.DateContent);
-            connection.addSprocParameter("@description", System.Data.SqlDbType.VarChar, txaDescription.Text);
-            connection.addSprocParameter("@plantTypeID", System.Data.SqlDbType.Int, (cbxPlantType.SelectedItem as ComboBoxItem).ID);
-            connection.addSprocParameter("@accessionDigits", System.Data.SqlDbType.Int, txfAccessionNumber.TextContent);
-            connection.addSprocParameter("@dateDeposited", System.Data.SqlDbType.Date, dpkDateDeposited.DateContent);
+            connection.addSprocParameter("@isIDBase", SqlDbType.Bit, 0);
+            if (!pictureEmpty) connection.addSprocParameter("@herbariumSheet", SqlDbType.VarBinary, picture);
+            connection.addSprocParameter("@locality", SqlDbType.VarChar, (cbxLocality.SelectedItem as ComboBoxItem).Item);
+            connection.addSprocParameter("@collector", SqlDbType.VarChar, (cbxCollector.SelectedItem as ComboBoxItem).Item);
+            connection.addSprocParameter("@staff", SqlDbType.VarChar, StaticData.staffname);
+            connection.addSprocParameter("@dateCollected", SqlDbType.Date, dpkDateCollected.DateContent);
+            connection.addSprocParameter("@description", SqlDbType.VarChar, txaDescription.Text);
+            connection.addSprocParameter("@plantType", SqlDbType.VarChar, (cbxPlantType.SelectedItem as ComboBoxItem).Item);
+            connection.addSprocParameter("@accessionDigits", SqlDbType.Int, txfAccessionNumber.TextContent);
+            connection.addSprocParameter("@dateDeposited", SqlDbType.Date, dpkDateDeposited.DateContent);
             status = connection.executeProcedure();
 
             switch (status)
@@ -561,22 +563,23 @@ namespace prototypeHerbarium
 
             DatabaseConnection connection = new DatabaseConnection();
             connection.setStoredProc("dbo.procInsertVerifiedDeposit");
-            connection.addSprocParameter("@accessionDigits", System.Data.SqlDbType.VarChar, txfAccessionNumber.TextContent);
+            connection.addSprocParameter("@isIDBase", SqlDbType.Bit, 0);
+            connection.addSprocParameter("@accessionDigits", SqlDbType.VarChar, txfAccessionNumber.TextContent);
             if (cbxReferenceNumber.SelectedIndex != -1)
-                connection.addSprocParameter("@newDepositID", System.Data.SqlDbType.VarChar, (cbxReferenceNumber.SelectedItem as ComboBoxItem).ID);
-            connection.addSprocParameter("@sameAccession", System.Data.SqlDbType.Bit, (chkSameAccession.IsChecked == true));
+                connection.addSprocParameter("@newDeposit", SqlDbType.VarChar, (cbxReferenceNumber.SelectedItem as ComboBoxItem).Item);
+            connection.addSprocParameter("@sameAccession", SqlDbType.Bit, (chkSameAccession.IsChecked == true));
             if (!pictureEmpty)
-                connection.addSprocParameter("@herbariumSheet", System.Data.SqlDbType.VarBinary, picture);
-            connection.addSprocParameter("@localityID", System.Data.SqlDbType.Int, (cbxLocality.SelectedItem as ComboBoxItem).ID);
-            connection.addSprocParameter("@speciesID", System.Data.SqlDbType.Int, (cbxTaxonName.SelectedItem as ComboBoxItem).ID);
-            connection.addSprocParameter("@collectorID", System.Data.SqlDbType.Int, (cbxCollector.SelectedItem as ComboBoxItem).ID);
-            connection.addSprocParameter("@validatorID", System.Data.SqlDbType.Int, (cbxValidator.SelectedItem as ComboBoxItem).ID);
-            connection.addSprocParameter("@staffID", System.Data.SqlDbType.Int, StaticData.ID);
-            connection.addSprocParameter("@dateCollected", System.Data.SqlDbType.Date, dpkDateCollected.DateContent);
-            connection.addSprocParameter("@dateDeposited", System.Data.SqlDbType.Date, dpkDateDeposited.DateContent);
-            connection.addSprocParameter("@dateVerified", System.Data.SqlDbType.Date, dpkDateVerified.DateContent);
-            connection.addSprocParameter("@description", System.Data.SqlDbType.VarChar, txaDescription.Text);
-            connection.addSprocParameter("@plantTypeID", System.Data.SqlDbType.Int, (cbxPlantType.SelectedItem as ComboBoxItem).ID);
+                connection.addSprocParameter("@herbariumSheet", SqlDbType.VarBinary, picture);
+            connection.addSprocParameter("@locality", SqlDbType.VarChar, (cbxLocality.SelectedItem as ComboBoxItem).Item);
+            connection.addSprocParameter("@species", SqlDbType.VarChar, (cbxTaxonName.SelectedItem as ComboBoxItem).Item);
+            connection.addSprocParameter("@collector", SqlDbType.VarChar, (cbxCollector.SelectedItem as ComboBoxItem).Item);
+            connection.addSprocParameter("@validator", SqlDbType.VarChar, (cbxValidator.SelectedItem as ComboBoxItem).Item);
+            connection.addSprocParameter("@staff", SqlDbType.VarChar, StaticData.staffname);
+            connection.addSprocParameter("@dateCollected", SqlDbType.Date, dpkDateCollected.DateContent);
+            connection.addSprocParameter("@dateDeposited", SqlDbType.Date, dpkDateDeposited.DateContent);
+            connection.addSprocParameter("@dateVerified", SqlDbType.Date, dpkDateVerified.DateContent);
+            connection.addSprocParameter("@description", SqlDbType.VarChar, txaDescription.Text);
+            connection.addSprocParameter("@plantType", SqlDbType.VarChar, (cbxPlantType.SelectedItem as ComboBoxItem).Item);
             status = connection.executeProcedure();
 
             switch (status)

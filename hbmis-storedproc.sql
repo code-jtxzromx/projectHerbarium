@@ -89,6 +89,7 @@ IF OBJECT_ID('procInsertClass', 'P') IS NOT NULL
 	DROP PROCEDURE procInsertClass
 GO
 CREATE PROCEDURE procInsertClass
+	@isIDBase		BIT,
 	@phylumName		VARCHAR(50),
 	@className		VARCHAR(50)
 AS
@@ -99,10 +100,12 @@ BEGIN
 	BEGIN TRANSACTION
 
 	BEGIN TRY
-		DECLARE @phylumID INT;
-		SET @phylumID = (SELECT intPhylumID
-						 FROM tblPhylum
-						 WHERE strPhylumName = @phylumName);
+		DECLARE @phylumID INT; 
+
+		SET @phylumID = (SELECT CASE
+							WHEN @isIDBase = 1 THEN @phylumName
+							ELSE (SELECT intPhylumID FROM tblPhylum WHERE strPhylumName = @phylumName)
+						END);
 
 		IF NOT EXISTS (SELECT	intClassID
 					   FROM		tblClass
@@ -133,6 +136,7 @@ IF OBJECT_ID('procUpdateClass', 'P') IS NOT NULL
 	DROP PROCEDURE procUpdateClass
 GO
 CREATE PROCEDURE procUpdateClass
+	@isIDBase		BIT,
 	@classNo		VARCHAR(50),
 	@phylumName		VARCHAR(50),
 	@className		VARCHAR(50)
@@ -150,9 +154,10 @@ BEGIN
 		SET @classID = (SELECT intClassID
 						FROM viewTaxonClass
 						WHERE strClassNo = @classNo)
-		SET @phylumID = (SELECT intPhylumID
-						 FROM tblPhylum
-						 WHERE strPhylumName = @phylumName)
+		SET @phylumID = (SELECT CASE
+							WHEN @isIDBase = 1 THEN @phylumName
+							ELSE (SELECT intPhylumID FROM tblPhylum WHERE strPhylumName = @phylumName)
+						END);
 		
 		UPDATE tblClass
 		SET intPhylumID = @phylumID,
@@ -176,6 +181,7 @@ IF OBJECT_ID('procInsertOrder', 'P') IS NOT NULL
 	DROP PROCEDURE procInsertOrder
 GO
 CREATE PROCEDURE procInsertOrder
+	@isIDBase		BIT,
 	@className		VARCHAR(50),
 	@orderName		VARCHAR(50)
 AS
@@ -187,9 +193,10 @@ BEGIN
 
 	BEGIN TRY
 		DECLARE @classID INT;
-		SET @classID = (SELECT intClassID
-						FROM tblClass
-						WHERE strClassName = @className);
+		SET @classID = (SELECT CASE
+							WHEN @isIDBase = 1 THEN @className
+							ELSE (SELECT intClassID FROM tblClass WHERE strClassName = @className)
+						END);
 
 		IF NOT EXISTS (SELECT	intOrderID
 					   FROM		tblOrder
@@ -220,6 +227,7 @@ IF OBJECT_ID('procUpdateOrder', 'P') IS NOT NULL
 	DROP PROCEDURE procUpdateOrder
 GO
 CREATE PROCEDURE procUpdateOrder
+	@isIDBase		BIT,
 	@orderNo		VARCHAR(50),
 	@className		VARCHAR(50),
 	@orderName		VARCHAR(50)
@@ -237,9 +245,10 @@ BEGIN
 		SET @orderID = (SELECT intOrderID
 						FROM viewTaxonOrder
 						WHERE strOrderNo = @orderNo)
-		SET @classID = (SELECT intClassID
-						FROM tblClass
-						WHERE strClassName = @className)
+		SET @classID = (SELECT CASE
+							WHEN @isIDBase = 1 THEN @className
+							ELSE (SELECT intClassID FROM tblClass WHERE strClassName = @className)
+						END);
 
 		UPDATE tblOrder
 		SET intClassID = @classID,
@@ -263,6 +272,7 @@ IF OBJECT_ID('procInsertFamily', 'P') IS NOT NULL
 	DROP PROCEDURE procInsertFamily
 GO
 CREATE PROCEDURE procInsertFamily
+	@isIDBase		BIT,
 	@orderName		VARCHAR(50),
 	@familyName		VARCHAR(50)
 AS
@@ -274,9 +284,10 @@ BEGIN
 	
 	BEGIN TRY
 		DECLARE @orderID INT;
-		SET @orderID = (SELECT intOrderID
-						FROM tblOrder
-						WHERE strOrderName = @orderName);
+		SET @orderID = (SELECT CASE
+					WHEN @isIDBase = 1 THEN @orderName
+					ELSE (SELECT intOrderID FROM tblOrder WHERE strOrderName = @orderName)
+				END);
 
 		IF NOT EXISTS (SELECT	intFamilyID
 					   FROM		tblFamily
@@ -307,6 +318,7 @@ IF OBJECT_ID('procUpdateFamily', 'P') IS NOT NULL
 	DROP PROCEDURE procUpdateFamily
 GO
 CREATE PROCEDURE procUpdateFamily
+	@isIDBase		INT,
 	@familyNo		VARCHAR(50),
 	@orderName		VARCHAR(50),
 	@familyName		VARCHAR(50)
@@ -324,9 +336,10 @@ BEGIN
 		SET @familyID = (SELECT intFamilyID
 						 FROM viewTaxonFamily
 						 WHERE strFamilyNo = @familyNo)
-		SET @orderID = (SELECT intOrderID
-						FROM tblOrder
-						WHERE strOrderName = @orderName)
+		SET @orderID = (SELECT CASE
+							WHEN @isIDBase = 1 THEN @orderName
+							ELSE (SELECT intOrderID FROM tblOrder WHERE strOrderName = @orderName)
+						END);
 
 		UPDATE tblFamily
 		SET intOrderID = @orderID,
@@ -350,6 +363,7 @@ IF OBJECT_ID('procInsertGenus', 'P') IS NOT NULL
 	DROP PROCEDURE procInsertGenus
 GO
 CREATE PROCEDURE procInsertGenus
+	@isIDBase		BIT,
 	@familyName		VARCHAR(50) = NULL,
 	@genusName		VARCHAR(50) = NULL
 AS
@@ -361,9 +375,10 @@ BEGIN
 	
 	BEGIN TRY
 		DECLARE @familyID INT;
-		SET @familyID = (SELECT intFamilyID
-						FROM tblFamily
-						WHERE strFamilyName = @familyName);
+		SET @familyID = (SELECT CASE
+							WHEN @isIDBase = 1 THEN @familyName
+							ELSE (SELECT intFamilyID FROM tblFamily WHERE strFamilyName = @familyName)
+						END);
 
 		IF NOT EXISTS (SELECT	intGenusID
 					   FROM		tblGenus
@@ -394,6 +409,7 @@ IF OBJECT_ID('procUpdateGenus', 'P') IS NOT NULL
 	DROP PROCEDURE procUpdateGenus
 GO
 CREATE PROCEDURE procUpdateGenus
+	@isIDBase		BIT,
 	@genusNo		VARCHAR(50),
 	@familyName		VARCHAR(50),
 	@genusName		VARCHAR(50)
@@ -411,9 +427,10 @@ BEGIN
 		SET @genusID = (SELECT intGenusID
 						FROM viewTaxonGenus
 						WHERE strGenusNo = @genusNo)
-		SET @familyID = (SELECT intFamilyID
-						 FROM tblFamily
-						 WHERE strFamilyName = @familyName)
+		SET @familyID = (SELECT CASE
+							WHEN @isIDBase = 1 THEN @familyName
+							ELSE (SELECT intFamilyID FROM tblFamily WHERE strFamilyName = @familyName)
+						END);
 
 		UPDATE tblGenus
 		SET intFamilyID = @familyID,
@@ -437,6 +454,7 @@ IF OBJECT_ID('procInsertSpecies', 'P') IS NOT NULL
 	DROP PROCEDURE procInsertSpecies
 GO
 CREATE PROCEDURE procInsertSpecies
+	@isIDBase		BIT,
 	@genusName		VARCHAR(50),
 	@speciesName	VARCHAR(50),
 	@commonName		VARCHAR(100),
@@ -454,9 +472,10 @@ BEGIN
 		DECLARE @speciesID INT;
 		DECLARE @authorID INT;
 
-		SET @genusID = (SELECT intGenusID
-						FROM tblGenus
-						WHERE strGenusName = @genusName);
+		SET @genusID = (SELECT CASE
+							WHEN @isIDBase = 1 THEN @genusName
+							ELSE (SELECT intGenusID FROM tblGenus WHERE strGenusName = @genusName)
+						END);
 
 		IF NOT EXISTS (SELECT	intSpeciesID
 					   FROM		tblSpecies
@@ -468,7 +487,10 @@ BEGIN
 			IF @isVerified = 1
 			BEGIN
 				SET @speciesID = (SELECT intSpeciesID FROM tblSpecies WHERE strSpeciesName = @speciesName);
-				SET @authorID = (SELECT intAuthorID FROM tblAuthor WHERE strAuthorsName = @author)
+				SET @authorID = (SELECT CASE
+									WHEN @isIDBase = 1 THEN @author
+									ELSE (SELECT intAuthorID FROM tblAuthor WHERE strAuthorsName = @author)
+								END);
 
 				INSERT INTO tblSpeciesAuthor (intSpeciesID, intAuthorID)
 				VALUES (@speciesID, @authorID)
@@ -496,6 +518,7 @@ IF OBJECT_ID('procUpdateSpecies', 'P') IS NOT NULL
 	DROP PROCEDURE procUpdateSpecies
 GO
 CREATE PROCEDURE procUpdateSpecies
+	@isIDBase		BIT,
 	@speciesNo		VARCHAR(50),
 	@genusName		VARCHAR(50),
 	@speciesName	VARCHAR(50),
@@ -517,9 +540,10 @@ BEGIN
 		SET @speciesID = (SELECT intSpeciesID
 						  FROM viewTaxonSpecies
 						  WHERE strSpeciesNo = @speciesNo)
-		SET @genusID = (SELECT intGenusID
-						FROM tblGenus
-						WHERE strGenusName = @genusName)
+		SET @genusID = (SELECT CASE
+							WHEN @isIDBase = 1 THEN @genusName
+							ELSE (SELECT intGenusID FROM tblGenus WHERE strGenusName = @genusName)
+						END);
 
 		UPDATE tblSpecies
 		SET intGenusID = @genusID,
@@ -529,9 +553,10 @@ BEGIN
 
 		IF @isVerified = 1
 		BEGIN
-			SET @authorID = (SELECT intAuthorID
-							 FROM tblAuthor
-							 WHERE strAuthorsName = @author)
+			SET @authorID = (SELECT CASE
+								WHEN @isIDBase = 1 THEN @author
+								ELSE (SELECT intAuthorID FROM tblAuthor WHERE strAuthorsName = @author)
+							END)
 
 			UPDATE tblSpeciesAuthor
 			SET intAuthorID = @authorID
@@ -623,11 +648,12 @@ BEGIN
 END
 GO
 
--- Insert Species Alternate Name
-IF OBJECT_ID('procInsertSpeciesAlternate', 'P') IS NOT NULL
-	DROP PROCEDURE procInsertSpeciesAlternate
+-- Insert Species Nomenclature
+IF OBJECT_ID('procInsertSpeciesNomenclature', 'P') IS NOT NULL
+	DROP PROCEDURE procInsertSpeciesNomenclature
 GO
-CREATE PROCEDURE procInsertSpeciesAlternate
+CREATE PROCEDURE procInsertSpeciesNomenclature
+	@isIDBase		BIT,
 	@taxonName		VARCHAR(255),
 	@language		VARCHAR(255),
 	@alternateName	VARCHAR(255)
@@ -640,9 +666,12 @@ BEGIN
 
 	BEGIN TRY
 		DECLARE @speciesID INT
-		
-		SET @speciesID = (SELECT intSpeciesID FROM viewTaxonSpecies WHERE strScientificName = @taxonName)
 
+		SET @speciesID = (SELECT CASE
+							WHEN @isIDBase = 1 THEN @taxonName
+							ELSE (SELECT intSpeciesID FROM viewTaxonSpecies WHERE strScientificName = @taxonName)
+						END);
+		
 		IF NOT EXISTS (SELECT *
 					   FROM tblSpeciesAlternateName
 					   WHERE intSpeciesID = @speciesID AND strLanguage = @language AND strAlternateName = @alternateName)
@@ -668,11 +697,12 @@ BEGIN
 END
 GO
 
--- Update Species Alternate Name
-IF OBJECT_ID('procUpdateSpeciesAlternate', 'P') IS NOT NULL
-	DROP PROCEDURE procUpdateSpeciesAlternate
+-- Update Species Nomenclature
+IF OBJECT_ID('procUpdateSpeciesNomenclature', 'P') IS NOT NULL
+	DROP PROCEDURE procUpdateSpeciesNomenclature
 GO
-CREATE PROCEDURE procUpdateSpeciesAlternate
+CREATE PROCEDURE procUpdateSpeciesNomenclature
+	@isIDBase		BIT,
 	@altNameID		INT,
 	@taxonName		VARCHAR(255),
 	@language		VARCHAR(255),
@@ -687,7 +717,10 @@ BEGIN
 	BEGIN TRY
 		DECLARE @speciesID INT
 
-		SET @speciesID = (SELECT intSpeciesID FROM viewTaxonSpecies WHERE strScientificName = @taxonName)
+		SET @speciesID = (SELECT CASE
+							WHEN @isIDBase = 1 THEN @taxonName
+							ELSE (SELECT intSpeciesID FROM viewTaxonSpecies WHERE strScientificName = @taxonName)
+						END);
 
 		UPDATE tblSpeciesAlternateName
 		SET intSpeciesID = @speciesID,
@@ -782,6 +815,7 @@ IF OBJECT_ID('procInsertFamilyBox', 'P') IS NOT NULL
 	DROP PROCEDURE procInsertFamilyBox
 GO
 CREATE PROCEDURE procInsertFamilyBox
+	@isIDBase		BIT,
 	@familyName		VARCHAR(50),
 	@boxLimit		INT,
 	@rack			INT,
@@ -796,23 +830,18 @@ BEGIN
 
 	BEGIN TRY
 		DECLARE @familyID INT
-		DECLARE @identifier INT
-		DECLARE @boxNumber VARCHAR(10)
-
-		SET @familyID = (SELECT intFamilyID FROM tblFamily WHERE strFamilyName = @familyName)
-		SET @identifier = (SELECT TOP 1 CAST(SUBSTRING(strBoxNumber, 5, 3) AS INT) FROM tblFamilyBox ORDER BY strBoxNumber DESC)
-
-		IF @identifier IS NULL
-			SET @boxNumber = 'BOX-001'
-		ELSE 
-			SET @boxNumber = 'BOX-' + FORMAT(@identifier + 1, '00#')
+		
+		SET @familyID = (SELECT CASE
+							WHEN @isIDBase = 1 THEN @familyName
+							ELSE (SELECT intFamilyID FROM tblFamily WHERE strFamilyName = @familyName)
+						END);
 
 		IF NOT EXISTS (SELECT intBoxID
 					   FROM tblFamilyBox
 					   WHERE intRackNo = @rack AND intRackRow = @row AND intRackColumn = @column)
 		BEGIN
-			INSERT INTO tblFamilyBox (strBoxNumber, intFamilyID, intBoxLimit, intRackNo, intRackRow, intRackColumn)
-			VALUES (@boxNumber, @familyID, @boxLimit, @rack, @row, @column);
+			INSERT INTO tblFamilyBox (intFamilyID, intBoxLimit, intRackNo, intRackRow, intRackColumn)
+			VALUES (@familyID, @boxLimit, @rack, @row, @column);
 		END
 		ELSE
 		BEGIN
@@ -836,6 +865,7 @@ IF OBJECT_ID('procUpdateFamilyBox', 'P') IS NOT NULL
 	DROP PROCEDURE procUpdateFamilyBox
 GO
 CREATE PROCEDURE procUpdateFamilyBox
+	@isIDBase		INT,
 	@boxNumber		VARCHAR(10),
 	@familyName		VARCHAR(50),
 	@boxLimit		INT,
@@ -851,9 +881,14 @@ BEGIN
 
 	BEGIN TRY
 		DECLARE @familyID INT
+		DECLARE @boxID INT
 		DECLARE @currentStoredSheets INT
 
-		SET @familyID = (SELECT intFamilyID FROM tblFamily WHERE strFamilyName = @familyName)
+		SET @boxID = (SELECT intBoxID FROM viewFamilyBox WHERE strBoxNumber = @boxNumber)
+		SET @familyID = (SELECT CASE
+							WHEN @isIDBase = 1 THEN @familyName
+							ELSE (SELECT intFamilyID FROM tblFamily WHERE strFamilyName = @familyName)
+						END);
 		SET @currentStoredSheets = (SELECT COUNT(intStoredSheetID) FROM viewHerbariumInventory WHERE strBoxNumber = @boxNumber);
 
 		IF NOT EXISTS (SELECT intBoxID
@@ -868,7 +903,7 @@ BEGIN
 					intRackNo = @rack,
 					intRackRow = @row,
 					intRackColumn = @column
-				WHERE strBoxNumber = @boxNumber
+				WHERE intBoxID = @boxID
 			END
 			ELSE
 			BEGIN
@@ -898,12 +933,10 @@ IF OBJECT_ID('procInsertLocality', 'P') IS NOT NULL
 	DROP PROCEDURE procInsertLocality
 GO
 CREATE PROCEDURE procInsertLocality
-	@country			VARCHAR(50),
-	@island				VARCHAR(50) = NULL,
-	@region				VARCHAR(50) = NULL,
-	@province			VARCHAR(50) = NULL,
-	@city				VARCHAR(50) = NULL,
-	@area				VARCHAR(50) = NULL,
+	@isIDBase			BIT,
+	@country			VARCHAR(255),
+	@province			VARCHAR(255) = NULL,
+	@city				VARCHAR(255) = NULL,
 	@specificLocation	VARCHAR(255) = NULL,
 	@shortLocation		VARCHAR(255) = NULL,
 	@fullLocation		VARCHAR(MAX) = NULL,
@@ -917,16 +950,43 @@ BEGIN
 	BEGIN TRANSACTION
 	
 	BEGIN TRY
+		DECLARE @localityID INT
+		DECLARE @cityID INT
+		DECLARE @countryINT INT
+		DECLARE @countrySTR VARCHAR(255)
+
+		SET @countryINT = (SELECT CASE
+								WHEN @isIDBase = 1 THEN @country
+								ELSE (SELECT intCountryID FROM tblCountry WHERE strCountry = @country)
+							END);
+		SET @countrySTR = (SELECT CASE
+								WHEN @isIDBase = 0 THEN @country
+								ELSE (SELECT strCountry FROM tblCountry WHERE intCountryID = @country)
+							END);		
+		SET @cityID = (SELECT CASE
+							WHEN @isIDBase = 1 THEN @city
+							ELSE (SELECT intCityID FROM tblCity WHERE strCity = @city 
+								AND intProvinceID = (SELECT intProvinceID FROM tblProvince WHERE strProvince = @province))
+						END);
+
 		IF NOT EXISTS (SELECT intLocalityID
 					   FROM tblLocality
-					   wHERE strCountry = @country AND strIsland = @island AND strProvince = @province
-							AND strCity = @city AND strArea = @area AND strSpecificLocation = @specificLocation
-							AND strShortLocation = @shortLocation AND strFullLocality = @fullLocation 
-							AND strLatitude = @latitude AND strLongtitude = @longtitude)
+					   wHERE strSpecificLocation = @specificLocation AND strShortLocation = @shortLocation 
+							AND strFullLocality = @fullLocation AND strLatitude = @latitude AND strLongtitude = @longtitude)
 		BEGIN
-			INSERT INTO tblLocality(strCountry, strIsland, strRegion, strProvince, strCity, strArea, strSpecificLocation,
-									strFullLocality, strShortLocation, strLatitude, strLongtitude)
-			VALUES (@country, @island, @region, @province, @city, @area, @shortLocation, @fullLocation, @shortLocation, @latitude, @longtitude)
+			INSERT INTO tblLocality(intCountryID, strSpecificLocation, strFullLocality, strShortLocation, strLatitude, strLongtitude)
+			VALUES (@countryINT, @specificLocation, @fullLocation, @shortLocation, @latitude, @longtitude)
+
+			SET @localityID = SCOPE_IDENTITY();
+
+			IF @countrySTR = 'Philippines'
+			BEGIN				
+				IF NOT EXISTS (SELECT * FROM tblPHLocality WHERE intLocalityID = @localityID AND intCityID = @cityID)
+				BEGIN
+					INSERT INTO tblPHLocality (intLocalityID, intCityID)
+					VALUES (@localityID, @cityID)
+				END
+			END
 		END
 		ELSE
 		BEGIN
@@ -950,15 +1010,13 @@ IF OBJECT_ID('procUpdateLocality', 'P') IS NOT NULL
 	DROP PROCEDURE procUpdateLocality
 GO
 CREATE PROCEDURE procUpdateLocality
+	@isIDBase			BIT,
 	@localityID			INT,
-	@country			VARCHAR(50),
-	@island				VARCHAR(50),
-	@region				VARCHAR(50),
-	@province			VARCHAR(50),
-	@city				VARCHAR(50),
-	@area				VARCHAR(50),
-	@specificLocation	VARCHAR(255),
-	@shortLocation		VARCHAR(255),
+	@country			VARCHAR(255),
+	@province			VARCHAR(255) = NULL,
+	@city				VARCHAR(255) = NULL,
+	@specificLocation	VARCHAR(255) = NULL,
+	@shortLocation		VARCHAR(255) = NULL,
 	@fullLocation		VARCHAR(MAX) = NULL,
 	@latitude			VARCHAR(20) = NULL,
 	@longtitude			VARCHAR(20) = NULL
@@ -970,20 +1028,47 @@ BEGIN
 	BEGIN TRANSACTION
 
 	BEGIN TRY
-		
+		DECLARE @cityID INT
+		DECLARE @countryINT INT
+		DECLARE @countrySTR VARCHAR(255)
+
+		SET @countryINT = (SELECT CASE
+								WHEN @isIDBase = 1 THEN @country
+								ELSE (SELECT intCountryID FROM tblCountry WHERE strCountry = @country)
+							END);
+		SET @countrySTR = (SELECT CASE
+								WHEN @isIDBase = 0 THEN @country
+								ELSE (SELECT strCountry FROM tblCountry WHERE intCountryID = @country)
+							END);		
+		SET @cityID = (SELECT CASE
+							WHEN @isIDBase = 1 THEN @city
+							ELSE (SELECT intCityID FROM tblCity WHERE strCity = @city 
+								AND intProvinceID = (SELECT intProvinceID FROM tblProvince WHERE strProvince = @province))
+						END);
+
 		UPDATE tblLocality
-		SET strCountry = @country, 
-			strIsland = @island,
-			strRegion = @region,
-			strProvince = @province,
-			strCity = @city,
-			strArea = @area,
+		SET intCountryID = @countryINT,
 			strSpecificLocation = @specificLocation,
 			strFullLocality = @fullLocation,
 			strShortLocation = @shortLocation,
 			strLatitude = @latitude,
 			strLongtitude = @longtitude
 		WHERE intLocalityID = @localityID
+
+		IF @countrySTR = 'Philippines'
+		BEGIN
+			IF NOT EXISTS (SELECT * FROM tblPHLocality WHERE intLocalityID = @localityID AND intCityID = @cityID)
+			BEGIN
+				INSERT INTO tblPHLocality (intLocalityID, intCityID)
+				VALUES (@localityID, @cityID)
+			END
+			ELSE
+			BEGIN
+				UPDATE tblPHLocality
+				SET intCityID = @cityID
+				WHERE intLocalityID = @localityID
+			END
+		END
 	END TRY
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
@@ -1419,6 +1504,7 @@ IF OBJECT_ID('procInsertAccount', 'P') IS NOT NULL
 	DROP PROCEDURE procInsertAccount
 GO
 CREATE PROCEDURE procInsertAccount
+	@isIDBase		BIT,
 	@staffName		VARCHAR(MAX),
 	@username		VARCHAR(50),
 	@password		VARCHAR(50)
@@ -1432,9 +1518,12 @@ BEGIN
 	BEGIN TRY
 		DECLARE @staffID INT
 
-		SET @staffID = (SELECT intStaffID FROM viewHerbariumStaff WHERE strFullName = @staffName)
-
-		IF NOT EXISTS (SELECT intAccountID
+		SET @staffID = (SELECT CASE
+							WHEN @isIDBase = 1 THEN @staffName
+							ELSE (SELECT intStaffID FROM viewHerbariumStaff WHERE strFullName = @staffName)
+						END);
+		
+		IF NOT EXISTS (SELECT intStaffID
 					   FROM tblAccounts
 					   WHERE intStaffID = @staffID AND strUsername = @username AND strPassword = @password)
 		BEGIN
@@ -1463,8 +1552,8 @@ IF OBJECT_ID('procUpdateAccount', 'P') IS NOT NULL
 	DROP PROCEDURE procUpdateAccount
 GO
 CREATE PROCEDURE procUpdateAccount
-	@accountID		INT,
-	@staffName		VARCHAR(MAX),
+	@isIDBase		BIT,
+	@staffID		INT,
 	@username		VARCHAR(50),
 	@password		VARCHAR(50)
 AS
@@ -1475,15 +1564,10 @@ BEGIN
 	BEGIN TRANSACTION
 
 	BEGIN TRY
-		DECLARE @staffID INT;
-
-		SET @staffID = (SELECT intStaffID FROM viewHerbariumStaff WHERE strFullName = @staffName);
-
 		UPDATE tblAccounts
-		SET intStaffID = @staffID,
-			strUsername = @username,
+		SET strUsername = @username,
 			strPassword = @password
-		WHERE intAccountID = @accountID;
+		WHERE intStaffID = @staffID;
 	END TRY
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
@@ -1502,13 +1586,14 @@ IF OBJECT_ID('procInsertPlantDeposit', 'P') IS NOT NULL
 	DROP PROCEDURE procInsertPlantDeposit
 GO
 CREATE PROCEDURE procInsertPlantDeposit
+	@isIDBase			BIT,
 	@herbariumSheet		VARBINARY(MAX) = NULL,
-	@localityID			INT,
-	@collectorID		INT,
-	@staffID			INT,
+	@locality			VARCHAR(MAX),
+	@collector			VARCHAR(255),
+	@staff				VARCHAR(255),
 	@dateCollected		DATE,
 	@description		VARCHAR(MAX),
-	@plantTypeID		INT,
+	@plantType			VARCHAR(50),
 	@accessionDigits	INT = NULL,
 	@dateDeposited		VARCHAR(50) = NULL
 AS
@@ -1519,6 +1604,28 @@ BEGIN
 	BEGIN TRANSACTION
 	
 	BEGIN TRY
+		DECLARE @plantTypeID INT
+		DECLARE @collectorID INT
+		DECLARE @localityID INT
+		DECLARE @staffID INT
+
+		SET @plantTypeID = (SELECT CASE
+								WHEN @isIDBase = 1 THEN @plantType
+								ELSE (SELECT intPlantTypeID FROM tblPlantType WHERE strPlantTypeName = @plantType)
+							END)
+		SET @collectorID = (SELECT CASE
+								WHEN @isIDBase = 1 THEN @collector
+								ELSE (SELECT intCollectorID FROM viewCollector WHERE strFullName = @collector)
+							END)
+		SET @localityID = (SELECT CASE
+								WHEN @isIDBase = 1 THEN @locality
+								ELSE (SELECT intLocalityID FROM viewLocality WHERE strShortLocation = @locality)
+							END)
+		SET @staffID = (SELECT CASE
+								WHEN @isIDBase = 1 THEN @staff
+								ELSE (SELECT intStaffID FROM viewHerbariumStaff WHERE strFullName = @staff)
+							END)
+
 		IF @accessionDigits IS NULL
 		BEGIN
 			INSERT INTO tblReceivedDeposits (intPlantTypeID, picHerbariumSheet, intCollectorID, intLocalityID, intStaffID, dateCollected, dateDeposited, strDescription, strStatus)
@@ -1596,12 +1703,13 @@ IF OBJECT_ID('procPlantResubmission', 'P') IS NOT NULL
 	DROP PROCEDURE procPlantResubmission
 GO
 CREATE PROCEDURE procPlantResubmission
+	@isIDBase			BIT,
 	@depositID			INT,
 	@herbariumSheet		VARBINARY(MAX) = NULL,
-	@localityID			INT,
-	@staffID			INT,
+	@locality			VARCHAR(MAX),
+	@staff				VARCHAR(255),
 	@description		VARCHAR(MAX),
-	@plantTypeID		INT
+	@plantType			VARCHAR(255)
 AS
 BEGIN 
 	SET NOCOUNT ON;
@@ -1610,6 +1718,23 @@ BEGIN
 	BEGIN TRANSACTION
 
 	BEGIN TRY
+		DECLARE @plantTypeID INT
+		DECLARE @localityID INT
+		DECLARE @staffID INT
+
+		SET @plantTypeID = (SELECT CASE
+								WHEN @isIDBase = 1 THEN @plantType
+								ELSE (SELECT intPlantTypeID FROM tblPlantType WHERE strPlantTypeName = @plantType)
+							END)
+		SET @localityID = (SELECT CASE
+								WHEN @isIDBase = 1 THEN @locality
+								ELSE (SELECT intLocalityID FROM viewLocality WHERE strFullLocality = @locality)
+							END)
+		SET @staffID = (SELECT CASE
+								WHEN @isIDBase = 1 THEN @staff
+								ELSE (SELECT intStaffID FROM viewHerbariumStaff WHERE strFullName = @staff)
+							END)
+
 		UPDATE tblReceivedDeposits
 		SET picHerbariumSheet = @herbariumSheet,
 			intLocalityID = @localityID,
@@ -1637,9 +1762,10 @@ IF OBJECT_ID('procExternalVerifyDeposit', 'P') IS NOT NULL
 	DROP PROCEDURE procExternalVerifyDeposit
 GO
 CREATE PROCEDURE procExternalVerifyDeposit
-	@orgDepositID	INT,
-	@newDepositID	INT = NULL,
-	@speciesID		INT = NULL
+	@isIDBase		BIT,
+	@orgDeposit		VARCHAR(50),
+	@newDeposit		VARCHAR(50) = NULL,
+	@species		VARCHAR(255) = NULL
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -1648,6 +1774,23 @@ BEGIN
 	BEGIN TRANSACTION
 
 	BEGIN TRY
+		DECLARE @orgDepositID INT
+		DECLARE @newDepositID INT
+		DECLARE @speciesID INT
+
+		SET @orgDepositID = (SELECT CASE
+								WHEN @isIDBase = 1 THEN @orgDeposit
+								ELSE (SELECT intPlantDepositID FROM viewPlantDeposit WHERE strAccessionNumber = @orgDeposit)
+							END)
+		SET @newDepositID = (SELECT CASE
+								WHEN @isIDBase = 1 THEN @newDeposit
+								ELSE (SELECT intPlantDepositID FROM viewPlantDeposit WHERE strAccessionNumber = @newDeposit)
+							END)
+		SET @speciesID =  (SELECT CASE
+								WHEN @isIDBase = 1 THEN @species
+								ELSE (SELECT intSpeciesID FROM viewTaxonSpecies WHERE strScientificName = @species)
+							END)
+
 		UPDATE tblPlantDeposit
 		SET strStatus = 'Further Verification'
 		WHERE intPlantDepositID = @orgDepositID
@@ -1675,10 +1818,11 @@ IF OBJECT_ID('procVerifyPlantDeposit', 'P') IS NOT NULL
 	DROP PROCEDURE procVerifyPlantDeposit
 GO
 CREATE PROCEDURE procVerifyPlantDeposit
-	@orgDepositID	INT,
-	@newDepositID	INT,
-	@speciesID		INT,
-	@validatorID	INT,
+	@isIDBase		BIT,
+	@orgDeposit		VARCHAR(50),
+	@newDeposit		VARCHAR(50),
+	@species		VARCHAR(255),
+	@validator		VARCHAR(255),
 	@dateVerified	DATE = NULL
 AS
 BEGIN
@@ -1688,6 +1832,28 @@ BEGIN
 	BEGIN TRANSACTION
 		
 	BEGIN TRY
+		DECLARE @orgDepositID INT
+		DECLARE @newDepositID INT
+		DECLARE @speciesID INT
+		DECLARE @validatorID INT
+
+		SET @orgDepositID = (SELECT CASE
+								WHEN @isIDBase = 1 THEN @orgDeposit
+								ELSE (SELECT intPlantDepositID FROM viewPlantDeposit WHERE strAccessionNumber = @orgDeposit)
+							END)
+		SET @newDepositID = (SELECT CASE
+								WHEN @isIDBase = 1 THEN @newDeposit
+								ELSE (SELECT intPlantDepositID FROM viewPlantDeposit WHERE strAccessionNumber = @newDeposit)
+							END)
+		SET @speciesID =  (SELECT CASE
+								WHEN @isIDBase = 1 THEN @species
+								ELSE (SELECT intSpeciesID FROM viewTaxonSpecies WHERE strScientificName = @species)
+							END)
+		SET @validatorID = (SELECT CASE
+								WHEN @isIDBase = 1 THEN @validator
+								ELSE (SELECT intValidatorID FROM viewValidator WHERE strFullName = @validator)
+							END)
+
 		UPDATE tblPlantDeposit
 		SET strStatus = 'Verified'
 		WHERE intPlantDepositID = @orgDepositID;
@@ -1715,20 +1881,21 @@ IF OBJECT_ID('procInsertVerifiedDeposit', 'P') IS NOT NULL
 	DROP PROCEDURE procInsertVerifiedDeposit
 GO
 CREATE PROCEDURE procInsertVerifiedDeposit
+	@isIDBase			BIT,
 	@accessionDigits	INT,
-	@newDepositID		INT = NULL,
+	@newDeposit			VARCHAR(50) = NULL,
 	@sameAccession		BIT,
 	@herbariumSheet		VARBINARY(MAX) = NULL,
-	@localityID			INT,
-	@speciesID			INT,
-	@collectorID		INT,
-	@validatorID		INT,
-	@staffID			INT,
+	@locality			VARCHAR(MAX),
+	@species			VARCHAR(255),
+	@collector			VARCHAR(255),
+	@validator			VARCHAR(255),
+	@staff				VARCHAR(255),
 	@dateCollected		DATE,
 	@dateDeposited		DATE,
 	@dateVerified		DATE,
 	@description		VARCHAR(MAX),
-	@plantTypeID		INT
+	@plantType			VARCHAR(50)
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -1737,16 +1904,20 @@ BEGIN
 	BEGIN TRANSACTION
 
 	BEGIN TRY
-		EXECUTE @Result = procInsertPlantDeposit @herbariumSheet, @localityID, @collectorID, @staffID, @dateCollected, @description, @plantTypeID, @accessionDigits, @dateDeposited
+		EXECUTE @Result = procInsertPlantDeposit @isIDBase, @herbariumSheet, @locality, @collector, @staff, @dateCollected, @description, @plantType, @accessionDigits, @dateDeposited
 		IF @Result = 0
 		BEGIN
-			DECLARE @orgDepositID VARCHAR(50);
-			SET @orgDepositID = (SELECT intPlantDepositID FROM viewPlantDeposit WHERE intAccessionNumber = @accessionDigits)
+			DECLARE @orgDeposit VARCHAR(50);
+			SET @orgDeposit = (SELECT CASE
+									WHEN @isIDBase = 1 
+									THEN CAST((SELECT intPlantDepositID FROM viewPlantDeposit WHERE intAccessionNumber = @accessionDigits) AS VARCHAR(50))
+									ELSE (SELECT strAccessionNumber FROM viewPlantDeposit WHERE intAccessionNumber = @accessionDigits)
+								END) 
 
 			IF @sameAccession = 1
-				SET @newDepositID = @orgDepositID
+				SET @newDeposit = @orgDeposit
 
-			EXECUTE @Result = procVerifyPlantDeposit @orgDepositID, @newDepositID, @speciesID, @validatorID, @dateVerified
+			EXECUTE @Result = procVerifyPlantDeposit @isIDBase, @orgDeposit, @newDeposit, @species, @validator, @dateVerified
 		END
 	END TRY
 	BEGIN CATCH
@@ -1807,7 +1978,8 @@ IF OBJECT_ID('procProcessLoan', 'P') IS NOT NULL
 	DROP PROCEDURE procProcessLoan
 GO
 CREATE PROCEDURE procProcessLoan
-	@borrowerName	VARCHAR(255),
+	@isIDBase		BIT,
+	@borrower		VARCHAR(255),
 	@startDate		DATE,
 	@endDate		DATE,
 	@purpose		VARCHAR(255),
@@ -1821,7 +1993,10 @@ BEGIN
 
 	BEGIN TRY
 		DECLARE @borrowerID INT;
-		SET @borrowerID = (SELECT intBorrowerID FROM viewBorrower WHERE strFullName = @borrowerName);
+		SET @borrowerID = (SELECT CASE
+								WHEN @isIDBase = 1 THEN @borrower
+								ELSE (SELECT intBorrowerID FROM viewBorrower WHERE strFullName = @borrower)
+							END);
 	
 		INSERT INTO tblPlantLoanTransaction(intBorrowerID, dateLoan, dateReturning, dateProcessed, strPurpose, strStatus)
 		VALUES (@borrowerID, @startDate, @endDate, GETDATE(), @purpose, @status)
@@ -1911,9 +2086,9 @@ GO
 
 -------------- SAMPLE DATA INITIALIZATION --------------
 
-EXECUTE procInsertLocality 'Philippines', 'Luzon', 'National Capital Region', 'Metro Manila', 'Manila', 'Santa Mesa', 'Polytechnic University of the Philippines - Sta. Mesa (Main) Campus', 'PUP Main Campus, Sta. Mesa, Manila', '', '14°35''52.44" N', '121°0''38.88" E'
-EXECUTE procInsertLocality 'Philippines', 'Luzon', 'National Capital Region', 'Metro Manila', 'Manila', 'Sampaloc', 'University of Sto. Tomas - Espana', 'UST Espana, Sampaloc, Manila', '', '', ''
-EXECUTE procInsertLocality 'Philippines', 'Luzon', 'National Capital Region', 'Metro Manila', 'Quezon City', 'Diliman', 'University of the Philippines - Diliman Campus', 'UP Diliman, Diliman, Quezon City', '', '', ''
+EXECUTE procInsertLocality 0, 'Philippines', 'Metro Manila', 'Manila, City of', 'Polytechnic University of the Philippines - Sta. Mesa (Main) Campus', 'PUP Main Campus, Sta. Mesa, Manila', '', '14°35''52.44" N', '121°0''38.88" E'
+EXECUTE procInsertLocality 0, 'Philippines', 'Metro Manila', 'Manila, City of', 'University of Sto. Tomas - Espana', 'UST Espana, Sampaloc, Manila', '', '', ''
+EXECUTE procInsertLocality 0, 'Philippines', 'Metro Manila', 'Quezon City', 'University of the Philippines - Diliman Campus', 'UP Diliman, Diliman, Quezon City', '', '', ''
 
 EXECUTE procInsertCollector 'Jake', 'M', 'Magpantay', 'M', '', 'Quezon City', '09991357924', 'jakemagpantay@yahoo.com', 'College of Engineering'
 EXECUTE procInsertCollector 'Anna', 'B', 'Balingit', 'B', '', 'Manila', '09051234567', 'annabalingit@gmail.com', 'College of Science'
@@ -1934,29 +2109,27 @@ EXECUTE procInsertHerbariumStaff 'Christine Joy', 'V', 'Leynes', 'V', '', '09991
 EXECUTE procInsertHerbariumStaff 'Armin','S', 'Coronado', 'S', '', '09123456789', 'armin_coronado@pup.edu.ph', 'ADMINISTRATOR', 'College of Science'
 EXECUTE procInsertHerbariumStaff 'Ma. Eleanor', 'C', 'Salvador', 'C', '', '09178482910', 'maria_salvador@pup.edu.ph', 'ADMINISTRATOR', 'College of Science'
 
-EXECUTE procInsertAccount 'Jerome Casingal', 'jetcasingal', 'jetcasingal'
-EXECUTE procInsertAccount 'Nino Danielle Escueta', 'ndescueta', 'ndescueta'
-EXECUTE procInsertAccount 'Althea Nicole Cruz', 'theacruz', 'theacruz'
-EXECUTE procInsertAccount 'Christine Joy Leynes', 'tineleynes', 'tineleynes'
+EXECUTE procInsertAccount 0, 'Jerome Casingal', 'jetcasingal', 'jetcasingal'
+EXECUTE procInsertAccount 0, 'Nino Danielle Escueta', 'ndescueta', 'ndescueta'
+EXECUTE procInsertAccount 0, 'Althea Nicole Cruz', 'theacruz', 'theacruz'
+EXECUTE procInsertAccount 0, 'Christine Joy Leynes', 'tineleynes', 'tineleynes'
 
 EXECUTE procInsertSpeciesAuthor 'Carl Linneaus', 'L.'
 
 EXECUTE procInsertPhylum 'Eukaryota', 'Plantae', 'Magnoliophyta'
-EXECUTE procInsertClass 'Magnoliophyta', 'Magnoliopsida'
-EXECUTE procInsertOrder 'Magnoliopsida', 'Lamiales'
-EXECUTE procInsertFamily 'Lamiales', 'Lamiaceae'
-EXECUTE procInsertGenus 'Lamiaceae', 'Vitex'
-EXECUTE procInsertSpecies 'Vitex', 'negundo', 'Chinese chastetree', 'Carl Linneaus', 1
+EXECUTE procInsertClass 0, 'Magnoliophyta', 'Magnoliopsida'
+EXECUTE procInsertOrder 0, 'Magnoliopsida', 'Lamiales'
+EXECUTE procInsertFamily 0, 'Lamiales', 'Lamiaceae'
+EXECUTE procInsertGenus 0, 'Lamiaceae', 'Vitex'
+EXECUTE procInsertSpecies 0, 'Vitex', 'negundo', 'Chinese chastetree', 'Carl Linneaus', 1
 
-EXECUTE procInsertSpeciesAlternate 'Vitex negundo L.', 'Filipino', 'Lagundi'
-EXECUTE procInsertFamilyBox 'Lamiaceae', 20, 1, 1, 1
+EXECUTE procInsertSpeciesNomenclature 0, 'Vitex negundo L.', 'Filipino', 'Lagundi'
+EXECUTE procInsertFamilyBox 0, 'Lamiaceae', 20, 1, 1, 1
 
 EXECUTE procInsertPlantType 'V', 'Vascular'
 EXECUTE procInsertPlantType 'B', 'Bryophytes'
 EXECUTE procInsertPlantType 'F', 'Flowering'
 EXECUTE procInsertPlantType 'A', 'Algae'
-
-INSERT INTO tblAccessionFormat (strInstitutionCode, strAccessionFormat, strYearFormat) VALUES ('PUPH', '0000#', '0#')
 
 --SELECT * FROM tblLocality
 --SELECT * FROM tblPerson
@@ -1964,6 +2137,7 @@ INSERT INTO tblAccessionFormat (strInstitutionCode, strAccessionFormat, strYearF
 --SELECT * FROM tblBorrower
 --SELECT * FROM tblValidator
 --SELECT * FROM tblHerbariumStaff
+--SELECT * FROM tblAccounts
 
 --SELECT * FROM viewTaxonPhylum
 --SELECT * FROM viewTaxonClass

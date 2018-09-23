@@ -98,12 +98,13 @@ namespace prototypeHerbarium
 
             DatabaseConnection connection = new DatabaseConnection();
             connection.setStoredProc("dbo.procPlantResubmission");
+            connection.addSprocParameter("@isIDBase", SqlDbType.Bit, 0);
             connection.addSprocParameter("@depositID", SqlDbType.Int, lblDepositID.Text);
             connection.addSprocParameter("@herbariumSheet", SqlDbType.VarBinary, picture);
-            connection.addSprocParameter("@localityID", SqlDbType.Int, (cbxLocality.SelectedItem as ComboBoxItem).ID);
-            connection.addSprocParameter("@staffID", SqlDbType.Int, StaticData.ID);
+            connection.addSprocParameter("@locality", SqlDbType.Int, (cbxLocality.SelectedItem as ComboBoxItem).Item);
+            connection.addSprocParameter("@staff", SqlDbType.Int, StaticData.staffname);
             connection.addSprocParameter("@description", SqlDbType.VarChar, txaDescription.Text);
-            connection.addSprocParameter("@plantTypeID", SqlDbType.Int, (cbxPlantType.SelectedItem as ComboBoxItem).ID);
+            connection.addSprocParameter("@plantType", SqlDbType.Int, (cbxPlantType.SelectedItem as ComboBoxItem).Item);
             connection.executeStoredProc();
 
             MessageBox.Show("Plant Deposit Submitted", "Record Saved");

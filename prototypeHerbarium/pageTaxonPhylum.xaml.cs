@@ -203,6 +203,7 @@ namespace prototypeHerbarium
             DatabaseConnection connection = new DatabaseConnection();
 
             connection.setStoredProc("dbo.procInsertPhylum");
+            connection.addSprocParameter("@isIDBase", SqlDbType.Bit, 0);
             connection.addSprocParameter("@domainName", SqlDbType.VarChar, txfDomainName.Text);
             connection.addSprocParameter("@kingdomName", SqlDbType.VarChar, txfKingdomName.Text);
             connection.addSprocParameter("@phylumName", SqlDbType.VarChar, txfPhylumName.Text);
@@ -229,6 +230,7 @@ namespace prototypeHerbarium
             DatabaseConnection connection = new DatabaseConnection();
 
             connection.setStoredProc("dbo.procUpdatePhylum");
+            connection.addSprocParameter("@isIDBase", SqlDbType.Bit, 0);
             connection.addSprocParameter("@phylumNo", SqlDbType.VarChar, txfPhylumID.Text);
             connection.addSprocParameter("@domainName", SqlDbType.VarChar, txfDomainName.Text);
             connection.addSprocParameter("@kingdomName", SqlDbType.VarChar, txfKingdomName.Text);

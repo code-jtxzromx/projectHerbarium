@@ -185,6 +185,7 @@ namespace prototypeHerbarium
             DatabaseConnection connection = new DatabaseConnection();
 
             connection.setStoredProc("dbo.procInsertOrder");
+            connection.addSprocParameter("@isIDBase", SqlDbType.Bit, 0);
             connection.addSprocParameter("@className", SqlDbType.VarChar, cbxClassName.SelectedItem.ToString());
             connection.addSprocParameter("@orderName", SqlDbType.VarChar, txfOrderName.Text);
             status = connection.executeProcedure();
@@ -211,6 +212,7 @@ namespace prototypeHerbarium
 
             connection.setStoredProc("dbo.procUpdateOrder");
             connection.addSprocParameter("@orderNo", SqlDbType.VarChar, txfOrderID.Text);
+            connection.addSprocParameter("@isIDBase", SqlDbType.Bit, 0);
             connection.addSprocParameter("@className", SqlDbType.VarChar, cbxClassName.SelectedItem.ToString());
             connection.addSprocParameter("@orderName", SqlDbType.VarChar, txfOrderName.Text);
             status = connection.executeProcedure();

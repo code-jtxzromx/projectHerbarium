@@ -162,6 +162,7 @@ namespace prototypeHerbarium
             DatabaseConnection connection = new DatabaseConnection();
 
             connection.setStoredProc("dbo.procInsertSpeciesAuthor");
+            connection.addSprocParameter("@isIDBase", SqlDbType.Bit, 0);
             connection.addSprocParameter("@author", SqlDbType.VarChar, txfAuthorName.Text);
             connection.addSprocParameter("@speciesSuffix", SqlDbType.VarChar, txfAuthorSuffix.Text);
             status = connection.executeProcedure();
@@ -187,6 +188,7 @@ namespace prototypeHerbarium
             DatabaseConnection connection = new DatabaseConnection();
 
             connection.setStoredProc("dbo.procUpdateSpeciesAuthor");
+            connection.addSprocParameter("@isIDBase", SqlDbType.Bit, 0);
             connection.addSprocParameter("@author", SqlDbType.VarChar, txfAuthorName.Text);
             connection.addSprocParameter("@speciesSuffix", SqlDbType.VarChar, txfAuthorSuffix.Text);
             status = connection.executeProcedure();

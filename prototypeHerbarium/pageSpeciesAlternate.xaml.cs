@@ -188,7 +188,8 @@ namespace prototypeHerbarium
             int status;
             DatabaseConnection connection = new DatabaseConnection();
 
-            connection.setStoredProc("dbo.procInsertSpeciesAlternate");
+            connection.setStoredProc("dbo.procInsertSpeciesNomenclature");
+            connection.addSprocParameter("@isIDBase", SqlDbType.Bit, 0);
             connection.addSprocParameter("@taxonName", SqlDbType.VarChar, cbxTaxonName.SelectedItem);
             connection.addSprocParameter("@language", SqlDbType.VarChar, txfLanguage.Text);
             connection.addSprocParameter("@alternateName", SqlDbType.VarChar, txfAlternateName.Text);
@@ -215,7 +216,8 @@ namespace prototypeHerbarium
             int status;
             DatabaseConnection connection = new DatabaseConnection();
 
-            connection.setStoredProc("dbo.procUpdateSpeciesAlternate");
+            connection.setStoredProc("dbo.procUpdateSpeciesNomenclature");
+            connection.addSprocParameter("@isIDBase", SqlDbType.Bit, 0);
             connection.addSprocParameter("@altNameID", SqlDbType.VarChar, txfAltNameID.Text);
             connection.addSprocParameter("@taxonName", SqlDbType.VarChar, cbxTaxonName.SelectedItem);
             connection.addSprocParameter("@language", SqlDbType.VarChar, txfLanguage.Text);

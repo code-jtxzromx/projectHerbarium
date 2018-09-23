@@ -122,7 +122,7 @@ namespace prototypeHerbarium
         {
             DatabaseConnection connection = new DatabaseConnection();
 
-            connection.setQuery("SELECT intAccountID FROM tblAccounts");
+            connection.setQuery("SELECT intStaffID FROM tblAccounts");
 
             SqlDataReader sqlData = connection.executeResult();
             noRecords = (sqlData.HasRows) ? false : true;

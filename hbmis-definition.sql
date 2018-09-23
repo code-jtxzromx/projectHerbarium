@@ -173,8 +173,7 @@ IF OBJECT_ID('tblFamilyBox', 'U') IS NOT NULL
 GO
 CREATE TABLE tblFamilyBox
 (
-	intBoxID INT IDENTITY(1000, 1) NOT NULL,
-	strBoxNumber VARCHAR(10) NOT NULL,
+	intBoxID INT IDENTITY(1, 1) NOT NULL,
 	intFamilyID INT NOT NULL,
 	intBoxLimit INT NOT NULL,
 	intRackNo INT NOT NULL,
@@ -186,25 +185,94 @@ CREATE TABLE tblFamilyBox
 )
 GO
 
+-- Country
+IF OBJECT_ID('tblCountry', 'U') IS NOT NULL
+	DROP TABLE tblCountry
+GO
+CREATE TABLE tblCountry
+(
+	intCountryID INT IDENTITY(1, 1) NOT NULL,
+	strCountry VARCHAR(255) NOT NULL
+	CONSTRAINT pk_tblCountry PRIMARY KEY(intCountryID)
+)
+GO
+
+-- Region
+IF OBJECT_ID('tblRegion', 'U') IS NOT NULL
+	DROP TABLE tblRegion
+GO
+CREATE TABLE tblRegion
+(
+	intRegionID INT IDENTITY(1, 1) NOT NULL,
+	strIsland VARCHAR(50) NOT NULL,
+	strRegionCode VARCHAR(10) NOT NULL,
+	strRegion VARCHAR(255) NOT NULL
+	CONSTRAINT pk_tblRegion PRIMARY KEY(intRegionID)
+)
+GO
+
+-- Provinces
+IF OBJECT_ID('tblProvince', 'U') IS NOT NULL
+	DROP TABLE tblProvince
+GO
+CREATE TABLE tblProvince
+(
+	intProvinceID INT IDENTITY(1, 1) NOT NULL,
+	intRegionID INT NOT NULL,
+	strProvince VARCHAR(255) NOT NULL
+	CONSTRAINT pk_tblProvince PRIMARY KEY(intProvinceID),
+	CONSTRAINT fk_tblProvince_tblRegion FOREIGN KEY(intRegionID)
+		REFERENCES tblRegion(intRegionID)
+)
+GO
+
+-- City
+IF OBJECT_ID('tblCity', 'U') IS NOT NULL
+	DROP TABLE tblCity
+GO
+CREATE TABLE tblCity
+(
+	intCityID INT IDENTITY(1, 1) NOT NULL,
+	intProvinceID INT NOT NULL,
+	strCity VARCHAR(255) NOT NULL
+	CONSTRAINT pk_tblCity PRIMARY KEY(intCityID),
+	CONSTRAINT fk_tblCity_tblProvince FOREIGN KEY(intProvinceID)
+		REFERENCES tblProvince(intProvinceID)
+)
+GO
+
 -- Locality
 IF OBJECT_ID('tblLocality', 'U') IS NOT NULL
 	DROP TABLE tblLocality
 GO
 CREATE TABLE tblLocality
 (
-	intLocalityID INT IDENTITY(1000, 1) NOT NULL,
-	strCountry VARCHAR(50) NOT NULL,
-	strIsland VARCHAR(50),
-	strRegion VARCHAR(50),
-	strProvince VARCHAR(50),
-	strCity VARCHAR(50),
-	strArea VARCHAR(50),
+	intLocalityID INT IDENTITY(1, 1) NOT NULL,
+	intCountryID INT NOT NULL,
 	strSpecificLocation VARCHAR(255),
 	strShortLocation VARCHAR(255),
 	strFullLocality VARCHAR(50),
 	strLatitude VARCHAR(20),
 	strLongtitude VARCHAR(20),
-	CONSTRAINT pk_tblLocality PRIMARY KEY(intLocalityID)
+	CONSTRAINT pk_tblLocality PRIMARY KEY(intLocalityID),
+	CONSTRAINT fk_tblLocality_tblCountry FOREIGN KEY(intCountryID)
+		REFERENCES tblCountry(intCountryID)
+)
+GO
+
+-- Philippine Locality
+IF OBJECT_ID('tblPHLocality', 'U') IS NOT NULL
+	DROP TABLE tblPHLocality
+GO
+CREATE TABLE tblPHLocality
+(
+	intLocalityID INT NOT NULL,
+	intCityID INT NOT NULL,
+	CONSTRAINT pk_tblPHLocality PRIMARY KEY(intLocalityID),
+	CONSTRAINT fk_tblPHLocality_tblLocality FOREIGN KEY(intLocalityID)
+		REFERENCES tblLocality(intLocalityID),
+	CONSTRAINT fk_tblPHLocality_tblCity FOREIGN KEY(intCityID)
+		REFERENCES tblCity(intCityID),
 )
 GO
 
@@ -214,7 +282,7 @@ IF OBJECT_ID('tblCollector', 'U') IS NOT NULL
 GO
 CREATE TABLE tblCollector
 (
-	intCollectorID INT IDENTITY(1000, 1) NOT NULL,
+	intCollectorID INT IDENTITY(1001, 1) NOT NULL,
 	strFirstname VARCHAR(50) NOT NULL,
 	strMiddlename VARCHAR(50),
 	strLastname VARCHAR(50) NOT NULL,
@@ -234,7 +302,7 @@ IF OBJECT_ID('tblBorrower', 'U') IS NOT NULL
 GO
 CREATE TABLE tblBorrower 
 (
-	intBorrowerID INT IDENTITY(1000, 1) NOT NULL,
+	intBorrowerID INT IDENTITY(1001, 1) NOT NULL,
 	strFirstname VARCHAR(50) NOT NULL,
 	strMiddlename VARCHAR(50),
 	strLastname VARCHAR(50) NOT NULL,
@@ -254,7 +322,7 @@ IF OBJECT_ID('tblValidator', 'U') IS NOT NULL
 GO
 CREATE TABLE tblValidator
 (
-	intValidatorID INT IDENTITY(1000, 1) NOT NULL,
+	intValidatorID INT IDENTITY(1001, 1) NOT NULL,
 	strFirstname VARCHAR(50) NOT NULL,
 	strMiddlename VARCHAR(50),
 	strLastname VARCHAR(50) NOT NULL,
@@ -274,7 +342,7 @@ IF OBJECT_ID('tblHerbariumStaff', 'U') IS NOT NULL
 GO
 CREATE TABLE tblHerbariumStaff
 (
-	intStaffID INT IDENTITY(1000, 1) NOT NULL,
+	intStaffID INT IDENTITY(1001, 1) NOT NULL,
 	strFirstname VARCHAR(50) NOT NULL,
 	strMiddlename VARCHAR(50),
 	strLastname VARCHAR(50) NOT NULL,
@@ -298,12 +366,11 @@ IF OBJECT_ID('tblAccounts', 'U') IS NOT NULL
 GO
 CREATE TABLE tblAccounts
 (
-	intAccountID INT IDENTITY(1000, 1) NOT NULL,
 	intStaffID INT NOT NULL,
 	strUsername VARCHAR(50) NOT NULL,
 	strPassword VARCHAR(50) NOT NULL,
 	boolActive BIT NOT NULL
-	CONSTRAINT pk_tblAccounts PRIMARY KEY(intAccountID),
+	CONSTRAINT pk_tblAccounts PRIMARY KEY(intStaffID),
 	CONSTRAINT fk_tblAccounts_tblHerbariumStaff FOREIGN KEY(intStaffID)
 		REFERENCES tblHerbariumStaff(intStaffID)
 )
@@ -650,7 +717,7 @@ GO
 CREATE VIEW viewFamilyBox
 AS
 (
-	SELECT FB.intBoxID, FB.strBoxNumber, TF.strFamilyName, FB.intBoxLimit, FB.intRackNo, FB.intRackRow, FB.intRackColumn
+	SELECT FB.intBoxID, CONCAT('BOX-', FORMAT(FB.intBoxID, '00#')) strBoxNumber, TF.strFamilyName, FB.intBoxLimit, FB.intRackNo, FB.intRackRow, FB.intRackColumn
 	FROM tblFamilyBox FB
 		INNER JOIN tblFamily TF ON FB.intFamilyID = TF.intFamilyID
 ) 
@@ -663,12 +730,17 @@ GO
 CREATE VIEW viewLocality
 AS
 (
-	SELECT intLocalityID, strCountry, strIsland, strRegion, strProvince, strCity, strArea, strSpecificLocation, strShortLocation,
+	SELECT Lo.intLocalityID, Co.strCountry, Re.strIsland, Re.strRegion, Pr.strProvince, Ci.strCity, Lo.strSpecificLocation, Lo.strShortLocation,
 		CASE
-			WHEN strCountry = 'Philippines' THEN CONCAT(strSpecificLocation, ', ', strArea, ', ', strCity, ', ', strProvince, ', ', strRegion, ', ', strIsland)
-			ELSE strFullLocality
-		END strFullLocality, strLatitude, strLongtitude
-	FROM tblLocality
+			WHEN Co.strCountry = 'Philippines' THEN CONCAT(Lo.strSpecificLocation, ', ', Ci.strCity, ', ', Pr.strProvince, ', ', Re.strRegion, ', ', Re.strIsland)
+			ELSE Lo.strFullLocality
+		END strFullLocality, Lo.strLatitude, Lo.strLongtitude
+	FROM tblLocality Lo
+		LEFT JOIN tblPHLocality PL ON Lo.intLocalityID = PL.intLocalityID
+		INNER JOIN tblCity Ci ON PL.intCityID = Ci.intCityID
+		INNER JOIN tblProvince Pr ON Ci.intProvinceID = Pr.intProvinceID
+		INNER JOIN tblRegion Re ON Pr.intRegionID = Re.intRegionID
+		INNER JOIN tblCountry Co ON Lo.intCountryID = Co.intCountryID
 )
 GO
 
@@ -733,7 +805,7 @@ GO
 CREATE VIEW viewAccounts
 AS
 (
-	SELECT Ac.intAccountID, HS.intStaffID, HS.strFullName, Ac.strUsername, Ac.strPassword, HS.strRole, Ac.boolActive
+	SELECT HS.intStaffID, HS.strFullName, Ac.strUsername, Ac.strPassword, HS.strRole, Ac.boolActive
 	FROM tblAccounts Ac	
 		INNER JOIN viewHerbariumStaff HS ON Ac.intStaffID = HS.intStaffID
 	WHERE Ac.boolActive = 1
@@ -767,8 +839,8 @@ AS
 (
 	SELECT PD.intPlantDepositID, 
 			CONCAT(AF.strInstitutionCode,'-', PT.strPlantTypeCode, '-', FORMAT(PD.intAccessionNumber, AF.strAccessionFormat), '-', 
-			FORMAT(YEAR(PD.dateDeposited) % POWER(10, LEN(AF.strYearFormat)), AF.strYearFormat)) strAccessionNumber, PD.intAccessionNumber,
-			PD.picHerbariumSheet, Co.strFullName AS strCollector, Lo.strFullLocality,
+			FORMAT(YEAR(PD.dateDeposited) % POWER(10, LEN(AF.strYearFormat)), AF.strYearFormat)) strAccessionNumber, 
+			PD.intAccessionNumber, PD.picHerbariumSheet, Co.strFullName AS strCollector, Lo.strFullLocality,
 			St.strFullName AS strStaff, PD.dateCollected, PD.dateDeposited, PD.strDescription, PD.strStatus
 	FROM tblPlantDeposit PD
 		INNER JOIN tblPlantType PT ON PD.intPlantTypeID = PT.intPlantTypeID
@@ -776,6 +848,24 @@ AS
 		INNER JOIN viewCollector Co ON PD.intCollectorID = Co.intCollectorID
 		INNER JOIN viewLocality Lo ON PD.intLocalityID = Lo.intLocalityID
 		INNER JOIN viewHerbariumStaff St ON PD.intStaffID = St.intStaffID
+)
+GO
+
+-- Externally Verifying Plant Deposit View
+IF OBJECT_ID('viewVerifyingDeposit', 'V') IS NOT NULL
+	DROP VIEW viewVerifyingDeposit
+GO
+CREATE VIEW viewVerifyingDeposit
+AS
+(
+	SELECT PD_A.intPlantDepositID, PD_A.strAccessionNumber, PD_B.strAccessionNumber AS strReferenceAccession, PD_A.picHerbariumSheet, 
+		TS.strFamilyName, TS.strScientificName, TS.strCommonName, PD_A.strCollector, PD_A.strFullLocality, PD_A.strStaff,  
+		PD_A.dateCollected, PD_A.dateDeposited, PD_A.strDescription, PD_A.strStatus
+	FROM tblVerifyingDeposit VD
+		RIGHT JOIN viewPlantDeposit PD_A ON VD.intPlantDepositID = PD_A.intPlantDepositID
+		INNER JOIN viewPlantDeposit PD_B ON VD.intReferenceDepositID = PD_B.intPlantDepositID
+		INNER JOIN viewTaxonSpecies TS ON VD.intSpeciesID = TS.intSpeciesID
+	WHERE PD_A.strStatus = 'Further Verification'
 )
 GO
 
@@ -870,5 +960,113 @@ AS
 		JOIN viewTaxonSpecies TS ON LS.intSpeciesID = TS.intSpeciesID
 )
 GO
+
+--------- STATIC DATA INSERTION ---------
+SET NOCOUNT ON
+
+-- Countries
+INSERT INTO tblCountry(strCountry)
+VALUES ('Afghanistan'), ('Aland Islands'), ('ALbania'), ('Algeria'), ('American Samoa'), 
+	   ('Andorra'), ('Angola'), ('Anguilla'), ('Antarctica'), ('Antigua and Barbuda'), 
+	   ('Argentina'), ('Armenia'), ('Aruba'), ('Australia'), ('Austria'), 
+	   ('Azerbaijan'), ('Bahamas'), ('Bahrain'), ('Bangladesh'), ('Barbados'), 
+	   ('Belarus'), ('Belgium'), ('Belize'), ('Benin'), ('Bermuda'),
+	   ('Bhutan'), ('Bolivia'), ('Bosnia and Herzegovina'), ('Botswana'), ('Bouvet Island'),
+	   ('Brazil'), ('British Indian Ocean Territory'), ('Brunei Darussalam'), ('Bulgaria'), ('Burkina Paso'),
+	   ('Burundi'), ('Cambodia'), ('Cameroon'), ('Canada'), ('Cape Verde'),
+	   ('Cayman Islands'), ('Central African Republic'), ('Chad'), ('Chile'), ('China'),
+	   ('Christmas Island'), ('Cocos (Keeling) Island'), ('Colombia'), ('Comoros'), ('Congo'),
+	   ('Congo, Democratic Republic of'), ('Cook Islands'), ('Costa Rica'), ('Cote D''Ivoire'), ('Croatia'),
+	   ('Cuba'), ('Cyprus'), ('Czech Republic'), ('Denmark'), ('Djibouti'),
+	   ('Dominica'), ('Dominican Republic'), ('Ecuador'), ('Egypt'), ('El Salvador'),
+	   ('Equatorial Guinea'), ('Eritrea'), ('Estonia'), ('Ethiopia'), ('Falkland Islands (Malvinas)'),
+	   ('Faroe Islands'), ('Fiji'), ('Finland'), ('France'), ('French Guiana'),
+	   ('French Polynesia'), ('French Southern Territories'), ('Gabon'), ('Gambia'), ('Georgia'),
+	   ('Germany'), ('Ghana'), ('Gibraltar'), ('Greece'), ('Greenland'),
+	   ('Grenada'), ('Guadaloupe'), ('Guam'), ('Guatemala'), ('Guernsey'),
+	   ('Guinea'), ('Guinea-Bissau'), ('Guyana'), ('Haiti'), ('Heard Island and McDonald Islands'),
+	   ('Holy See (Vatican City State)'), ('Honduras'), ('Hong Kong'), ('Hungary'), ('Iceland'),
+	   ('India'), ('Indonesia'), ('Iran'), ('Iraq'), ('Ireland'),
+	   ('Isle of Man'), ('Israel'), ('Italy'), ('Jamaica'), ('Japan'),
+	   ('Jersey'), ('Jordan'), ('Kazakhstan'), ('Kenya'), ('Kiribati'),
+	   ('Korea, North'), ('Korea, South'), ('Kuwait'), ('Kyrgyzstan'), ('Laos'),
+	   ('Latvia'), ('Lebanon'), ('Lesotho'), ('Liberia'), ('Libya'),
+	   ('Liechtenstein'), ('Lithuania'), ('Luxemberg'), ('Macao'), ('Macedonia'),
+	   ('Madagascar'), ('Malawi'), ('Malaysia'), ('Maldives'), ('Mali'),
+	   ('Malta'), ('Marshall Islands'), ('Martinique'), ('Mauritania'), ('Mauritius'),
+	   ('Mayotte'), ('Mexico'), ('Micronesia'), ('Moldova'), ('Monaco'),
+	   ('Mongolia'), ('Montenegro'), ('Montserrat'), ('Morocco'), ('Mozambique'),
+	   ('Myanmar'), ('Namibia'), ('Nauru'), ('Nepal'), ('Netherlands'),
+	   ('Netherlands Antille'), ('New Caledonia'), ('New Zealand'), ('Nicaragua'), ('Niger'),
+	   ('Nigeria'), ('Niue'), ('Norfolk Island'), ('Northern Mariana Islands'), ('Norway'),
+	   ('Oman'), ('Pakistan'), ('Palau'), ('Palestine'), ('Panama'), 
+	   ('Papua New Guinea'), ('Paraguay'), ('Peru'), ('Philippines'), ('Pitcairn'),
+	   ('Poland'), ('Portugal'), ('Puerto Rico'), ('Qatar'), ('Reunion'),
+	   ('Romania'), ('Russia'), ('Rwanda'), ('Saint Barthelemy'), ('Saint Helena, Ascension and Tristan Da Cunha'),
+	   ('Saint Kitts'), ('Saint Lucia'), ('Saint Martin'), ('Saint Pierre and Miquelon'), ('Saint Vincent and the Grenadines'),
+	   ('Samoa'), ('San Marino'), ('Sao Tome and Principe'), ('Saudi Arabia'), ('Senegal'),
+	   ('Serbia'), ('Seychelles'), ('Sierra Leone'), ('Singapore'), ('Slovakia'),
+	   ('Slovenia'), ('Solomon Islands'), ('Somalia'), ('South Africa'), ('South Georgia and the South Sandwich Islands'),
+	   ('Spain'), ('Sri Lanka'), ('Sudan'), ('Suriname'), ('Svalbard and Jan Mayen'),
+	   ('Swaziland'), ('Sweden'), ('Switzerland'), ('Syria'), ('Taiwan'),
+	   ('Tajikistan'), ('Tanzania'), ('Thailand'), ('Timor-Leste'), ('Togo'),
+	   ('Tokelau'), ('Tonga'), ('Trinidad and Tobago'), ('Tunisia'), ('Turkey'),
+	   ('Turkmenistan'), ('Turks and Caicos Islands'), ('Tuvalu'), ('Uganda'), ('Ukraine'),
+	   ('United Arab Emirates'), ('United Kingdom'), ('United States'), ('United States Minor Outlying Islands'), ('Uruguay'),
+	   ('Uzbekistan'), ('Vanuatu'), ('Vatican City'), ('Venezuela'), ('Vietnam'),
+	   ('Virgin Islands (British)'), ('Virgin Islands (US)'), ('Wallis and Fortuna'), ('Western Sahara'), ('Yemen'),
+	   ('Yugoslavia'), ('Zambia'), ('Zimbabwe')
+
+-- Regions
+INSERT INTO tblRegion (strIsland, strRegionCode, strRegion)
+VALUES ('Luzon', 'NCR', 'National Capital Region'),
+	   ('Luzon', 'CAR', 'Cordillera Administrative Region'),
+	   ('Luzon', 'I', 'Ilocos Region'),
+	   ('Luzon', 'II', 'Cagayan Valley'),
+	   ('Luzon', 'III', 'Central Luzon'),
+	   ('Luzon', 'IV-A', 'CALABARZON'),
+	   ('Luzon', 'IV-B', 'MIMAROPA'),
+	   ('Luzon', 'V', 'Bicol Region'),
+	   ('Visayas', 'VI', 'Western Visayas'),
+	   ('Visayas', 'VII', 'Central Visayas'),
+	   ('Visayas', 'VIII', 'Eastern Visayas'),
+	   ('Mindanao', 'IX', 'Zamboanga Peninsula'),
+	   ('Mindanao', 'X', 'Northern Mindanao'),
+	   ('Mindanao', 'XI', 'Davao Region'),
+	   ('Mindanao', 'XII', 'SOCCSKSARGEN'),
+	   ('Mindanao', 'XIII', 'Caraga Region'),
+	   ('Mindanao', 'ARMM', 'Autonomous Region in Muslim Mindanao')
+GO
+
+-- Provinces
+INSERT INTO tblProvince (intRegionID, strProvince)
+VALUES (1, 'Metro Manila'),
+	   (2, 'Abra'), (2, 'Apayao'), (2, 'Benguet'), (2, 'Ifugao'), (2, 'Kalinga'), (2, 'Mountain Province'),
+	   (3, 'Ilocos Norte'), (3, 'Ilocos Sur'), (3, 'La Union'), (3, 'Pangasinan'),
+	   (4, 'Batanes'), (4, 'Cagayan'), (4, 'Isabela'), (4, 'Nueva Vizcaya'), (4, 'Quirino'),
+	   (5, 'Aurora'), (5, 'Bataan'), (5, 'Bulacan'), (5, 'Nueva Ecija'), (5, 'Pampanga'), (5, 'Tarlac'), (5, 'Zambales'),
+	   (6, 'Batangas'), (6, 'Cavite'), (6, 'Laguna'), (6, 'Quezon'), (6, 'Rizal'),
+	   (7, 'Marinduque'), (7, 'Occidental Mindoro'), (7, 'Oriental Mindoro'), (7, 'Palawan'), (7, 'Romblon'),
+	   (8, 'Albay'), (8, 'Camarines Norte'), (8, 'Camarines Sur'), (8, 'Catanduanes'), (8, 'Masbate'), (8, 'Sorsogon'),
+	   (9, 'Aklan'), (9, 'Antique'), (9, 'Capiz'), (9, 'Guimaras'), (9, 'Negros Occidental'), (9, 'Iloilo'),
+	   (10, 'Bohol'), (10, 'Cebu'), (10, 'Negros Oriental'), (10, 'Siquijor'),
+	   (11, 'Biliran'), (11, 'Eastern Samar'), (11, 'Leyte'), (11, 'Northern Samar'), (11, 'Southern Leyte'),
+	   (12, 'Zamboanga del Norte'), (12, 'Zamboanga del Sur'), (12, 'Zamboanga Sibugay'),
+	   (13, 'Bukidnon'), (13, 'Camiguin'), (13, 'Lanao del Norte'), (13, 'Misamis Occidental'), (13, 'Misamis Oriental'),
+	   (14, 'Compostela Valley'), (14, 'Davao del Norte'), (14, 'Davao del Sur'), (14, 'Davao Occidental'), (14, 'Davao Oriental'),
+	   (15, 'Cotabato'), (15, 'Saranggani'), (15, 'South Cotabato'), (15, 'Sultan Kudarat'),
+	   (16, 'Agusan del Norte'), (16, 'Agusan del Sur'), (16, 'Dinagat Islands'), (16, 'Surigao del Norte'), (16, 'Surigao del Sur'),
+	   (17, 'Basilan'), (17, 'Lanao del Sur'), (17, 'Maguindanao'), (17, 'Sulu'), (17, 'Tawi-Tawi')
+GO
+
+-- Cities
+INSERT INTO tblCity (intProvinceID, strCity)
+VALUES (1, 'Caloocan City'), (1, 'Las Piñas, City of'), (1, 'Makati, City of'), (1, 'Malabon, City of'), (1, 'Mandaluyong, City of'), 
+	   (1, 'Manila, City of '), (1, 'Marikina, City of '), (1, 'Muntilupa, City of '), (1, 'Navotas, City of'), (1, 'Parañaque, City of'),
+	   (1, 'Pasay City'), (1, 'Pasig, City of'), (1, 'Pateros'), (1, 'Quezon City'), (1, 'San Juan, City of '), 
+	   (1, 'Taguig City'), (1, 'Valenzuela, City of ')
+
+-- Others
+INSERT INTO tblAccessionFormat (strInstitutionCode, strAccessionFormat, strYearFormat) VALUES ('PUPH', '0000#', '0#')
 
 -------------- END OF FILE --------------
