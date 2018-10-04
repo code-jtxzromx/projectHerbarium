@@ -40,7 +40,7 @@ namespace prototypeHerbarium
             DatabaseConnection connection = new DatabaseConnection();
             PlantDeposit plantDeposit = dgrVerifyingDeposit.SelectedValue as PlantDeposit;
 
-            connection.setQuery("SELECT intPlantDepositID, strAccessionNumber, picHerbariumSheet, " +
+            connection.setQuery("SELECT intPlantDepositID, strAccessionNumber, " +
                                         "CONVERT(VARCHAR, dateCollected, 107), CONVERT(VARCHAR, dateDeposited, 107), " +
                                         "strFullLocality, strCollector, strDescription " +
                                 "FROM viewPlantDeposit " +
@@ -51,28 +51,24 @@ namespace prototypeHerbarium
             pnlPlantDeposit.Visibility = Visibility.Visible;
             while (sqlData.Read())
             {
-                try {
-                    byte[] tempBlob = (byte[])sqlData[2];
-                    picHerbariumSheet.Source = getHerbariumSheet(tempBlob);
-                }
-                catch(Exception) { }
-
                 lblDepositID.Text = sqlData[0].ToString();
                 lblAccessionNumber.Text = sqlData[1].ToString();
-                lblDateCollected.Text = sqlData[3].ToString();
-                lblDateDeposited.Text = sqlData[4].ToString();
-                lblLocality.Text = sqlData[5].ToString();
-                lblCollector.Text = sqlData[6].ToString();
-                lblDescription.Text = sqlData[7].ToString();
+                lblDateCollected.Text = sqlData[2].ToString();
+                lblDateDeposited.Text = sqlData[3].ToString();
+                lblLocality.Text = sqlData[4].ToString();
+                lblCollector.Text = sqlData[5].ToString();
+                lblDescription.Text = sqlData[6].ToString();
 
                 plantDetails.AccessionNumber = sqlData[1].ToString();
-                plantDetails.DateCollected = sqlData[3].ToString();
-                plantDetails.DateDeposited = sqlData[4].ToString();
-                plantDetails.Locality = sqlData[5].ToString();
-                plantDetails.Collector = sqlData[6].ToString();
-                plantDetails.Description = sqlData[7].ToString();
+                plantDetails.DateCollected = sqlData[2].ToString();
+                plantDetails.DateDeposited = sqlData[3].ToString();
+                plantDetails.Locality = sqlData[4].ToString();
+                plantDetails.Collector = sqlData[5].ToString();
+                plantDetails.Description = sqlData[6].ToString();
             }
             connection.closeResult();
+
+            getHerbariumImage(plantDetails.AccessionNumber);
         }
 
         private void chkIsDuplicate_CheckChanged(object sender, RoutedEventArgs e) => ctrlReference.Visibility = (chkIsDuplicate.IsChecked == true) ? Visibility.Visible : Visibility.Collapsed;
@@ -83,7 +79,7 @@ namespace prototypeHerbarium
             {
                 getAccessionNumbers((cbxScientificName.SelectedItem as ComboBoxItem).Item);
 
-                if (isDuplicateHerbarium(plantDetails, ref referenceAccession, ref scientificName))
+                if (isDuplicateHerbarium(plantDetails, scientificName, ref referenceAccession))
                 {
                     chkIsDuplicate.IsChecked = true;
                     chkIsDuplicate_CheckChanged(chkIsDuplicate, null);
@@ -91,9 +87,6 @@ namespace prototypeHerbarium
                     foreach (var item in cbxReferenceNumber.Items)
                         if ((item as ComboBoxItem).Item == referenceAccession)
                             cbxReferenceNumber.SelectedItem = item;
-                    foreach (var item in cbxScientificName.Items)
-                        if ((item as ComboBoxItem).Item == scientificName)
-                            cbxScientificName.SelectedItem = item;
                 }
                 else
                 {
@@ -177,9 +170,7 @@ namespace prototypeHerbarium
                     MessageBox.Show("Transaction Failed, The system had run to an Error", "Record Saved", MessageBoxButton.OK, MessageBoxImage.Information);
                     break;
             }
-
-
-
+            
             pnlPlantDeposit.Visibility = Visibility.Hidden;
 
             getPlantDeposit();
@@ -215,6 +206,25 @@ namespace prototypeHerbarium
             image.StreamSource = new MemoryStream(blob);
             image.EndInit();
             return image;
+        }
+
+        private void getHerbariumImage(string accessionNumber)
+        {
+            DatabaseConnection connection = new DatabaseConnection();
+            connection.setQuery("SELECT picHerbariumSheet FROM viewHerbariumPicture WHERE strAccessionNumber = @accessionNumber");
+            connection.addParameter("@accessionNumber", SqlDbType.VarChar, accessionNumber);
+
+            SqlDataReader sqlData = connection.executeResult();
+            while (sqlData.Read())
+            {
+                try
+                {
+                    byte[] tempBlob = (byte[])sqlData[0];
+                    picHerbariumSheet.Source = getHerbariumSheet(tempBlob);
+                }
+                catch (Exception) { }
+            }
+            connection.closeResult();
         }
 
         private void getSpeciesList()
@@ -264,7 +274,7 @@ namespace prototypeHerbarium
             cbxReferenceNumber.ItemsSource = accessionList;
         }
 
-        private bool isDuplicateHerbarium(PlantDeposit deposit, ref string refAccession, ref string taxonName)
+        private bool isDuplicateHerbarium(PlantDeposit deposit, string taxonName, ref string refAccession)
         {
             bool result;
 
@@ -274,11 +284,13 @@ namespace prototypeHerbarium
                                 "WHERE strCollector = @collector " +
                                     "AND strFullLocality = @locality " +
                                     "AND dateCollected = @dateCollected " +
-                                    "AND strDescription = @description");
+                                    "AND strDescription = @description " +
+                                    "AND strScientificName = @taxonName");
             connection.addParameter("@collector", SqlDbType.VarChar, deposit.Collector);
             connection.addParameter("@locality", SqlDbType.VarChar, deposit.Locality);
             connection.addParameter("@dateCollected", SqlDbType.Date, deposit.DateCollected);
             connection.addParameter("@description", SqlDbType.VarChar, deposit.Description);
+            connection.addParameter("@taxonName", SqlDbType.VarChar, taxonName);
 
             SqlDataReader sqlData = connection.executeResult();
             while (sqlData.Read())

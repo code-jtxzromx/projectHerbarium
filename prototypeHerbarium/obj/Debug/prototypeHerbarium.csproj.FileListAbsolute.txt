@@ -335,3 +335,5 @@ C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbariu
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\viewQTaxonSpecies.baml
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\viewExcelDepositUpload.g.cs
 C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\obj\Debug\viewExcelDepositUpload.baml
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\bin\Debug\ExcelDataReader.dll
+C:\Users\Jtxzromx Casingal\Documents\Visual Studio 2017\Projects\projectHerbarium\prototypeHerbarium\bin\Debug\ExcelDataReader.xml

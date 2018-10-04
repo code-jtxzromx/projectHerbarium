@@ -41,7 +41,7 @@ namespace prototypeHerbarium
             HerbariumSheet herbariumSheet = dgrHerbariumSheets.SelectedValue as HerbariumSheet;
             
             // Query Command Setting
-            connection.setQuery("SELECT strAccessionNumber, strReferenceAccession, picHerbariumSheet, " +
+            connection.setQuery("SELECT strAccessionNumber, strReferenceAccession, " +
                                     "strFamilyName, strScientificName, strCommonName, CONVERT(VARCHAR, dateCollected, 107), " +
                                     "CONVERT(VARCHAR, dateDeposited, 107), CONVERT(VARCHAR, dateVerified, 107), strFullLocality, " +
                                     "strCollector, strValidator, strDescription " +
@@ -55,7 +55,7 @@ namespace prototypeHerbarium
             // Query Result
             while (sqlData.Read())
             {
-                string family = sqlData[3].ToString();
+                string family = sqlData[2].ToString();
 
                 var result = from box in availableBoxes
                              where box.Family == family
@@ -68,31 +68,27 @@ namespace prototypeHerbarium
                 }
                 else
                 {
-                    try
-                    {
-                        byte[] tempBlob = (byte[])sqlData[2];
-                        picHerbariumSheet.Source = getHerbariumSheet(tempBlob);
-                    } catch (Exception) { }
-                    
                     lblAccessionNumber.Text = sqlData[0].ToString();
                     lblReferenceNumber.Text = sqlData[1].ToString();
-                    lblScientificName.Text = sqlData[4].ToString();
-                    lblCommonName.Text = sqlData[5].ToString();
-                    lblDateCollected.Text = sqlData[6].ToString();
-                    lblDateDeposited.Text = sqlData[7].ToString();
-                    lblDateVerified.Text = sqlData[8].ToString();
-                    lblLocality.Text = sqlData[9].ToString();
-                    lblCollector.Text = sqlData[10].ToString();
-                    lblValidator.Text = sqlData[11].ToString();
-                    lblDescription.Text = sqlData[12].ToString();
+                    lblScientificName.Text = sqlData[3].ToString();
+                    lblCommonName.Text = sqlData[4].ToString();
+                    lblDateCollected.Text = sqlData[5].ToString();
+                    lblDateDeposited.Text = sqlData[6].ToString();
+                    lblDateVerified.Text = sqlData[7].ToString();
+                    lblLocality.Text = sqlData[8].ToString();
+                    lblCollector.Text = sqlData[9].ToString();
+                    lblValidator.Text = sqlData[10].ToString();
+                    lblDescription.Text = sqlData[11].ToString();
 
                     lblBox.Text = result.First();
-                    lblFamilyName.Text = "  [" + sqlData[3].ToString() + "]";
+                    lblFamilyName.Text = "  [" + sqlData[2].ToString() + "]";
 
                     pnlPlantDeposit.Visibility = Visibility.Visible;
                 }
             }
             connection.closeResult();
+
+            getHerbariumImage(lblAccessionNumber.Text);
         }
 
         private void btnReturn_Click(object sender, RoutedEventArgs e)
@@ -193,6 +189,25 @@ namespace prototypeHerbarium
             image.StreamSource = new MemoryStream(blob);
             image.EndInit();
             return image;
+        }
+
+        private void getHerbariumImage(string accessionNumber)
+        {
+            DatabaseConnection connection = new DatabaseConnection();
+            connection.setQuery("SELECT picHerbariumSheet FROM viewHerbariumPicture WHERE strAccessionNumber = @accessionNumber");
+            connection.addParameter("@accessionNumber", SqlDbType.VarChar, accessionNumber);
+
+            SqlDataReader sqlData = connection.executeResult();
+            while (sqlData.Read())
+            {
+                try
+                {
+                    byte[] tempBlob = (byte[])sqlData[0];
+                    picHerbariumSheet.Source = getHerbariumSheet(tempBlob);
+                }
+                catch (Exception) { }
+            }
+            connection.closeResult();
         }
     }
 }

@@ -94,7 +94,7 @@ namespace prototypeHerbarium
         {
             DatabaseConnection connection = new DatabaseConnection();
             connection.setStoredProc("dbo.procConfirmDeposit");
-            connection.addSprocParameter("@depositID", SqlDbType.Int, lblDepositID.Text);
+            connection.addSprocParameter("@depositNumber", SqlDbType.VarChar, lblDepositNumber.Text);
             connection.addSprocParameter("@receiveStatus", SqlDbType.VarChar, "Rejected");
 
             connection.executeStoredProc();
@@ -109,7 +109,7 @@ namespace prototypeHerbarium
         {
             DatabaseConnection connection = new DatabaseConnection();
             connection.setStoredProc("dbo.procConfirmDeposit");
-            connection.addSprocParameter("@depositID", SqlDbType.Int, lblDepositID.Text);
+            connection.addSprocParameter("@depositNumber", SqlDbType.VarChar, lblDepositNumber.Text);
             connection.addSprocParameter("@receiveStatus", SqlDbType.VarChar, "Accepted");
 
             connection.executeStoredProc();

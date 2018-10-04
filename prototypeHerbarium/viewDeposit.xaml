@@ -28,8 +28,7 @@
                 <WrapPanel Grid.Column="2" FlowDirection="RightToLeft">
                     <Button x:Name="btnProceed" Click="btnProceed_Click" Margin="5" Padding="10 5" Content="PROCEED"
                             IsEnabled="{Binding ElementName=chkGoodCondition, Path=IsChecked, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <Button x:Name="btnClear" Click="btnClear_Click" Margin="5" Padding="10 5" Content="CLEAR" 
-                            IsEnabled="{Binding ElementName=chkGoodCondition, Path=IsChecked, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <Button x:Name="btnClear" Click="btnClear_Click" Margin="5" Padding="10 5" Content="CLEAR"  />
                 </WrapPanel>
             </Grid>
 

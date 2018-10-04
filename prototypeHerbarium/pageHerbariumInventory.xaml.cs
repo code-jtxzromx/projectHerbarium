@@ -36,7 +36,7 @@ namespace prototypeHerbarium
             HerbariumSheet herbariumSheet = dgrHerbariumSheets.SelectedValue as HerbariumSheet;
 
             // Query Command Setting
-            connection.setQuery("SELECT strAccessionNumber, picHerbariumSheet, strBoxNumber, strFamilyName, strScientificName, " +
+            connection.setQuery("SELECT strAccessionNumber, strBoxNumber, strFamilyName, strScientificName, " +
                                     "strCommonName, dateCollected, dateDeposited, dateVerified, strFullLocality, " +
                                     "strCollector, strValidator, strDescription, boolLoanAvailable, strStatus " +
                                     "FROM viewHerbariumInventory " +
@@ -49,32 +49,27 @@ namespace prototypeHerbarium
             // Query Result
             while (sqlData.Read())
             {
-                try
-                {
-                    byte[] tempBlob = (byte[])sqlData[1];
-                    picHerbariumSheet.Source = getHerbariumSheet(tempBlob);
-                }
-                catch (Exception) { }
-                
                 lblAccessionNumber.Text = sqlData[0].ToString();
-                lblBox.Text = sqlData[2].ToString();
-                lblFamilyName.Text = "  [" + sqlData[3].ToString() + "]";
-                lblScientificName.Text = sqlData[4].ToString();
-                lblCommonName.Text = sqlData[5].ToString();
-                lblDateCollected.Text = sqlData[6].ToString();
-                lblDateDeposited.Text = sqlData[7].ToString();
-                lblDateVerified.Text = sqlData[8].ToString();
-                lblLocality.Text = sqlData[9].ToString();
-                lblCollector.Text = sqlData[10].ToString();
-                lblValidator.Text = sqlData[11].ToString();
-                lblDescription.Text = sqlData[12].ToString();
-                lblAvail.Text = (bool)sqlData[13] ? "Available" : "Not Available";
-                lblStatus.Text = sqlData[14].ToString();
-                btnAvail.Visibility = (sqlData[14].ToString() == "Loaned") ? Visibility.Hidden : Visibility.Visible;
+                lblBox.Text = sqlData[1].ToString();
+                lblFamilyName.Text = "  [" + sqlData[2].ToString() + "]";
+                lblScientificName.Text = sqlData[3].ToString();
+                lblCommonName.Text = sqlData[4].ToString();
+                lblDateCollected.Text = sqlData[5].ToString();
+                lblDateDeposited.Text = sqlData[6].ToString();
+                lblDateVerified.Text = sqlData[7].ToString();
+                lblLocality.Text = sqlData[8].ToString();
+                lblCollector.Text = sqlData[9].ToString();
+                lblValidator.Text = sqlData[10].ToString();
+                lblDescription.Text = sqlData[11].ToString();
+                lblAvail.Text = (bool)sqlData[12] ? "Available" : "Not Available";
+                lblStatus.Text = sqlData[13].ToString();
+                btnAvail.Visibility = (sqlData[13].ToString() == "Loaned") ? Visibility.Hidden : Visibility.Visible;
 
                 pnlPlantDeposit.Visibility = Visibility.Visible;
             }
             connection.closeResult();
+
+            getHerbariumImage(lblAccessionNumber.Text);
         }
         
         private void btnReturn_Click(object sender, RoutedEventArgs e)
@@ -159,6 +154,25 @@ namespace prototypeHerbarium
             image.StreamSource = new MemoryStream(blob);
             image.EndInit();
             return image;
+        }
+
+        private void getHerbariumImage(string accessionNumber)
+        {
+            DatabaseConnection connection = new DatabaseConnection();
+            connection.setQuery("SELECT picHerbariumSheet FROM viewHerbariumPicture WHERE strAccessionNumber = @accessionNumber");
+            connection.addParameter("@accessionNumber", SqlDbType.VarChar, accessionNumber);
+
+            SqlDataReader sqlData = connection.executeResult();
+            while (sqlData.Read())
+            {
+                try
+                {
+                    byte[] tempBlob = (byte[])sqlData[0];
+                    picHerbariumSheet.Source = getHerbariumSheet(tempBlob);
+                }
+                catch (Exception) { }
+            }
+            connection.closeResult();
         }
 
         public void changeAvailability(string AccessionNumber, bool AvailableStatus)
