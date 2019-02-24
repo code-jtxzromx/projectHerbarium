@@ -9,8 +9,16 @@ namespace prototypeHerbarium
 {
     class DatabaseConnection
     {
-        //private SqlConnection connection = new SqlConnection("Server=192.168.43.38,1433; Database=HerbariumDatabase; User ID=sa; Password=1234; Trusted_Connection=False;");
-        private SqlConnection connection = new SqlConnection("Server=localhost; Database=HerbariumDatabase; Integrated Security=True; Connection Timeout=900");
+        //private SqlConnection connection = new SqlConnection("Server=192.168.43.38,1433;" +
+        //                                                    "Database=HerbariumDatabase;" +
+        //                                                    "User ID=sa; Password=1234;" +
+        //                                                    "Trusted_Connection=False;");
+        private SqlConnection connection = new SqlConnection("Server=MONO-CHROME;" +
+                                                            "Database=HerbariumDatabase;" +
+                                                            "User ID=sa; Password=123;" +
+                                                            "Trusted_Connection=False;");
+        //private SqlConnection connection = new SqlConnection("Server=MONO-CHROME; Database=HerbariumDatabase; Integrated Security=True");
+        // private SqlConnection connection = new SqlConnection("Server=DESKTOP-TL402RH; Database=HerbariumDatabase; Integrated Security=True");
 
         private SqlCommand command;
         private SqlDataAdapter dataAdapter;

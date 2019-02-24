@@ -99,7 +99,7 @@ namespace prototypeHerbarium
             DatabaseConnection connection = new DatabaseConnection();
             connection.setStoredProc("dbo.procPlantResubmission");
             connection.addSprocParameter("@isIDBase", SqlDbType.Bit, 0);
-            connection.addSprocParameter("@depositID", SqlDbType.Int, lblDepositID.Text);
+            connection.addSprocParameter("@depositID", SqlDbType.VarChar, lblDepositNumber.Text);
             connection.addSprocParameter("@herbariumSheet", SqlDbType.VarBinary, picture);
             connection.addSprocParameter("@locality", SqlDbType.Int, (cbxLocality.SelectedItem as ComboBoxItem).Item);
             connection.addSprocParameter("@staff", SqlDbType.Int, StaticData.staffname);
